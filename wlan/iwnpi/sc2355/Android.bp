@@ -1,0 +1,37 @@
+//add 2355 npi app
+//source files
+WLNPI_OBJS = [
+    "wlnpi.c",
+    "cmd2355.c",
+]
+//cflags
+IWNPI_CFLAGS = [
+    "-O2",
+    "-g",
+]
+IWNPI_CFLAGS += [
+    "-Wall",
+    "-Wundef",
+    "-Wstrict-prototypes",
+    "-Wno-trigraphs",
+    "-fno-strict-aliasing",
+    "-fno-common",
+    "-Werror-implicit-function-declaration",
+    "-DCONFIG_LIBNL20",
+]
+
+//Build wlnpi tool
+cc_binary {
+    name: "iwnpi_sc2355",
+    stem: "iwnpi",
+    proprietary: true,
+    shared_libs: [
+        "libcutils",
+        "libutils",
+        "liblog",
+        "libnl",
+    ],
+
+    cflags: IWNPI_CFLAGS,
+    srcs: WLNPI_OBJS,
+}

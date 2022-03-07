@@ -1,0 +1,75 @@
+//Build libiwnpi
+cc_library_shared {
+    name: "libiwnpi",
+
+    srcs: [
+        "iwnpi_cmd_executer.c",
+        "util.c",
+        "cmd.c",
+    ],
+
+    cflags: [
+        "-O2",
+        "-g",
+    ] + [
+        "-Wall",
+        "-Wundef",
+        "-Wstrict-prototypes",
+        "-Wno-trigraphs",
+        "-fno-strict-aliasing",
+        "-fno-common",
+        "-Werror-implicit-function-declaration",
+        "-DCONFIG_LIBNL20",
+    ],
+
+    shared_libs: [
+        "libcutils",
+        "libutils",
+        "liblog",
+    ],
+
+    proprietary: true,
+
+    static_libs: ["libnl"],
+}
+
+/*
+//libsprdftms is not used in our platform. Early samsung projects in used.
+//Android makefile for libsprdftms
+
+ifeq ($(BOARD_WLAN_DEVICE), $(filter $(BOARD_WLAN_DEVICE),sc2332 sp9832e))
+//Build libss
+
+LIBSS_OBJS = [
+    "ops.c",
+    "netlink.c",
+    "wrap.c",
+    "nl80211.c",
+]
+
+LIBSS_CFLAGS = [
+    "-O2",
+    "-g",
+]
+LIBSS_CFLAGS += [
+    "-Wall",
+    "-Wundef",
+    "-Wstrict-prototypes",
+    "-Wno-trigraphs",
+    "-fno-strict-aliasing",
+    "-fno-common",
+    "-Werror-implicit-function-declaration",
+    "-DCONFIG_LIBNL20",
+    "-DCONFIG_SAMSUNG_EXT",
+]
+cc_library_shared {
+
+    name: "libsprdftms",
+    proprietary: true,
+
+    cflags: LIBSS_CFLAGS,
+    srcs: LIBSS_OBJS,
+    shared_libs: ["libcutils"] + ["libnl"] + ["liblog"],
+}
+endif
+*/

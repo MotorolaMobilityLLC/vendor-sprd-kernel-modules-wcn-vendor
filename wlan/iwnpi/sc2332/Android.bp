@@ -1,0 +1,34 @@
+//add 2332 npi app
+WLNPI_OBJS = [
+    "wlnpi.c",
+    "cmd2332.c",
+]
+IWNPI_CFLAGS = [
+    "-O2",
+    "-g",
+]
+IWNPI_CFLAGS += [
+    "-Wall",
+    "-Wundef",
+    "-Wstrict-prototypes",
+    "-Wno-trigraphs",
+    "-fno-strict-aliasing",
+    "-fno-common",
+    "-Werror-implicit-function-declaration",
+    "-DCONFIG_LIBNL20",
+]
+
+cc_binary {
+    name: "iwnpi_sc2332",
+    stem: "iwnpi",
+    proprietary: true,
+    shared_libs: [
+        "libcutils",
+        "libutils",
+        "liblog",
+        "libnl",
+    ],
+
+    cflags: IWNPI_CFLAGS,
+    srcs: WLNPI_OBJS,
+}

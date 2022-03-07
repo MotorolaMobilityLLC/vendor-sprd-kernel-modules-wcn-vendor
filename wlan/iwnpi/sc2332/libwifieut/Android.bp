@@ -1,0 +1,19 @@
+cc_library_shared {
+    name: "libwifieut_sc2332",
+    stem: "libwifieut",
+    compile_multilib: "32",
+
+    srcs: ["wifi_eut_hdlr.c"],
+
+    include_dirs: ["vendor/sprd/tools/engpc/sprd_fts_inc/"],
+
+    proprietary: true,
+    relative_install_path: "npidevice",
+
+    shared_libs: [
+        "liblog",
+        "libc",
+        "libcutils",
+    ],
+
+}
