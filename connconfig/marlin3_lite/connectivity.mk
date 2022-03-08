@@ -3,8 +3,6 @@ CONNECTIVITY_OWN_FILES := \
     bt_configure_pskey.ini \
     bt_configure_rf_aa.ini \
     bt_configure_pskey_aa.ini \
-    wifi_board_config.ini\
-    wifi_board_config_aa.ini\
     fm_board_config.ini
 
 WIFI_INI_FILES := \
@@ -13,6 +11,9 @@ WIFI_INI_FILES := \
 
 SPRD_WCN_ETC_PATH ?= vendor/firmware
 SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
+
+SPRD_WIFI_ODM_ETC_PATH :=$(TARGET_COPY_OUT_ODM)/etc
+SPRD_WIFI_ODM_FIRMWARE_PATH :=$(TARGET_COPY_OUT_ODM)/firmware
 
 CONNECTIVITY_FM_FILES := fm_board_config.ini
 SPRD_WCN_FM_PATH := vendor/firmware
@@ -34,11 +35,16 @@ GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_FM_FILES), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WCN_FM_PATH)/$(own), \
         $(error wcn chip fm ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
 
-#copy wifi ini to vendor/firmware to use request_firmware in driver
-GENERATE_WIFI_INI_COPY_FILES += $(foreach own, $(WIFI_INI_FILES), \
+#move wifi ini to odm to use request_firmware in driver
+GENERATE_WIFI_INI_ODM_FIRMWARE_FILES += $(foreach own, $(WIFI_INI_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
-        $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_FIRMWARE_PATH)/$(own), \
+        $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_ODM_FIRMWARE_PATH)/$(own), \
         $(error wifi ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
+
+GENERATE_WIFI_INI_ODM_ETC_FILES += $(foreach own, $(WIFI_INI_FILES), \
+    $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
+        $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_ODM_ETC_PATH)/$(own), \
+        $(error wcn wifi ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don' t take a random one)))
 
 ifneq ($(wildcard $(SPRD_WCN_MODEM_FIRMWARE)), )
     GENERATE_WCN_PRODUCT_COPY_FILES += \
@@ -54,7 +60,8 @@ endif
 
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
-    $(GENERATE_WIFI_INI_COPY_FILES) \
+    $(GENERATE_WIFI_INI_ODM_FIRMWARE_FILES) \
+    $(GENERATE_WIFI_INI_ODM_ETC_FILES) \
     $(LOCAL_PATH)/wcn.rc:/vendor/etc/init/wcn.rc \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:vendor/etc/permissions/android.hardware.bluetooth_le.xml
 

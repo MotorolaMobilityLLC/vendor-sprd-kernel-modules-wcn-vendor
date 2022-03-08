@@ -5,6 +5,9 @@ CONNECTIVITY_OWN_FILES := \
 SPRD_WCN_ETC_PATH ?= vendor/firmware
 SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
 
+SPRD_WIFI_ODM_ETC_PATH := $(TARGET_COPY_OUT_ODM)/etc
+SPRD_WIFI_ODM_FIRMWARE_PATH := $(TARGET_COPY_OUT_ODM)/firmware
+
 SPRD_WCN_FIRMWARE_FILES := \
     wcnmodem.bin\
     gpsbd.bin\
@@ -14,15 +17,15 @@ SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/marlin2_18a/sharkl3_cm
 SPRD_GNSS_BD_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/greeneye2_cm4_bds_builddir/gnssbdmodem.bin
 SPRD_GNSS_GL_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/greeneye2_cm4_glonass_builddir/gnssmodem.bin
 
-GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
+GENERATE_WIFI_INI_ODM_ETC_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
-        $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WCN_ETC_PATH)/$(own), \
-        $(error wcn chip ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
+        $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_ODM_ETC_PATH)/$(own), \
+        $(error wifi ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
 
-#copy wifi ini to vendor/firmware to use request_firmware in driver
-GENERATE_WIFI_INI_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
+#copy wifi ini to odm/firmware to use request_firmware in driver
+GENERATE_WIFI_INI_ODM_FIRMWARE_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
-        $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_FIRMWARE_PATH)/$(own), \
+        $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_ODM_FIRMWARE_PATH)/$(own), \
         $(error wifi ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
 
 ifneq ($(wildcard $(SPRD_WCN_MODEM_FIRMWARE)), )
@@ -40,7 +43,8 @@ endif
 
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
-    $(GENERATE_WIFI_INI_COPY_FILES) \
+    $(GENERATE_WIFI_INI_ODM_ETC_FILES) \
+    $(GENERATE_WIFI_INI_ODM_FIRMWARE_FILES) \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:vendor/etc/permissions/android.hardware.bluetooth_le.xml \
     $(LOCAL_PATH)/wcn.rc:/vendor/etc/init/wcn.rc
 
