@@ -120,12 +120,16 @@ enum WLNPI_CMD_LIST
 
     WLNPI_CMD_SET_SAR_POWER = 54,
     WLNPI_CMD_GET_SAR_POWER,
+    WLNPI_CMD_SET_FCC_EN = 56,
+    WLNPI_CMD_SET_POWER_BACKOFF = 57,
+    WLNPI_CMD_GET_POWER_BACKOFF = 58,
     WLNPI_CMD_SET_SOFTAP_WFA_PARA = 60,
     WLNPI_CMD_GET_SOFTAP_WFA_PARA = 61,
 
     WLNPI_CMD_SET_STA_WFA_PARA = 62,
     WLNPI_CMD_GET_STA_WFA_PARA = 63,
-    WLNPI_CMD_SET_RAND_MAC_FLAG = 200,
+    WLNPI_CMD_SET_RAND_MAC_FLAG = 199,
+    WLNPI_CMD_SET_COUNTRY = 200,
 
     /* Max */
     WLNPI_CMD_MAX,
@@ -198,6 +202,13 @@ typedef struct assoc_resp_t
 
     char assoc_resp_info[IWNPI_ASSOC_RESP_DATA_LEN];
 } assoc_resp;
+
+struct power_backoff
+{
+	unsigned char phy_mode;
+	unsigned char channel;
+	char power_bo_value;
+};
 
 extern wlnpi_t g_wlnpi;
 extern struct wlnpi_cmd_t *match_cmd_table(char *name);

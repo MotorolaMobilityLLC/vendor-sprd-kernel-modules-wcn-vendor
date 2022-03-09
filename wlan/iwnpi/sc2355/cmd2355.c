@@ -4631,6 +4631,73 @@ int wlnpi_show_get_sar_power(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int 
     return 0;
 }
 
+struct power_backoff
+{
+#define PHY_MODE_NUM 7
+#define BACKOFF_PARA_NUM 17
+	unsigned char subtype;
+	unsigned char channel;
+	unsigned char bw_mode;
+	unsigned char phy_power_bo_value[PHY_MODE_NUM][2];
+};
+
+int wlnpi_cmd_set_power_backoff(int argc, char **argv, unsigned char *s_buf, int *s_len)
+{
+	char *err;
+	unsigned char *tmp = s_buf;
+	long value;
+	int i;
+
+	if(BACKOFF_PARA_NUM != argc)
+	{
+		printf("need %d paras, please check!\n", BACKOFF_PARA_NUM);
+		return -1;
+	}
+
+	printf("show para : ");
+
+	for(i = 0; i < BACKOFF_PARA_NUM; i++) {
+		value = strtol(argv[i], &err, 10);
+		*(tmp + i) = (char)value;
+		printf("%d ", s_buf[i]);
+	}
+
+	printf("\n");
+
+	*s_len = BACKOFF_PARA_NUM;
+
+	return 0;
+}
+
+int wlnpi_show_get_power_backoff(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
+{
+	int i;
+	char value;
+	struct power_backoff *bo;
+
+	printf("ADL entry %s(), r_len = %d\n", __func__, r_len);
+
+	/* 1 groups, each group has 16 bytes, and another 1 byte indicate on/off
+	 *  total len: 16 + 1 = 17 bytes.
+	 */
+	if(BACKOFF_PARA_NUM != r_len) {
+		printf("get power backoff err, len is : %d\n", r_len);
+		return -1;
+	}
+
+	printf("\n");
+	/* max 1 groups, each group has 17 bytes value*/
+	bo = (struct power_backoff *)(r_buf);
+	printf(" subtype is:%hhu;\n", bo->subtype);
+	printf(" channel is:%hhu\n", bo->channel);
+	printf(" bw_mode is:%hhu;\n", bo->bw_mode);
+	for(i = 0; i < PHY_MODE_NUM; i++) {
+		printf(" phy_mode is:%hhu;", bo->phy_power_bo_value[i][0]);
+		printf(" power_bo_value is:%hhu;\n", bo->phy_power_bo_value[i][1]);
+	}
+	return 0;
+}
+
 int wlnpi_cmd_set_softap_wfa_para(int argc, char **argv, unsigned char *s_buf,
 				  int *s_len)
 {
@@ -4737,6 +4804,25 @@ int wlnpi_cmd_set_rand_mac_flag(int argc, char **argv, unsigned char *s_buf,
 		return -1;
 	}
 	*s_len = 1;
+	return 0;
+}
+
+int wlnpi_cmd_set_country(int argc, char **argv, unsigned char *s_buf,
+			  int *s_len)
+{
+	char *err;
+
+	if(1 != argc)
+	{
+		printf("need 1 paras, please check!\n");
+		return -1;
+	}
+
+	memcpy(s_buf, argv[0], 2);
+	*s_len = 2;
+
+	ENG_LOG("country code : %c%c\n",s_buf[0], s_buf[1]);
+
 	return 0;
 }
 
@@ -5699,6 +5785,22 @@ struct wlnpi_cmd_t g_cmd_table[] =
 		.show  = wlnpi_show_only_status,
 	},
 	{
+		/*----CMD ID:152------------*/
+		.id    = WLNPI_CMD_SET_POWER_BACKOFF,
+		.name  = "set_power_backoff",
+		.help  = "set_power_backoff type power mode channel band",
+		.parse = wlnpi_cmd_set_power_backoff,
+		.show  = wlnpi_show_only_status,
+	},
+	{
+		/*----CMD ID:153-----------*/
+		.id    = WLNPI_CMD_GET_POWER_BACKOFF,
+		.name  = "get_power_backoff",
+		.help  = "get_power_backoff",
+		.parse = wlnpi_cmd_no_argv,
+		.show  = wlnpi_show_get_power_backoff,
+	},
+	{
 		/*----CMD ID:154------------*/
 		.id    = WLNPI_CMD_SET_SOFTAP_WFA_PARA,
 		.name  = "set_softap_wfa",
@@ -5731,13 +5833,21 @@ struct wlnpi_cmd_t g_cmd_table[] =
 		.show  = wlnpi_cmd_get_sta_wfa_para,
 	},
 	{
-        /*CMD ID:200*/
-        .id   = WLNPI_CMD_SET_RAND_MAC_FLAG,
-        .name  = "set_rand_mac_flag",
-        .help  = "set_rand_mac_flag",
-        .parse = wlnpi_cmd_set_rand_mac_flag,
-        .show  = wlnpi_show_only_status,
-    }
+		/*----CMD ID:199------------*/
+		.id    = WLNPI_CMD_SET_RAND_MAC_FLAG,
+		.name  = "set_rand_mac_flag",
+		.help  = "set_rand_mac_flag",
+		.parse = wlnpi_cmd_set_rand_mac_flag,
+		.show  = wlnpi_show_only_status,
+    	},
+	{
+		/*----CMD ID:200------------*/
+		.id    = WLNPI_CMD_SET_COUNTRY,
+		.name  = "set_country",
+		.help  = "set_country country code",
+		.parse = wlnpi_cmd_set_country,
+		.show  = wlnpi_show_only_status,
+    	},
 };
 
 struct wlnpi_cmd_t *match_cmd_table(char *name)

@@ -2658,6 +2658,124 @@ int wlnpi_show_get_sar_power(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int 
     return 0;
 }
 
+int wlnpi_cmd_set_fcc_en(int argc, char **argv, unsigned char *s_buf, int *s_len)
+{
+	char *err;
+
+	if(1 != argc)
+	{
+		printf("need 1 paras, please check!\n");
+		return -1;
+	}
+
+	*s_buf = (unsigned char)strtol(argv[0], &err, 10);
+	if(err == argv[0])
+	{
+		ENG_LOG("ADL %s(), strtol is ERROR, return -1\n", __func__);
+		printf("invalid input argv\n");
+		return -1;
+	}
+
+	printf("set fcc en : %d\n", s_buf[0]);
+	*s_len = 1;
+    	return 0;
+}
+
+int wlnpi_cmd_set_power_backoff(int argc, char **argv, unsigned char *s_buf, int *s_len)
+{
+	char *err;
+	unsigned char *tmp = s_buf;
+	long  power, type, mode, channel, bw;
+
+	if(4!= argc)
+	{
+		printf("need 4 paras, please check!\n");
+		return -1;
+	}
+
+	type = strtol(argv[0], &err, 10);
+	if(err == argv[0])
+	{
+		printf("invalid arguments for type\n");
+		return -1;
+	}
+
+	printf("type is : %ld\n", type);
+
+	*tmp = (char)type;
+	tmp++;
+
+	power = strtol(argv[1], &err, 10);
+	if(err == argv[1])
+	{
+		printf("invalid arguments for power\n");
+		return -1;
+	}
+
+	printf("power is : %ld\n", power);
+
+	*tmp = (char)power;
+	tmp++;
+
+	mode = strtol(argv[2], &err, 10);
+	if(err == argv[2])
+	{
+		printf("invalid arguments for mode\n");
+		return -1;
+	}
+
+	printf("mode is : %ld\n", mode);
+
+	*tmp = (char)mode;
+	tmp++;
+
+	channel = strtol(argv[3], &err, 10);
+	if(err == argv[3])
+	{
+		printf("invalid arguments for channel\n");
+		return -1;
+	}
+
+	printf("channel is : %ld\n", channel);
+	*tmp = (char)channel;
+
+	*s_len = 4;
+
+	printf("show para : %d, %d, %d, %d\n", s_buf[0], s_buf[1], s_buf[2], s_buf[3]);
+	ENG_LOG("show para : %d, %d, %d, %d\n", s_buf[0], s_buf[1], s_buf[2],s_buf[3]);
+
+    return 0;
+}
+
+int wlnpi_show_get_power_backoff(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
+{
+
+	int mode_index = 0, channal_index = 0;
+	char value;
+	struct power_backoff *bo;
+
+	ENG_LOG("ADL entry %s(), r_len = %d", __func__, r_len);
+
+	/* 3 mode, each mode has 14 channel, 1 byte flag*/
+	if(14*3 + 1 != r_len) {
+		printf("get power backoff err, len is : %d\n", r_len);
+		ENG_LOG("ADL leaving %s(), r_len is ERROR, return -1", __func__);
+		return -1;
+	}
+
+	printf("\n");
+	printf("flag : %hhd\n", r_buf[0]);
+
+	for (mode_index = 0; mode_index < 3; mode_index++) {
+		for(channal_index = 0; channal_index < 14; channal_index++) {
+			printf("%hhd ", r_buf[mode_index * 14 + channal_index + 1]);
+		}
+		printf("\n");
+	}
+
+    return 0;
+}
+
 int wlnpi_cmd_set_softap_wfa_para(int argc, char **argv, unsigned char *s_buf,
 				  int *s_len)
 {
@@ -2767,6 +2885,25 @@ int wlnpi_cmd_set_rand_mac_flag(int argc, char **argv, unsigned char *s_buf,
 	}
 	*s_len = 1;
 	return 0;
+}
+
+int wlnpi_cmd_set_country(int argc, char **argv, unsigned char *s_buf,
+			  int *s_len)
+{
+        char *err;
+
+        if(1 != argc)
+        {
+                printf("need 1 paras, please check!\n");
+                return -1;
+        }
+
+        memcpy(s_buf, argv[0], 2);
+        *s_len = 2;
+
+        ENG_LOG("country code : %c%c\n",s_buf[0], s_buf[1]);
+
+    return 0;
 }
 
 struct wlnpi_cmd_t g_cmd_table[] =
@@ -3195,6 +3332,30 @@ struct wlnpi_cmd_t g_cmd_table[] =
         .show  = wlnpi_show_get_sar_power,
     },
     {
+	/*-----CMD ID:56-----------*/
+	.id    = WLNPI_CMD_SET_FCC_EN,
+	.name  = "set_fcc_en",
+	.help  = "set_fcc_en 0/1",
+	.parse = wlnpi_cmd_set_fcc_en,
+	.show  = wlnpi_show_only_status,
+    },
+    {
+	/*-----CMD ID:57-----------*/
+	.id    = WLNPI_CMD_SET_POWER_BACKOFF,
+	.name  = "set_power_backoff",
+	.help  = "set_power_backoff type power mode channel",
+	.parse = wlnpi_cmd_set_power_backoff,
+	.show  = wlnpi_show_only_status,
+    },
+    {
+	/*-----CMD ID:58-----------*/
+	.id    = WLNPI_CMD_GET_POWER_BACKOFF,
+	.name  = "get_power_backoff",
+	.help  = "get_power_backoff",
+	.parse = wlnpi_cmd_no_argv,
+	.show  = wlnpi_show_get_power_backoff,
+    },
+    {
         /*----CMD ID:60------------*/
         .id    = WLNPI_CMD_SET_SOFTAP_WFA_PARA,
         .name  = "set_softap_wfa",
@@ -3227,13 +3388,21 @@ struct wlnpi_cmd_t g_cmd_table[] =
         .show  = wlnpi_cmd_get_sta_wfa_para,
     },
     {
-        /*CMD ID:200*/
+	 /*----CMD ID:199------------*/
         .id   = WLNPI_CMD_SET_RAND_MAC_FLAG,
         .name  = "set_rand_mac_flag",
         .help  = "set_rand_mac_flag",
         .parse = wlnpi_cmd_set_rand_mac_flag,
         .show  = wlnpi_show_only_status,
-    }
+    },
+    {
+	 /*----CMD ID:200------------*/
+        .id   = WLNPI_CMD_SET_COUNTRY,
+        .name  = "set_country",
+        .help  = "set_country country code",
+        .parse = wlnpi_cmd_set_country,
+        .show  = wlnpi_show_only_status,
+    },
 };
 
 struct wlnpi_cmd_t *match_cmd_table(char *name)
