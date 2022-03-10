@@ -2,7 +2,7 @@ CONNECTIVITY_OWN_FILES := \
     connectivity_calibration.ini \
     connectivity_configure.ini
 
-SPRD_WCN_ETC_PATH ?= vendor/firmware
+SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/etc
 SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
 
 SPRD_WIFI_ODM_ETC_PATH := $(TARGET_COPY_OUT_ODM)/etc
