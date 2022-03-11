@@ -1336,7 +1336,11 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 	char *pout;
 	int npi_flag = 0;
 
-	at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
+	if (strncmp(WIFI_EUT_KEYWORD, diag_cmd, WIFI_EUT_KEYWORD_LEN)!=0)
+		at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
+	else
+		at_cmd = diag_cmd;
+
 	len = strlen(at_cmd) - 1;
 	at_cmd[len] = 0;
 

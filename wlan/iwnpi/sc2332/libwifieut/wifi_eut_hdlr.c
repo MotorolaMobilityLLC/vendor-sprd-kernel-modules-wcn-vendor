@@ -1213,7 +1213,10 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 	struct eut_cmd_t *eut;
 
 	hdr_len = sizeof(MSG_HEAD_T);
-	at_cmd = diag_cmd + 1 + hdr_len;
+	if (strncmp(WIFI_EUT_KEYWORD, diag_cmd, WIFI_EUT_KEYWORD_LEN)!=0)
+		at_cmd = diag_cmd + 1 + hdr_len;
+	else
+		at_cmd = diag_cmd;
 	len = strlen(at_cmd) - 1;
 	at_cmd[len] = 0;
 
