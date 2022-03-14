@@ -72,5 +72,5 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.bluetooth.a2dp_offload.cap = "sbc" \
     persist.bluetooth.a2dp_offload.switch = "false" \
     ro.bluetooth.a2dp_offload.supported="false" \
-    persist.bluetooth.a2dp_offload.disabled = "false"
+    persist.bluetooth.a2dp_offload.disabled = "true"
 
