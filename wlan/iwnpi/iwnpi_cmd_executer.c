@@ -48,6 +48,8 @@ extern struct cmd __stop___cmd;
 #define CMD_GET_RSSI	"get_rssi"
 #define INSMOD_SPRWL_KO     "insmod"
 #define RMMOD_SPRWL_KO     "rmmod"
+#define IFCONFIG_WLAN0_UP    "ifconfig wlan0 up"
+#define IFCONFIG_WLAN0_DOWN  "ifconfig wlan0 down"
 #define CMD_GET_BEAMF_STATUS "get_beamf_status"
 #define CMD_GET_RXSTBC_STATUS "get_rxstbc_status"
 
@@ -377,44 +379,28 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
     }
 
     if(strstr(cmd_str, INSMOD_SPRWL_KO) > 0) {
-	module_cmd += snprintf(module_cmd, CMD_RESULT_BUFFER_LEN, "%s ", INSMOD_SPRWL_KO);
-#ifdef WIFI_DRIVER_MODULE_PATH
-	module_cmd += snprintf(module_cmd, CMD_RESULT_BUFFER_LEN, "%s", WIFI_DRIVER_MODULE_PATH);
-#endif
-	*module_cmd = '\0';
+      module_cmd += snprintf(module_cmd, CMD_RESULT_BUFFER_LEN, "%s", IFCONFIG_WLAN0_UP);
+      *module_cmd = '\0';
     } else if (strstr(cmd_str, RMMOD_SPRWL_KO) > 0) {
-	 module_cmd += snprintf(module_cmd, CMD_RESULT_BUFFER_LEN, "%s ", RMMOD_SPRWL_KO);
-#ifdef WIFI_DRIVER_MODULE_PATH
-	 module_cmd += snprintf(module_cmd, CMD_RESULT_BUFFER_LEN, "%s", WIFI_DRIVER_MODULE_PATH);
-#endif
-	 *module_cmd = '\0';
+      module_cmd += snprintf(module_cmd, CMD_RESULT_BUFFER_LEN, "%s", IFCONFIG_WLAN0_DOWN);
+      *module_cmd = '\0';
     }
     snprintf(command, WIFI_EUT_COMMAND_MAX_LEN, "%s", cmd_str);
-#if 0
+
     err = system(command);
-    ALOGD("ADL %s(), called system(%s), err = %d", __func__, command, err);
-#endif
-	err = system(command);
-	if(err == -1) {
-		ALOGD("ADL %s(), called system(%s), err = %d", __func__, command, err);
-	} else {
-		if(WIFEXITED(err)) {
-			if(WEXITSTATUS(err) == 0) {
-				ALOGD("ADL %s(), called system(%s), successful ret = %d", __func__, command, err);
-			} else {
-				ALOGD("ADL %s(), called system(%s), err = %d, %s", __func__, command, WEXITSTATUS(err), strerror(WEXITSTATUS(err)));
-			}
-		} else {
-			ALOGD("ADL %s(), called system(%s), child pro exit err. err = %d", __func__, command, WEXITSTATUS(err));
-		}
-	}
+    if(WIFEXITED(err) && (WEXITSTATUS(err) == 0)) {
+      ALOGD("ADL %s(), called system(%s), successful ret = %d", __func__, command, err);
+    } else {
+      ALOGD("ADL %s(), called system(%s), child pro exit err = %d, %s", __func__, command, WEXITSTATUS(err), strerror(WEXITSTATUS(err)));
+    }
+
   }
 
-  // for lna_status cmd
-  ALOGD("ADL %s(), command = %s", __func__, command);
-   if(strstr(command, INSMOD_SPRWL_KO) > 0) {
+   // for lna_status cmd
+   ALOGD("ADL %s(), command = %s", __func__, command);
+   if(strstr(command, IFCONFIG_WLAN0_UP) > 0) {
 	snprintf(result_buf, CMD_RESULT_BUFFER_LEN, "result: %d", err);
-   } else if (strstr(command, RMMOD_SPRWL_KO) > 0) {
+   } else if (strstr(command, IFCONFIG_WLAN0_DOWN) > 0) {
 	snprintf(result_buf, CMD_RESULT_BUFFER_LEN, "result: %d", err);
    } else if (strstr(command, CMD_LNA_STATUS) > 0) {
     if (result_buf) {
