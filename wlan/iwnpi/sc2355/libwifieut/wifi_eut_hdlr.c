@@ -933,16 +933,22 @@ int set_mac_addr_new(char *mac)
 {
 	int fd;
 	int ret;
+	char mac_addr[32] = {0};
 
 	fd = open(NV_MAC_ADDR_PATH, O_CREAT | O_WRONLY, 0666);
 	if (fd < 0)
 		return -1;
 
+	sprintf(mac_addr, "%c%c:%c%c:%c%c:%c%c:%c%c:%c%c",
+		mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
+		mac[6], mac[7], mac[8], mac[9], mac[10], mac[11]);
+	ENG_LOG("wifi_eut: %s MAC=%s", __func__, mac_addr);
+
 	if(fd >= 0){
 	    if (-1 == chmod(NV_MAC_ADDR_PATH, 0666))
 		    ENG_LOG("%s chmod failed", __func__);
 	}
-	ret = write(fd, mac, strlen(mac));
+	ret = write(fd, mac_addr, strlen(mac_addr));
 	fsync(fd);
 	close(fd);
 
@@ -1506,7 +1512,10 @@ int wifi_mac_get_addr(char *diag_cmd, char *at_rsp)
 	struct wifi_eut_t *eut;
 	char mac[6];
 
-	at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
+	if (strncmp(WIFI_EUT_GET_ADDR, diag_cmd, WIFI_EUT_ADDR_LEN) != 0)
+		at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
+	else
+		at_cmd = diag_cmd;
 	len = strlen(at_cmd) - 1;
 	at_cmd[len] = 0;
 
@@ -1562,7 +1571,10 @@ int wifi_mac_set_addr(char *diag_cmd, char *at_rsp)
 	struct wifi_eut_t *eut;
 	char mac[6];
 
-	at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
+	if (strncmp(WIFI_EUT_SET_ADDR, diag_cmd, WIFI_EUT_ADDR_LEN) != 0)
+		at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
+	else
+		at_cmd = diag_cmd;
 	len = strlen(at_cmd) - 1;
 	at_cmd[len] = 0;
 
