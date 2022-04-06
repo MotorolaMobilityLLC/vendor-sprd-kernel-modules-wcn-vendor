@@ -49,28 +49,41 @@
 #define LPM_COMBINE_SLEEP_MODE_AND_LPM  1
 #endif
 
-typedef struct {
-  /** Set to sizeof(wcn_vndor_interface_t) */
-  size_t size;
+#define WCND_SOCKET_CMD_ERROR_QUOTE  2
 
-  /*
-   * Functions need to be implemented in Vendor libray (libwcn-vendor.so).
-   */
-  int (*init)(void);
-  int (*get_sw_version)(char *buf, int *len);
-  int (*get_hw_version)(char *buf, int *len);
-  int (*get_loglevel)(char *buf, int *len);
-  int (*set_loglevel)(char *buf, int len);
-  int (*enable_armlog)(void);
-  int (*disable_armlog)(void);
-  int (*get_armlog_status)(void);
-  int (*manual_assert)(void);
-  int (*manual_dumpmem)(void);
-  int (*reset)(bool);
-  int (*get_reset_status)(void);
-  int (*send_at_cmd)(char *buf, int len);
-  /** Closes the interface */
-  int (*cleanup)(void);
+#define WCND_SOCKET_CMD_REPLY_LENGTH 255
+#define WCND_SOCKET_CMD_CP2_VERSION          "at+spatgetcp2info"
+#define WCND_SOCKET_CMD_ENABLE_CP2_LOG       "at+armlog=1"
+#define WCND_SOCKET_CMD_DISABLE_CP2_LOG      "at+armlog=0"
+#define WCND_SOCKET_CMD_CP2_LOG_STATUS       "at+armlog?"
+#define WCND_SOCKET_CMD_CP2_LOG_STATUS_RSP   "+ARMLOG:"
+#define WCND_SOCKET_CMD_GET_CP2_LOGLEVEL     "at+loglevel?"
+#define WCND_SOCKET_CMD_SET_CP2_LOGLEVEL     "at+loglevel="
+#define WCND_SOCKET_CMD_CP2_LOGLEVEL_RSP     "+LOGLEVEL:"
+#define WCND_SOCKET_CMD_CP2_ASSERT           "at+spatassert=1"
+#define WCND_SOCKET_CMD_CP2_DUMP             "dumpmem"
+#define WCND_SOKCET_CMD_CP2_DUMP_ENABLE      "dump_enable"
+#define WCND_SOCKET_CMD_CP2_DUMP_DISABLE     "dump_disable"
+#define WCND_SOCKET_CMD_CP2_RESET_STATUS     "at+reset?"
+#define WCND_SOCKET_CMD_CP2_RESET_STATUS_RSP "+RESET:"
+#define WCND_SOCKET_CMD_CP2_RESET_ENABLE     "reset_enable"
+#define WCND_SOCKET_CMD_CP2_RESET_DISABLE    "reset_disable"
+#define WCND_SOCKET_CMD_CP2_RESET_DUMP       "reset_dump"
+#define WCND_SOCKET_CMD_AT_PREFIX            "at+"
+
+#define WCND_DUMP       0
+#define WCND_RESET      1
+#define WCND_RESET_DUMP 2
+
+typedef struct {
+	/* Set to sizeof(wcn_vndor_interface_t) */
+	size_t size;
+
+	/*
+	 * Functions need to be implemented in Vendor libray (libwcn-vendor.so).
+	 */
+	int (*wcn_cmd_opt)(char *argv[], char *result,
+			   int len, int *error_type);
 } wcn_vendor_interface_t;
 
 #endif /* WCN_VENDOR_H */
