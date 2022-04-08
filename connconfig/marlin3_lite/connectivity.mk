@@ -9,14 +9,14 @@ WIFI_INI_FILES := \
     wifi_board_config.ini\
     wifi_board_config_aa.ini\
 
-SPRD_WCN_ETC_PATH ?= vendor/firmware
-SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
+SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/etc
+SPRD_WIFI_FIRMWARE_PATH := $(TARGET_COPY_OUT_ODM)/firmware
 
 SPRD_WIFI_ODM_ETC_PATH :=$(TARGET_COPY_OUT_ODM)/etc
 SPRD_WIFI_ODM_FIRMWARE_PATH :=$(TARGET_COPY_OUT_ODM)/firmware
 
 CONNECTIVITY_FM_FILES := fm_board_config.ini
-SPRD_WCN_FM_PATH := vendor/firmware
+SPRD_WCN_FM_PATH := $(TARGET_COPY_OUT_ODM)/firmware
 
 SPRD_WCN_FIRMWARE_FILES := \
     wcnmodem.bin\
@@ -30,6 +30,7 @@ GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WCN_ETC_PATH)/$(own), \
         $(error wcn chip ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
 
+#move fm ini to odm to use request_firmware in driver
 GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_FM_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WCN_FM_PATH)/$(own), \
