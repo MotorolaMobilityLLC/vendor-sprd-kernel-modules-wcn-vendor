@@ -50,8 +50,6 @@ $(error wcn chip ini configuration miss. please fix it, and don't take a random 
 endif
 
 $(call inherit-product, vendor/sprd/modules/wcn/vendor/connconfig/$(SPRD_WCN_HW_MODEL)/connectivity.mk)
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := vendor/sprd/modules/wcn/vendor/bt/libbt/conf/sprd/$(SPRD_WCNBT_CHISET)/include \
-                                               vendor/sprd/modules/wcn/vendor/bt/libbt/include
 
 PRODUCT_PACKAGES += \
     libbqbbt \
