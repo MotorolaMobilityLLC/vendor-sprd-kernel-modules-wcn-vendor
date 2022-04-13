@@ -8,6 +8,7 @@ PRODUCT_COPY_FILES += \
 $(warning shell echo "device-sprd-gps_mk_entry1")
 PRODUCT_PACKAGES += \
     gpsd \
+    liblte
 
 $(warning shell echo "device-sprd-gps_mk_end")
 endif
