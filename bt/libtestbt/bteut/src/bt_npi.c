@@ -43,7 +43,7 @@
 
 #define BT_EUT_SLEEP_MAX_COUNT (50)
 
-#define SYSFS_MARLIN3_CHIPID_NODE "/sys/devices/platform/sprd-mtty/chipid"
+ #define SYSFS_MARLIN3_CHIPID_NODE "/sys/devices/platform/sprd-marlin3/sprd-marlin3:sprd-mtty/chipid"
 
 static BTEUT_TX_ELEMENT g_bteut_tx = {
     .pattern = BT_EUT_TX_PATTERN_DEAFULT_VALUE,
