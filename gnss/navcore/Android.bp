@@ -1,0 +1,28 @@
+
+cc_prebuilt_library_shared {
+
+    name: "libnavcore",
+
+    compile_multilib: "both",
+    multilib: {
+        lib32: {           
+            srcs: ["marlin3lite/lib32bit/libnavcore.so"],
+        },
+        lib64: {
+            srcs: ["marlin3lite/lib64bit/libnavcore.so"],
+        },
+    },
+
+    vendor: true,
+
+    shared_libs: [
+        "libc++",
+        "libcutils",
+        "liblog",
+        "libpower",
+        "libui",
+        "libutils",
+    ],
+
+}
+
