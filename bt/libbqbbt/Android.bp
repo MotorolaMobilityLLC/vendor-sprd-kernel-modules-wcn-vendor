@@ -1,0 +1,23 @@
+cc_library_shared {
+    name: "libbqbbt",
+
+    srcs: [
+        "src/bqb.c",
+        "src/bqb_vendor.c",
+    ],
+
+    local_include_dirs: ["include"],
+
+    shared_libs: [
+        "libcutils",
+        "liblog",
+        "libdl",
+    ],
+
+    cflags: ["-fstack-protector"],
+    proprietary: true,
+
+    owner: "sprd",
+    compile_multilib: "32",
+
+}

@@ -1,7 +1,7 @@
-/* Auto-generated from include/vnd_marlin3_lite.txt on Wed Nov 24 17:35:25 CST 2021 */
-#ifndef _VND_MARLIN3_LITE_H
-#define _VND_MARLIN3_LITE_H
-#define SPRD_WCNBT_MARLIN3_LITE
+/* Auto-generated from include/vnd_marlin3_internal.txt on Sun Apr 24 15:56:44 CST 2022 */
+#ifndef _VND_MARLIN3_INTERNAL_H
+#define _VND_MARLIN3_INTERNAL_H
+#define SPRD_WCNBT_MARLIN3_INTERNAL
 #define BLUETOOTH_UART_DEVICE_PORT   "/dev/ttyBT0"
 #define LPM_IDLE_TIMEOUT_MULTIPLE   5
 #define BTVND_DBG   TRUE

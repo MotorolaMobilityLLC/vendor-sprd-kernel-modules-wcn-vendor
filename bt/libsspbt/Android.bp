@@ -1,0 +1,22 @@
+cc_library_shared {
+    name: "libbt-ssp_bt",
+
+    srcs: [
+        "p_256_ecc_pp.c",
+        "p_256_curvepara.c",
+        "p_256_multprecision.c",
+        "lmp_ecc.c",
+        "algo_api.c",
+        "algo_utils.c",
+        "bt_vendor_ssp_lib.c",
+    ],
+
+    shared_libs: [
+        "libcutils",
+        "liblog",
+    ],
+
+    owner: "sprd",
+    proprietary: true,
+
+}

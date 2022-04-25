@@ -1,0 +1,37 @@
+cc_library_shared {
+    name: "libbt-sprd_eut",
+
+    srcs: [
+        "src/bt_eut.c",
+        "src/bt_npi.c",
+        "src/bt_cus.c",
+        "src/bt_eng.c",
+        "src/bt_auto.c",
+        "src/bt_factory.c",
+        "src/bt_hal.c",
+    ],
+
+    include_dirs: [
+      //"vendor/sprd/proprietories-source/engpc/sprd_fts_inc",
+      "vendor/sprd/modules/wcn/vendor/bt/libtestbt/btsuite/main/include",
+  ],
+
+    local_include_dirs: ["include"],
+
+    shared_libs: [
+        "liblog",
+        "libc",
+        "libcutils",
+        "libhardware",
+        "libdl",
+    ],
+
+    cflags: [
+        "-std=c99",
+    ],
+
+    relative_install_path: "npidevice",
+    proprietary: true,
+    compile_multilib: "32",
+
+}

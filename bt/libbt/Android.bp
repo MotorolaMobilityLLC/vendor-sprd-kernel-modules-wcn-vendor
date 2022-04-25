@@ -1,0 +1,151 @@
+soong_config_module_type {
+    name: "libbt_cc_defaults",
+    module_type: "cc_defaults",
+    config_namespace: "libbt",
+    variables: ["btsoc"],
+    properties: ["cflags", "srcs", "local_include_dirs"],
+
+}
+
+soong_config_string_variable {
+    name: "btsoc",
+    values: [
+        "marlin",
+        "marlin2",
+        "marlin3",
+        "marlin3_internal",
+        "marlin3_lite",
+        "pike2",
+        "sharkl3",
+        "sharkle",
+        "sharklep",
+        "sr2351",
+    ],
+}
+
+filegroup {
+    name: "LibbtSources",
+    srcs: [
+        "src/bt_vendor_sprd_hci.c",
+        "src/bt_vendor_sprd_ssp.c",
+        "src/bt_vendor_sprd.c",
+        "src/conf.c",
+        "src/hardware.c",
+        "src/sitm.c",
+        "src/upio.c",
+        "src/userial_vendor.c",
+    ],
+}
+
+
+libbt_cc_defaults {
+    name: "libbtvendor",
+    soong_config_variables: {
+        btsoc:{
+            marlin:{
+                srcs: [
+                    "conf/sprd/marlin/src/marlin.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/marlin/include",
+                ],
+                cflags: ["-DMARLIN"],
+            },
+            marlin2:{
+                srcs: [
+                    "conf/sprd/marlin2/src/marlin2.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/marlin2/include",
+                ],
+                cflags: ["-DMARLIN2"],
+            },
+            marlin3:{
+                srcs: [
+                    "conf/sprd/marlin3/src/marlin3.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/marlin3/include",
+                ],
+                cflags: ["-DMARLIN3"],
+            },
+            marlin3_internal:{
+                srcs: [
+                    "conf/sprd/marlin3_internal/src/marlin3_internal.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/marlin3_internal/include",
+                ],
+                cflags: ["-DMARLIN3_INTERNAL"],
+            },
+            marlin3_lite:{
+                srcs: [
+                    "conf/sprd/marlin3_lite/src/marlin3_lite.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/marlin3_lite/include",
+                ],
+                cflags: ["-DMARLIN3_LITE"],
+            },
+            pike2:{
+                srcs: [
+                    "conf/sprd/pike2/src/pike2.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/pike2/include",
+                ],
+                cflags: ["-DPIKE2"],
+            },
+            sharkl3:{
+                srcs: [
+                    "conf/sprd/sharkl3/src/sharkl3.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/sharkl3/include",
+                ],
+                cflags: ["-DSHARKL3"],
+            },
+            sharkle:{
+                srcs: [
+                    "conf/sprd/sharkle/src/sharkle.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/sharkle/include",
+                ],
+                cflags: ["-DSHARKLE"],
+            },
+            sharklep:{
+                srcs: [
+                    "conf/sprd/sharklep/src/sharklep.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/sharklep/include",
+                ],
+                cflags: ["-DSHARKLEP"],
+            },
+            sr2351:{
+                srcs: [
+                    "conf/sprd/sr2351/src/sr2351.c",
+                ],
+                local_include_dirs: [
+                    "conf/sprd/sr2351/include",
+                ],
+                cflags: ["-DSR2351"],
+            },
+        },
+    },
+}
+
+cc_library_shared {
+    name: "libbt-vendor",
+    defaults: ["libbtvendor"],
+    srcs: [
+        ":LibbtSources",
+    ],
+    local_include_dirs: ["include"],
+    shared_libs: [
+        "libcutils",
+        "liblog",
+    ],
+    proprietary: true,
+}

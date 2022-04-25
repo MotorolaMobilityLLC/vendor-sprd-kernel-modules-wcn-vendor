@@ -2,7 +2,7 @@
 #define __LIBBT_SPRD_BT_HAL_H__
 
 #include <stdbool.h>
-#include "bdroid_buildcfg.h"
+//#include "bdroid_buildcfg.h"
 #include "vendor_suite.h"
 
 #define HCI_GRP_VENDOR_SPECIFIC (0x3F << 10) /* 0xFC00 */

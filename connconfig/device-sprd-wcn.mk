@@ -49,6 +49,8 @@ $(error wcn chip ini configuration miss. please fix it, and don't take a random 
 # steven.chen
 endif
 
+$(call add_soong_config_namespace,libbt)
+$(call add_soong_config_var_value,libbt,btsoc,$(BOARD_HAVE_SPRD_WCN_COMBO))
 $(call inherit-product, vendor/sprd/modules/wcn/vendor/connconfig/$(SPRD_WCN_HW_MODEL)/connectivity.mk)
 
 PRODUCT_PACKAGES += \

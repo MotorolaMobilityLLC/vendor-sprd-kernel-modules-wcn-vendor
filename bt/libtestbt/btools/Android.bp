@@ -1,0 +1,18 @@
+cc_binary {
+    name: "btools",
+
+    compile_multilib: "32",
+
+    srcs: ["btools.c"],
+
+    host_ldlibs: ["-llog"],
+
+    shared_libs: [
+        "libcutils",
+        "libutils",
+        "libhardware",
+        "libhardware_legacy",
+    ],
+
+    proprietary: true,
+}

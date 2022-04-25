@@ -1,0 +1,46 @@
+cc_library_shared {
+    name: "libbt-sprd_suite",
+
+    srcs: [
+        "osi/src/list.c",
+        "osi/src/allocator.c",
+        "osi/src/hash_map.c",
+        "osi/src/hash_functions.c",
+        "osi/src/allocation_tracker.c",
+        "osi/src/semaphore.c",
+        "osi/src/fixed_queue.c",
+        "osi/src/reactor.c",
+        "osi/src/thread.c",
+        "osi/src/eager_reader.c",
+        "osi/src/future.c",
+        "main/src/sprd_suite.c",
+        "main/src/buffer_allocator.c",
+        "main/src/vendor_h4.c",
+        "main/src/vendor_hci.c",
+        "main/src/vendor_hcif.c",
+        "main/src/vendor_hcicmds.c",
+        "main/src/vendor_test.c",
+        "main/src/vendor_suite.c",
+    ],
+
+    local_include_dirs: ["."] + [
+        "main/include",
+        "osi/include",
+    ],
+
+    shared_libs: [
+        "libcutils",
+        "libutils",
+        "liblog",
+        "libc",
+        "libdl",
+    ],
+
+    cflags: [
+        "-std=c99",
+        "-Wall",
+    ],
+    clang_cflags: ["-Wno-error=typedef-redefinition"],
+
+    proprietary: true,
+}
