@@ -67,11 +67,12 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:vendor/etc/permissions/android.hardware.bluetooth_le.xml
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.wcn.hardware.product=$(SPRD_WCN_HW_MODEL) \
     ro.vendor.wcn.hardware.etcpath=/$(SPRD_WCN_ETC_PATH) \
     ro.bt.bdaddr_path="/data/vendor/bluetooth/btmac.txt" \
     persist.bluetooth.a2dp_offload.cap = "sbc" \
     persist.bluetooth.a2dp_offload.switch = "false" \
-    ro.bluetooth.a2dp_offload.supported="true" \
-    persist.bluetooth.a2dp_offload.disabled = "true"
+    ro.bluetooth.a2dp_offload.supported="true"
 
+PRODUCT_ODM_PROPERTIES += \
+    ro.vendor.wcn.hardware.product=$(SPRD_WCN_HW_MODEL) \
+    persist.bluetooth.a2dp_offload.disabled = "true"

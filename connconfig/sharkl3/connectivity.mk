@@ -49,6 +49,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wcn.rc:/vendor/etc/init/wcn.rc
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.wcn.hardware.product=$(SPRD_WCN_HW_MODEL) \
     ro.vendor.wcn.hardware.etcpath=/$(SPRD_WCN_ETC_PATH) \
     ro.bt.bdaddr_path="/data/vendor/bluetooth/btmac.txt"
+
+PRODUCT_ODM_PROPERTIES += \
+    ro.vendor.wcn.hardware.product=$(SPRD_WCN_HW_MODEL)
