@@ -8,7 +8,9 @@ cc_library_shared {
     proprietary: true,
     relative_install_path: "npidevice",
 
-    include_dirs: ["vendor/sprd/tools/engpc/sprd_fts_inc"],
+    header_libs:[
+	"engpc_sprd_fts_inc",
+    ],
 
     shared_libs: [
         "liblog",

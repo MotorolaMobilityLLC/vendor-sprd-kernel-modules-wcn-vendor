@@ -5,7 +5,9 @@ cc_library_shared {
 
     srcs: ["wifi_eut_hdlr.c"],
 
-    include_dirs: ["vendor/sprd/tools/engpc/sprd_fts_inc/"],
+    header_libs:[
+	"engpc_sprd_fts_inc",
+    ],
 
     proprietary: true,
     relative_install_path: "npidevice",
