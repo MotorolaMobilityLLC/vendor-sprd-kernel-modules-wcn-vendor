@@ -2,6 +2,13 @@ CONNECTIVITY_OWN_FILES := \
     connectivity_calibration.ini \
     connectivity_configure.ini
 
+CONNECTIVITY_22NM_FILES := \
+    connectivity_calibration.ini \
+    connectivity_configure.ini \
+    connectivity_calibration.22nm.ini \
+    connectivity_configure.22nm.ini
+
+SUFFIX_22NM_NAME := .22nm.ini
 SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/etc
 SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
 
@@ -13,17 +20,17 @@ SPRD_WCN_FIRMWARE_FILES := \
     gpsbd.bin\
     gpsgl.bin
 
-SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/marlin2_18a/sharkl3_cm4_v2_builddir/PM_sharkl3_cm4_v2.bin
+SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/marlin2_18a/9863_integration_cm4_v2_builddir/9863_integration_cm4_v2.bin
 SPRD_GNSS_BD_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/greeneye2_cm4_bds_builddir/gnssbdmodem.bin
 SPRD_GNSS_GL_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/greeneye2_cm4_glonass_builddir/gnssmodem.bin
 
-GENERATE_WIFI_INI_ODM_ETC_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
+GENERATE_WIFI_INI_ODM_ETC_FILES += $(foreach own, $(CONNECTIVITY_22NM_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_ODM_ETC_PATH)/$(own), \
         $(error wifi ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
 
 #copy wifi ini to odm/firmware to use request_firmware in driver
-GENERATE_WIFI_INI_ODM_FIRMWARE_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
+GENERATE_WIFI_INI_ODM_FIRMWARE_FILES += $(foreach own, $(CONNECTIVITY_22NM_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_ODM_FIRMWARE_PATH)/$(own), \
         $(error wifi ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
