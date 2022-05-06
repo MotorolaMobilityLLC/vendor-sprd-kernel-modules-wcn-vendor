@@ -1,4 +1,82 @@
-//Build libiwnpi
+soong_config_module_type {
+    name: "iwnpi_cc_defaults",
+    module_type: "cc_defaults",
+    config_namespace: "iwnpi_libwifieut",
+    bool_variables: ["sprd_wlan_iwnpi"],
+    properties: ["srcs"],
+}
+
+iwnpi_cc_defaults {
+    name: "iwnpi_soong_defaults",
+    proprietary: true,
+
+    shared_libs: [
+        "libcutils",
+        "libutils",
+        "liblog",
+        "libnl",
+    ],
+
+    cflags: [
+        "-O2",
+        "-g",
+    ] + [
+        "-Wall",
+        "-Wundef",
+        "-Wstrict-prototypes",
+        "-Wno-trigraphs",
+        "-fno-strict-aliasing",
+        "-fno-common",
+        "-Werror-implicit-function-declaration",
+        "-DCONFIG_LIBNL20",
+    ],
+
+    soong_config_variables: {
+        sprd_wlan_iwnpi: {
+            srcs: [
+		"sc2332/wlnpi.c",
+		"sc2332/cmd2332.c",
+                ],
+	conditions_default: {
+	    srcs: [
+		"sc2355/wlnpi.c",
+		"sc2355/cmd2355.c",
+                ],
+            },
+        },
+    },
+}
+
+iwnpi_cc_defaults {
+    name: "libwifieut_soong_defaults",
+    proprietary: true,
+	compile_multilib: "32",
+    shared_libs: [
+        "liblog",
+        "libc",
+        "libcutils",
+    ],
+
+    header_libs:[
+	"engpc_sprd_fts_inc",
+    ],
+
+	relative_install_path: "npidevice",
+
+    soong_config_variables: {
+        sprd_wlan_iwnpi: {
+            srcs: [
+		"sc2332/libwifieut/wifi_eut_hdlr.c",
+                ],
+	conditions_default: {
+            srcs: [
+		"sc2355/libwifieut/wifi_eut_hdlr.c",
+                ],
+            },
+        },
+    },
+}
+
 cc_library_shared {
     name: "libiwnpi",
 
@@ -33,6 +111,19 @@ cc_library_shared {
     static_libs: ["libnl"],
 }
 
+cc_binary {
+    name: "iwnpi",
+    defaults: [
+        "iwnpi_soong_defaults",
+        ],
+}
+
+cc_library_shared {
+    name: "libwifieut",
+    defaults: [
+        "libwifieut_soong_defaults",
+        ],
+}
 /*
 //libsprdftms is not used in our platform. Early samsung projects in used.
 //Android makefile for libsprdftms
