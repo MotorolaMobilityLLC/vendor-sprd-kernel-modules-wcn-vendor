@@ -282,8 +282,12 @@ enum wcn_aon_chip_id {
     WCN_SHARKLE_CHIP_AA_OR_AB,
     WCN_SHARKLE_CHIP_AC,
     WCN_SHARKLE_CHIP_AD,
+    WCN_PIKE2_CHIP,
     WCN_PIKE2_CHIP_AA,
     WCN_PIKE2_CHIP_AB,
+    WCN_SHARKL6_CHIP,
+    WCN_SHARKL3_CHIP,
+    WCN_SHARKL3_CHIP_22NM,
 };
 
 enum wcn_chip_id_type {

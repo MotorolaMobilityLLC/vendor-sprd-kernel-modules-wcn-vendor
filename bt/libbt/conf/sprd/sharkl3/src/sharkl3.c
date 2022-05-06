@@ -18,6 +18,7 @@
 
 #define LOG_TAG "bt_chip_vendor"
 
+#include <unistd.h>
 #include <log/log.h>
 #include <string.h>
 #include <cutils/properties.h>
@@ -27,6 +28,9 @@
 #include "bt_hci_bdroid.h"
 #include "conf.h"
 #include "upio.h"
+
+#define SYSFS_CHIPID_NODE "/sys/devices/platform/sipc-virt/sipc-virt:core@3/sipc-virt:core@3:sprd-mtty/chipid"
+#define CONFIGURATION_22nm_FILE "connectivity_configure.22nm.ini"
 
 // pskey file structure default value
 static pskey_config_t sharkl3_pskey;
@@ -413,23 +417,67 @@ static void sharkl3_epilog_process() {
     hw_core_enable(0);
 }
 
+static int get_file_name(char *name_t) {
+    int fd, ret;
+    char file_name[128] = {0}, id_str[10] = {0};
+    unsigned int id = 0;
+
+    /* property check */
+    ret = property_get(VENDOR_LIB_CONF_PROPERTY_PATH, file_name, VENDOR_LIB_CONF_PATH);
+    if (ret <0) {
+        ALOGE("get ini path from %s error", VENDOR_LIB_CONF_PROPERTY_PATH);
+    }
+    strcat(file_name, "/");
+
+    /* chip id check */
+    fd = open(SYSFS_CHIPID_NODE, O_RDONLY);
+    if (fd < 0) {
+        ALOGE("open %s faild", SYSFS_CHIPID_NODE);
+        goto normal;
+    }
+
+    ret = read(fd, id_str, sizeof(id_str));
+    close(fd);
+    if (ret < 0) {
+        ALOGE("read %s faild", SYSFS_CHIPID_NODE);
+        goto normal;
+
+    }
+
+    id_str[ret - 1] = 0;
+    id = strtoul(id_str, 0, 0) & 0xFFFFFFFF;
+
+    ALOGD("%s ret: %d, id: %s[%d]", __func__, ret, id_str, id);
+
+    if (id == WCN_SHARKL3_CHIP_22NM) {
+        strcat(file_name, CONFIGURATION_22nm_FILE);
+        ALOGI("%s, set ini file: %s", __func__, file_name);
+        memcpy(name_t, file_name, strlen(file_name));
+        return 0;
+    }
+
+normal:;
+
+    strcat(file_name, VENDOR_LIB_CONF_PROPERTY_FILE);
+    ALOGI("%s, set ini file: %s", __func__, file_name);
+    memcpy(name_t, file_name, strlen(file_name));
+
+    return 0;
+}
+
+
 static int sharkl3_init(void) {
     int ret;
+    char filename[128] = {0};
     char property[128] = {0};
 
     ALOGI("%s", __func__);
     memset(&sharkl3_pskey, 0, sizeof(sharkl3_pskey));
 
-    ret = property_get(VENDOR_LIB_CONF_PROPERTY_PATH, property, VENDOR_LIB_CONF_PATH);
-    if (ret <0) {
-        ALOGE("get ini path from %s error", VENDOR_LIB_CONF_PROPERTY_PATH);
-    }
+    /*bug1883480,modify 22nm ini path*/
+    get_file_name(filename);
 
-    strcat(property, "/");
-    strcat(property, VENDOR_LIB_CONF_PROPERTY_FILE);
-    ALOGI("%s, set ini file: %s", __func__, property);
-
-    vnd_load_configure(property, &sharkl3_table[0]);
+    vnd_load_configure(filename, &sharkl3_table[0]);
 
     set_mac_address(sharkl3_pskey.device_addr);
 
