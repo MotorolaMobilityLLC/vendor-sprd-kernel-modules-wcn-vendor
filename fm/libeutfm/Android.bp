@@ -1,0 +1,23 @@
+cc_library_shared {
+    name: "libfm-sprd_eut",
+
+    compile_multilib: "32",
+
+    srcs: ["fmeut.c"],
+
+    relative_install_path: "npidevice",
+
+    header_libs: ["engpc_sprd_fts_inc"],
+
+    shared_libs: [
+        "liblog",
+        "libc",
+        "libcutils",
+        "libtracedump",
+        "libutils",
+    ],
+
+    device_specific: true,
+
+}
+

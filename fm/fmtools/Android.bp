@@ -1,0 +1,8 @@
+cc_binary {
+    name: "fm_tools",
+
+    srcs: ["main.c"],
+
+    device_specific: true,
+
+}

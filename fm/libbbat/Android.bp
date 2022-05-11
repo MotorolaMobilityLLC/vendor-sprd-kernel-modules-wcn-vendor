@@ -1,0 +1,28 @@
+cc_library_shared {
+    name: "autotestfm",
+
+    compile_multilib: "32",
+
+    srcs: [
+        "fm.cpp",
+        "audio.cpp",
+        "fmtest.cpp",
+    ],
+
+    device_specific: true,
+
+    relative_install_path: "npidevice",
+    cflags: ["-DGOOGLE_FM_INCLUDED"],
+
+    header_libs: ["engpc_sprd_fts_inc"],
+    include_dirs: ["vendor/sprd/modules/wcn/vendor/bt/libengbt"],
+
+    shared_libs: [
+        "libcutils",
+        "libutils",
+        "liblog",
+        "libhardware",
+        "libhardware_legacy",
+    ],
+
+}
