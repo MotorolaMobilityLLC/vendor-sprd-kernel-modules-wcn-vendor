@@ -36,11 +36,13 @@ iwnpi_cc_defaults {
             srcs: [
 		"sc2332/wlnpi.c",
 		"sc2332/cmd2332.c",
+		"sc2332/test.c",
                 ],
 	conditions_default: {
 	    srcs: [
 		"sc2355/wlnpi.c",
 		"sc2355/cmd2355.c",
+		"sc2355/test.c"
                 ],
             },
         },

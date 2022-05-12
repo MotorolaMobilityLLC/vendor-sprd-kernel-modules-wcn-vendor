@@ -9,8 +9,10 @@
 
 #include <android/log.h>
 #include <utils/Log.h>
+#include "test.h"
 
 #define WLNPI_WLAN0_NAME            ("wlan0")
+#define TEST_CMD    "test"
 
 #ifdef LOG_TAG
 #undef LOG_TAG
@@ -229,6 +231,13 @@ int main(int argc, char **argv)
 
     argc--;
     argv++;
+
+    if (0 == strcmp(argv[0], TEST_CMD)) {
+	/*skip "test"*/
+	argc--;
+	argv++;
+	return sprdwl_handle_test(argc, argv);
+    }
 
     if (0 == strcmp(argv[0], WLNPI_WLAN0_NAME))
     {
