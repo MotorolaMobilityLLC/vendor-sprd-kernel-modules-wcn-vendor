@@ -2122,7 +2122,7 @@ static char *wlnpi_bss_get_ie(const char *bss, char ieid)
 
         if (pos[0] == ieid)
         {
-            return pos;
+            return (char *)pos;
         }
 
         pos += 2 + pos[1];
@@ -2165,7 +2165,7 @@ static char *iwnpi_bss_get_vendor_ie(const char *bss, int vendor_type)
 
         if (pos[0] == WLAN_EID_VENDOR_SPECIFIC && pos[1] >= 4 && vendor_type == iwnpi_get_be32(&pos[2]))
         {
-            return pos;
+            return (char *)pos;
         }
         pos += 2 + pos[1];
     }
