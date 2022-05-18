@@ -1220,6 +1220,8 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 	len = strlen(at_cmd) - 1;
 	at_cmd[len] = 0;
 
+	strip_white_space(at_cmd);
+
 	if (strncmp(WIFI_EUT_KEYWORD, at_cmd, WIFI_EUT_KEYWORD_LEN) != 0)
 		goto err;
 
