@@ -8,7 +8,7 @@ WIFI_INI_FILES := \
     wifi_board_config.ini\
 
 SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/etc
-SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
+SPRD_WIFI_FIRMWARE_PATH := $(TARGET_COPY_OUT_ODM)/firmware
 
 SPRD_WCN_FIRMWARE_FILES := \
     wcnmodem.bin\
