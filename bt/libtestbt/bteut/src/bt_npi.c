@@ -1663,8 +1663,16 @@ int bt_prf_path_get(char *rsp) {
 int bt_chipid_get(char *rsp) {
     int fd, ret;
     char id_str[30] = {0}, *id_str_pt[2];
+	int count_id = 10;
     /* chip id check */
     fd = open(SYSFS_MARLIN3_CHIPID_NODE, O_RDONLY);
+	while(fd < 0 && count_id --)
+    {
+		usleep(500 * 1000); // sleep 500ms
+		ALOGE("chipid open fail, sleep 500ms try time:", count_id);
+		fd = open(SYSFS_MARLIN3_CHIPID_NODE, O_RDONLY);
+    }
+
     if (fd < 0) {
         BTD("open %s faild", SYSFS_MARLIN3_CHIPID_NODE);
         goto error;
