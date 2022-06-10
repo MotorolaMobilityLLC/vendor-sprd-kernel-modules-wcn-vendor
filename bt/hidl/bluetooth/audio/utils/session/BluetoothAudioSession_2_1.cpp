@@ -38,6 +38,10 @@ using SessionType_2_0 =
     BluetoothAudioSession_2_1::invalidSoftwareAudioConfiguration = {};
 ::android::hardware::bluetooth::audio::V2_1::AudioConfiguration
     BluetoothAudioSession_2_1::invalidOffloadAudioConfiguration = {};
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+::android::hardware::bluetooth::audio::V2_0::CodecConfiguration
+audio_code_config_2_1_ = {};
+//#endif
 
 namespace {
 bool is_2_0_session_type(
@@ -121,6 +125,15 @@ BluetoothAudioSession_2_1::GetAudioConfig() {
   }
 }
 
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+// The control function is for the bluetooth_audio module to get the current
+// CodecConfiguration
+const ::android::hardware::bluetooth::audio::V2_0::CodecConfiguration
+BluetoothAudioSession_2_1::GetCurrentCodecConfig() {
+   return audio_code_config_2_1_;
+}
+//#endif
+
 bool BluetoothAudioSession_2_1::UpdateAudioConfig(
     const ::android::hardware::bluetooth::audio::V2_1::AudioConfiguration&
         audio_config) {
@@ -159,6 +172,13 @@ void BluetoothAudioSession_2_1::OnSessionStarted(
     const sp<IBluetoothAudioPort> stack_iface, const DataMQ::Descriptor* dataMQ,
     const ::android::hardware::bluetooth::audio::V2_1::AudioConfiguration&
         audio_config) {
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+  if (audio_config.getDiscriminator() ==
+      ::android::hardware::bluetooth::audio::V2_1::AudioConfiguration::
+          hidl_discriminator::codecConfig) {
+    audio_code_config_2_1_ = audio_config.codecConfig();
+  }
+//#endif
   if (session_type_2_1_ == SessionType_2_1::UNKNOWN) {
     ::android::hardware::bluetooth::audio::V2_0::AudioConfiguration config;
     if (audio_config.getDiscriminator() ==

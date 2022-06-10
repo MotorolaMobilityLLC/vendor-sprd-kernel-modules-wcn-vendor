@@ -67,6 +67,13 @@ class BluetoothAudioSession_2_1 {
   const ::android::hardware::bluetooth::audio::V2_1::AudioConfiguration
   GetAudioConfig();
 
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+  // The control function is for the bluetooth_audio module to get the current
+  // CodecConfiguration
+  const ::android::hardware::bluetooth::audio::V2_0::CodecConfiguration
+  GetCurrentCodecConfig();
+//#endif
+
   static constexpr ::android::hardware::bluetooth::audio::V2_1::
       AudioConfiguration& kInvalidSoftwareAudioConfiguration =
           invalidSoftwareAudioConfiguration;

@@ -21,6 +21,6 @@ cc_library_shared {
         "libfmq",
         "liblog",
         "android.hardware.bluetooth.audio-V2-ndk",
-        "libbluetooth_audio_session_aidl_unisoc",
+        "libbluetooth_audio_session_aidl",
     ],
 }

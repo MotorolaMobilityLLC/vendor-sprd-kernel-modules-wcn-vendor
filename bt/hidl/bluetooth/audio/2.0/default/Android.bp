@@ -1,5 +1,5 @@
 cc_library_shared {
-    name: "android.hardware.bluetooth.audio@2.0-impl-unisoc",
+    name: "android.hardware.bluetooth.audio@2.0-impl",
     defaults: ["hidl_defaults"],
     vendor: true,
     relative_install_path: "hw",
@@ -15,7 +15,7 @@ cc_library_shared {
         "android.hardware.audio.common@5.0",
         "android.hardware.bluetooth.audio@2.0",
         "libbase",
-        "libbluetooth_audio_session_unisoc",
+        "libbluetooth_audio_session",
         "libcutils",
         "libfmq",
         "libhidlbase",

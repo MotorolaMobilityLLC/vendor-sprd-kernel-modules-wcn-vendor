@@ -81,6 +81,17 @@ class BluetoothAudioSessionControl_2_1 {
     }
   }
 
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+  // The control function is for the bluetooth_audio module to get the current
+  // CodecConfiguration
+  static const ::android::hardware::bluetooth::audio::V2_0::CodecConfiguration
+  GetCurrentCodecConfig(const SessionType_2_1& session_type) {
+    std::shared_ptr<BluetoothAudioSession_2_1> session_ptr =
+        BluetoothAudioSessionInstance_2_1::GetSessionInstance(session_type);
+      return session_ptr->GetCurrentCodecConfig();
+  }
+//#endif
+
   // Those control APIs for the bluetooth_audio module to start / suspend / stop
   // stream, to check position, and to update metadata.
   static bool StartStream(const SessionType_2_1& session_type) {
