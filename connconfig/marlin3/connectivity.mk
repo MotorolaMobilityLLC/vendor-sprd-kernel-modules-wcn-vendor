@@ -6,10 +6,18 @@ CONNECTIVITY_OWN_FILES := \
     fm_board_config.ini
 
 SPRD_WCN_ETC_PATH ?= vendor/etc
+SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
 
 CONNECTIVITY_FM_FILES := fm_board_config.ini
 SPRD_WCN_FM_PATH := vendor/firmware
 
+BOARD_HAVE_SPRD_WCN_BRANCH ?= marlin3_20a
+SPRD_WCN_FIRMWARE_FILES := \
+    wcnmodem.bin\
+    gnssmodem.bin
+
+SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/(BOARD_HAVE_SPRD_WCN_BRANCH)/sc2355_marlin3_pcie_builddir/EXEC_KERNEL_IMAGE.bin
+SPRD_GNSS_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3/marlin3_gnss_cm4_builddir/gnssmodem.bin
 GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WCN_ETC_PATH)/$(own), \
@@ -20,6 +28,17 @@ GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_FM_FILES), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WCN_FM_PATH)/$(own), \
         $(error wcn chip fm ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
 
+
+ifneq ($(wildcard $(SPRD_WCN_MODEM_FIRMWARE)), )
+    GENERATE_WCN_PRODUCT_COPY_FILES += \
+        $(SPRD_WCN_MODEM_FIRMWARE):$(SPRD_WIFI_FIRMWARE_PATH)/wcnmodem.bin \
+        $(SPRD_GNSS_MODEM_FIRMWARE):$(SPRD_WIFI_FIRMWARE_PATH)/gnssmodem.bin
+else
+    GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(SPRD_WCN_FIRMWARE_FILES), \
+        $(if $(wildcard $(LOCAL_PATH)/$(own)), \
+            $(LOCAL_PATH)/$(own):$(SPRD_WIFI_FIRMWARE_PATH)/$(own), \
+            $(error wcn firmware bin $(own) miss. please fix it, and don't take a random one)))
+endif
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
         $(LOCAL_PATH)/wcn.rc:/vendor/etc/init/wcn.rc \
