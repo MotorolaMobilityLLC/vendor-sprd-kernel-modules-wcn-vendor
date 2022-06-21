@@ -59,9 +59,9 @@ PRODUCT_PACKAGES += \
     libwcn-vendor \
     btools \
     android.hardware.bluetooth@1.1-service.unisoc \
-    android.hardware.bluetooth.audio@2.1-impl \
     libbluetooth_audio_session \
     libbluetooth_audio_session_aidl \
+    android.hardware.bluetooth.audio-impl\
     audio.bluetooth.default \
     libbt-sprd_suite \
     libbt-sprd_eut \
