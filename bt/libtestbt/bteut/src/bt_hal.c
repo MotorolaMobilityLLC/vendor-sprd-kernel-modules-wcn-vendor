@@ -66,6 +66,7 @@ static pthread_mutex_t mutex_lock;
 
 static bthal_callbacks_t *bthal_callbacks = NULL;
 
+uint8_t local_version = 0;
 typedef struct {
     int ret;
     void *data;
@@ -265,6 +266,13 @@ static int bt_dut_mode_send(uint16_t opcode, uint8_t* buf, uint8_t len)
     return 0;
 }
 
+static int bt_set_sar_send(uint16_t opcode, uint8_t* buf, uint8_t len)
+{
+    if (lib_interface)
+        lib_interface->hci_cmd_send(opcode, len, buf, NULL);
+    return 0;
+}
+
 static int bt_le_test_mode(uint16_t opcode, uint8_t* buf, uint8_t len)
 {
     if (lib_interface)
@@ -328,9 +336,24 @@ static void dut_vsc_cback(hci_cmd_complete_t *p)
             }
             break;
 
+        case HCI_READ_LOCAL_VERSION: {
+                BTD("local version data: 0x%02X%02X", (p->p_param_buf)[0], (p->p_param_buf)[1]);
+                if ((p->p_param_buf)[0] == 0) {
+                    BTD("store local version");
+                    local_version = (p->p_param_buf)[1];
+                }
+            }
+            break;
         default:
             break;
     }
+}
+
+static int bt_read_local_version(void)
+{
+    BTD("%s", __func__);
+    lib_interface->hci_cmd_send(HCI_READ_LOCAL_VERSION, 0, NULL, dut_vsc_cback);
+    return 0;
 }
 
 static int bt_set_nonsig_tx_testmode(uint16_t enable,
@@ -465,6 +488,63 @@ static int bt_le_enhanced_transmitter_cmd(uint8_t channel, uint8_t length, uint8
     return 0;
 }
 
+static int bt_le_enhanced_transmitter_cmd_v3(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy,
+                                             uint8_t cte_length, uint8_t cte_type, uint8_t switching_pattern_length,
+                                             uint8_t *attenna_ids)
+{
+    uint8_t buf[8];
+    int j;
+
+    BTD("%s channel: 0x%02x, length: 0x%02x, payload: 0x%02x, phy: 0x%02x,cte_length: 0x%02x, cte_type: 0x%02x, switching_pattern_length: 0x%02x",
+        __func__, channel, length, payload, phy, cte_length, cte_type, switching_pattern_length);
+    if(attenna_ids != NULL){
+        for(j = 0; j <switching_pattern_length; j++){
+            BTD("attenna_ids[%d] = %d",j, attenna_ids[j]);
+        }
+    }
+    buf[0] = channel;
+    buf[1] = length;
+    buf[2] = payload;
+    buf[3] = phy;
+    buf[4] = cte_length;
+    buf[5] = cte_type;
+    buf[6] = switching_pattern_length;
+    if(attenna_ids != NULL) {
+        buf[7] = *attenna_ids;
+    }
+    lib_interface->hci_cmd_send(HCI_BLE_ENHANCED_TRANSMITTER_TEST_V3, sizeof(buf), buf, dut_vsc_cback);
+    return 0;
+}
+
+static int bt_le_enhanced_transmitter_cmd_v4(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy,
+                                             uint8_t cte_length, uint8_t cte_type, uint8_t switching_pattern_length,
+                                             uint8_t *attenna_ids, uint8_t tramit_power_level)
+{
+    uint8_t buf[9];
+    int j;
+
+    BTD("%s channel: 0x%02x, length: 0x%02x, payload: 0x%02x, phy: 0x%02x,cte_length: 0x%02x, cte_type: 0x%02x, switching_pattern_length: 0x%02x, tramit_power_level: 0x%02x",
+        __func__, channel, length, payload, phy, cte_length, cte_type, switching_pattern_length, tramit_power_level);
+    if(attenna_ids != NULL){
+        for(j = 0; j <switching_pattern_length; j++){
+            BTD("attenna_ids[%d] = %d",j, attenna_ids[j]);
+        }
+    }
+    buf[0] = channel;
+    buf[1] = length;
+    buf[2] = payload;
+    buf[3] = phy;
+    buf[4] = cte_length;
+    buf[5] = cte_type;
+    buf[6] = switching_pattern_length;
+    if(attenna_ids != NULL) {
+        buf[7] = *attenna_ids;
+    }
+    buf[8] = tramit_power_level;
+    lib_interface->hci_cmd_send(HCI_BLE_ENHANCED_TRANSMITTER_TEST_V4, sizeof(buf), buf, dut_vsc_cback);
+    return 0;
+}
+
 static int bt_le_test_end_cmd(void)
 {
 
@@ -548,12 +628,16 @@ static bt_test_kit_t bt_test_kit = {
     .get_nonsig_rx_data = bt_get_nonsig_rx_data,
     .le_enhanced_receiver = bt_le_enhanced_receiver_cmd,
     .le_enhanced_transmitter = bt_le_enhanced_transmitter_cmd,
+    .le_enhanced_transmitter_v3 = bt_le_enhanced_transmitter_cmd_v3,
+    .le_enhanced_transmitter_v4 = bt_le_enhanced_transmitter_cmd_v4,
     .le_test_end = bt_le_test_end_cmd,
     .set_rf_path = bt_rf_set_path,
     .get_rf_path = bt_rf_get_path,
     .read_local_address = bt_read_local_address,
     .discovery = bt_discovery,
     .scan_results = bt_read_scan_results,
+    .set_sar_send = bt_set_sar_send,
+    .read_local_version = bt_read_local_version,
 };
 
 const bt_test_kit_t *bt_test_kit_get_interface(void) {

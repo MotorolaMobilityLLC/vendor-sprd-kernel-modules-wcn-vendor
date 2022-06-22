@@ -32,6 +32,7 @@
 #include "bt_npi.h"
 #include "bt_eut.h"
 
+#include "bt_types.h"
 
 #define BTD(param, ...) ALOGD("%s "param, __FUNCTION__, ## __VA_ARGS__)
 #define BTE(param, ...) ALOGE("%s "param, __FUNCTION__, ## __VA_ARGS__)
@@ -43,7 +44,15 @@
 
 #define BT_EUT_SLEEP_MAX_COUNT (50)
 
- #define SYSFS_MARLIN3_CHIPID_NODE "/sys/devices/platform/sprd-marlin3/sprd-marlin3:sprd-mtty/chipid"
+#define SYSFS_MARLIN3_CHIPID_NODE "/sys/devices/platform/sprd-mtty/chipid"
+#define SYSFS_MARLIN3_INTERNAL_CHIPID_NODE "/sys/devices/platform/wcn_bt/chipid"
+
+#define CHANNEL_BIT_MOVE(n)  (0x01 << n)
+#define CHANNEL_MAX_BIT 7
+#define HCI_SPRD_SET_CHANNEL_POWER_SIZE 9
+int8_t set_power_count[8] = {0};
+
+extern uint8_t local_version;
 
 static BTEUT_TX_ELEMENT g_bteut_tx = {
     .pattern = BT_EUT_TX_PATTERN_DEAFULT_VALUE,
@@ -51,6 +60,10 @@ static BTEUT_TX_ELEMENT g_bteut_tx = {
     .pkttype = BT_EUT_TX_PKTTYPE_DEAFULT_VALUE,
     .pktlen = BT_EUT_PKTLEN_DEAFULT_VALUE,
     .phy = BTEUT_LE_LEGACY_PHY,
+    .ctelen = BT_EUT_CTELEN_DEAFULT_VALUE,
+    .ctetype = BT_EUT_CTETYPE_DEAFULT_VALUE,
+    .switch_pattlen = BT_EUT_SWITCH_PATTERNLEN_DEAFULT_VALUE,
+    .attenna_id = BT_EUT_ATTENNAID_DEAFULT_VALUE,
     .txpwr.power_type = BT_EUT_POWER_TYPE_DEAFULT_VALUE,
     .txpwr.power_value = BT_EUT_POWER_VALUE_DEAFULT_VALUE
 };
@@ -96,6 +109,9 @@ struct bt_eut_cmd bt_eut_cmds[] = {
     /* TXPWR */
     { BT_TXPWR_REQ_INDEX, ENG_BT_TXPWR_REQ },
     { BT_TXPWR_INDEX, ENG_BT_TXPWR },
+
+    /* SETSAR */
+    { BT_TXSAR_INDEX, ENG_BT_TXSAR },
 
     /* RX Gain */
     { BT_RXGAIN_REQ_INDEX, ENG_BT_RXGAIN_REQ },
@@ -143,6 +159,17 @@ struct bt_eut_cmd bt_eut_cmds[] = {
     /* CHIP */
     { BT_CHIP_REQ_INDEX, ENG_BT_CHIP_REQ },
 
+    /*CTELEN*/
+    { BT_CTELEN_INDEX, ENG_BT_CTELEN },
+
+    /*CTETYPE*/
+    { BT_CTETYPE_INDEX, ENG_BT_CTETYPE },
+
+    /*SWITCH_PATTERNLEN*/
+    { BT_SWITCH_PATTERNLEN_INDEX, ENG_BT_SWITCH_PATTERNLEN },
+
+    /*ATTENNAID*/
+    { BT_ATTENNAID_INDEX, ENG_BT_ATTENNAID },
 };
 
 static bteut_txrx_status g_bteut_txrx_status = BTEUT_TXRX_STATUS_OFF;
@@ -158,6 +185,8 @@ static bteut_eut_running g_bteut_runing = BTEUT_EUT_RUNNING_OFF;
 static int bteut_rf_path = BTEUT_RFPATH_UNKNOWN;
 
 static char *le_test_legacy_list[] = {"marlin", "marlin2", "pike2", "sharkle", "sharkl3", "sharklep", NULL};
+static char *le_test_legacy_list_v3[] = {"marlin3_internal", "marlin3e", NULL};
+static char marlin3_internal[] = {"marlin3_internal"};
 
 
 int bt_testmode_set(bteut_bt_mode bt_mode, bteut_testmode testmode, char *rsp);
@@ -181,6 +210,8 @@ int bt_txpktlen_get(char *rsp);
 int bt_txpwr_set(bteut_txpwr_type txpwr_type, unsigned int value, char *rsp);
 int bt_txpwr_get(char *rsp);
 
+int bt_txsar_set(uint8_t txsar_type, uint8_t txsar_channel, int8_t txsar_value, char *rsp);
+
 int bt_rxgain_set(bteut_gain_mode mode, unsigned int value, char *rsp);
 int bt_rxgain_get(char *rsp);
 
@@ -202,6 +233,13 @@ int bt_prf_path_set(int index, char *rsp);
 int bt_prf_path_get(char *rsp);
 
 int bt_chipid_get(char *rsp);
+int bt_cte_length_set(unsigned int ctelen, char *rsp);
+
+int bt_cte_type_set(unsigned int ctetype, char *rsp);
+
+int bt_switch_pattern_length_set(unsigned int switch_pattlen, char *rsp);
+
+int bt_attenna_id_set(uint8_t *attenna_id, char *rsp);
 
 /**************************Function Definition***************************/
 static void bt_build_err_resp(char *resp) {
@@ -228,7 +266,27 @@ static int le_test_mode_inuse(void)
             return 0;
         }
     }
+    return 1;
+}
 
+static int le_test_mode_inuse_v3(void)
+{
+    int ret, i = 0;
+    char property_buf[128] = {0};
+    ret = property_get("ro.vendor.wcn.hardware.product", property_buf, "unknow");
+    BTD("current device: %s", property_buf);
+
+    if (ret < 0)
+        return -1;
+
+    for (;; i++) {
+        if (le_test_legacy_list_v3[i] == NULL)
+            break;
+        if (!strcmp(le_test_legacy_list_v3[i], property_buf)) {
+            BTD("legacy device found: %s", le_test_legacy_list_v3[i]);
+            return 0;
+        }
+    }
     return 1;
 }
 
@@ -347,6 +405,7 @@ static const char* dump_cmd_index(int cmd_index) {
         CASE_RETURN_STR(BT_TXPKTLEN_INDEX)
         CASE_RETURN_STR(BT_TXPWR_REQ_INDEX)
         CASE_RETURN_STR(BT_TXPWR_INDEX)
+        CASE_RETURN_STR(BT_TXSAR_INDEX)
         CASE_RETURN_STR(BT_RXGAIN_REQ_INDEX)
         CASE_RETURN_STR(BT_RXGAIN_INDEX)
         CASE_RETURN_STR(BT_ADDRESS_REQ_INDEX)
@@ -365,6 +424,10 @@ static const char* dump_cmd_index(int cmd_index) {
         CASE_RETURN_STR(BT_RFPATH_REQ_INDEX)
         CASE_RETURN_STR(BT_RFPATH_INDEX)
         CASE_RETURN_STR(BT_CHIP_REQ_INDEX)
+        CASE_RETURN_STR(BT_CTELEN_INDEX)
+        CASE_RETURN_STR(BT_CTETYPE_INDEX)
+        CASE_RETURN_STR(BT_SWITCH_PATTERNLEN_INDEX)
+        CASE_RETURN_STR(BT_ATTENNAID_INDEX)
 
     default:
         return "unknown cmd";
@@ -531,6 +594,10 @@ void bt_npi_parse(int module_index, char *buf, char *rsp) {
             bt_txpwr_set(atoi(data[1]), atoi(data[2]), rsp);
         } break;
 
+        case BT_TXSAR_INDEX: {
+            bt_txsar_set(atoi(data[1]), atoi(data[2]), atoi(data[3]), rsp);
+        } break;
+
         /* RX Gain */
         case BT_RXGAIN_REQ_INDEX: {
             bt_rxgain_get(rsp);
@@ -609,6 +676,21 @@ void bt_npi_parse(int module_index, char *buf, char *rsp) {
             bt_chipid_get(rsp);
         } break;
 
+        case BT_CTETYPE_INDEX: {
+            bt_cte_type_set(atoi(data[1]),rsp);
+        } break;
+
+        case BT_SWITCH_PATTERNLEN_INDEX: {
+            bt_switch_pattern_length_set(atoi(data[1]),rsp);
+        } break;
+
+        case BT_ATTENNAID_INDEX: {
+            uint8_t *attenna_ids = (uint8_t*)malloc(sizeof(uint8_t)*g_bteut_tx.switch_pattlen);
+            if(&data[1] && attenna_ids != NULL){
+                memcpy(attenna_ids, &data[1],sizeof(uint8_t)*g_bteut_tx.switch_pattlen);
+            }
+            bt_attenna_id_set(attenna_ids, rsp);
+        } break;
         //-----------------------------------------------------
         default:
             BTD("can not match the at command: %d", cmd_index);
@@ -743,6 +825,10 @@ int bt_testmode_set(bteut_bt_mode bt_mode, bteut_testmode testmode, char *rsp) {
                         "BTEUT_EUT_RUNNING_ON",
                         __func__);
                 g_bteut_runing = BTEUT_EUT_RUNNING_ON;
+                ret = engpc_bt_read_local_version();
+                if (0 != ret) {
+                    BTD("ADL %s(), read local version fail",__func__);
+                }
             } else {
                 BTD("ADL %s(), case BTEUT_TESTMODE_ENTER_EUT: now is ENTER_EUT, error.",
                         __func__);
@@ -775,6 +861,10 @@ int bt_testmode_set(bteut_bt_mode bt_mode, bteut_testmode testmode, char *rsp) {
                         "is error, goto err",
                         __func__);
                 goto err;
+            }
+            ret = engpc_bt_read_local_version();
+            if (0 != ret) {
+                BTD("ADL %s(), read local version fail",__func__);
             }
         } break;
 
@@ -1433,6 +1523,104 @@ err:
 }
 
 /********************************************************************
+*   name   bt_txsar_set
+*   ---------------------------
+*   descrition: set txpwr to global variable
+*   ----------------------------
+*   para        IN/OUT      type            note
+*   txsar_type     IN       uint8_t         set type
+*   txsar_channel   IN      uint8_t         set channel
+*   txsar_value     IN      int8_t          sar value
+*   rsp         OUT         char *          response result
+*   ----------------------------------------------------
+*   return
+*   0:exec successful
+*   -1:error
+*   ------------------
+*   other:
+*
+********************************************************************/
+int bt_txsar_set(uint8_t txsar_type, uint8_t txsar_channel, int8_t txsar_value, char *rsp) {
+    int ret = -1;
+
+    int move_count = 0;
+    uint8_t type  = txsar_type;
+    uint8_t channel= txsar_channel;
+    int8_t power = txsar_value;
+    int8_t temp_power = power;
+
+    uint8_t command[HCI_SPRD_SET_CHANNEL_POWER_SIZE];
+    uint8_t* command_ptr = command;
+    memset(command, 0, HCI_SPRD_SET_CHANNEL_POWER_SIZE);
+
+    BTD("txpwr_type = %d, channel = %d, value = %d", type, channel, power);
+
+    channel &= 0xff;
+    type &= 0x0f;
+
+    /* power check */
+    if (type) {
+        if (temp_power > 0) {
+            for (move_count = 0; move_count <= CHANNEL_MAX_BIT; move_count++) {
+                if (channel & CHANNEL_BIT_MOVE(move_count)) {
+                    for (temp_power = power;temp_power > 0;temp_power--) {
+                        set_power_count[move_count] ++;
+                        ALOGD("%s temp_power_reduce set count:%d,count:%d", __func__, set_power_count[move_count],move_count);
+                    }
+                }
+            }
+        } else if (temp_power < 0) {
+            for (move_count = 0; move_count <= CHANNEL_MAX_BIT; move_count++) {
+                if (channel & CHANNEL_BIT_MOVE(move_count)) {
+                    for (temp_power = power;temp_power < 0;temp_power++) {
+                        if (temp_power + set_power_count[move_count] < 0 ) {
+                            ALOGD("%s invalid power range set count:%d,count:%d", __func__, set_power_count[move_count],move_count);
+                            return -1;
+                        } else {
+                            set_power_count[move_count] --;
+                        }
+                        ALOGD("%s temp_power_add set count:%d,count:%d", __func__, set_power_count[move_count],move_count);
+                    }
+                }
+            }
+        } else {
+            ALOGD("%s: set power is 0", __func__);
+        }
+    }
+
+    /* fill command */
+    UINT8_TO_STREAM(command_ptr, type);
+    for (move_count = 0; move_count <= CHANNEL_MAX_BIT; move_count++) {
+        if (channel & CHANNEL_BIT_MOVE(move_count)) {
+            INT8_TO_STREAM(command_ptr, power);
+        } else {
+            INT8_TO_STREAM(command_ptr, 0);
+        }
+    }
+
+    if (BTEUT_TESTMODE_ENTER_EUT == g_bteut_testmode && BTEUT_EUT_RUNNING_ON == g_bteut_runing) {
+        BTD("start call engpc_bt_set_sar_send %s ", __func__);
+        ret = engpc_bt_set_sar_send(HCI_SET_SAR, command, HCI_SPRD_SET_CHANNEL_POWER_SIZE);
+
+        if (0 != ret) {
+            BTD("ADL %s(), call dut_mode_send() is ERROR, goto err", __func__);
+            goto err;
+        }
+    }
+
+    strncpy(rsp, (ret == 0 ? BT_SET_SAR_OK : BT_SET_SAR_ERROR),
+            BT_EUT_COMMAND_RSP_MAX_LEN);
+    RESPONSE_DUMP(rsp);
+    return 0;
+
+err:
+    bt_build_err_resp(rsp);
+    RESPONSE_DUMP(rsp);
+    BTD("Failure, Response: %s", rsp);
+    return -1;
+}
+
+/********************************************************************
 *   name   bt_txpwr_get
 *   ---------------------------
 *   descrition: get txpwr type and value from g_bteut_tx
@@ -1774,16 +1962,39 @@ int bt_tx_set(int on_off, int instru_tx_mode, unsigned int pktcnt, char *rsp) {
             goto err;
         }
 
-        BTD("ADL %s(), call set_nonsig_tx_testmode(), enable = 1, le = %d, pattern "
+        if(le_test_mode_inuse_v3() && is_ble) {
+            BTD("ADL %s(), call set_nonsig_tx_testmode(), enable = 1, le = %d, pattern "
                 "= %d, channel = %d, pac_type = %d, pac_len = %d, pwr_type = %d, "
                 "pwr_value = %d, pkt_cnt = %d",
                 __func__, is_ble, (int)g_bteut_tx.pattern, g_bteut_tx.channel, g_bteut_tx.pkttype,
                 g_bteut_tx.pktlen, g_bteut_tx.txpwr.power_type, g_bteut_tx.txpwr.power_value,
                 pktcnt);
-
+        } else {
+            BTD("ADL %s(), call set_nonsig_tx_testmode(), enable = 1, le = %d, pattern "
+                "= %d, channel = %d, pac_type = %d, pac_len = %d, cte_len = %d, cte_type = %d, switch_pattlen = %d, pwr_type = %d, "
+                "pwr_value = %d, pkt_cnt = %d",
+                __func__, is_ble, (int)g_bteut_tx.pattern, g_bteut_tx.channel, g_bteut_tx.pkttype,
+                g_bteut_tx.pktlen, g_bteut_tx.ctelen, g_bteut_tx.ctetype, g_bteut_tx.switch_pattlen,
+                g_bteut_tx.txpwr.power_type, g_bteut_tx.txpwr.power_value, pktcnt);
+        }
 
         if (le_test_mode_inuse() && is_ble) {
-            ret= engpc_bt_le_enhanced_transmitter(g_bteut_tx.channel, g_bteut_tx.pktlen, g_bteut_tx.pattern, g_bteut_tx.phy);
+            if (local_version) {
+                BTD("ADL %s(), ble test local version = %d", __func__,local_version);
+                if (local_version == core_spc_version_5_1) {
+                    ret= engpc_bt_le_enhanced_transmitter_v3(g_bteut_tx.channel, g_bteut_tx.pktlen, g_bteut_tx.pattern, g_bteut_tx.phy,
+                                                            g_bteut_tx.ctelen, g_bteut_tx.ctetype, g_bteut_tx.switch_pattlen, g_bteut_tx.attenna_id);
+                } else {
+                    ret= engpc_bt_le_enhanced_transmitter(g_bteut_tx.channel, g_bteut_tx.pktlen, g_bteut_tx.pattern, g_bteut_tx.phy);
+                }
+            } else {
+                if(le_test_mode_inuse_v3() && is_ble) {
+                   ret= engpc_bt_le_enhanced_transmitter(g_bteut_tx.channel, g_bteut_tx.pktlen, g_bteut_tx.pattern, g_bteut_tx.phy);
+                } else {
+                    ret= engpc_bt_le_enhanced_transmitter_v3(g_bteut_tx.channel, g_bteut_tx.pktlen, g_bteut_tx.pattern, g_bteut_tx.phy,
+                                                             g_bteut_tx.ctelen, g_bteut_tx.ctetype, g_bteut_tx.switch_pattlen, g_bteut_tx.attenna_id);
+                }
+           }
         } else {
             ret = engpc_bt_set_nonsig_tx_testmode(
                 1, is_ble, g_bteut_tx.pattern, g_bteut_tx.channel, g_bteut_tx.pkttype,
@@ -2144,4 +2355,114 @@ err:
 
     BTD("ADL leaving %s(), rsp = %s, return -1", __func__, rsp);
     return -1;
+}
+/********************************************************************
+*   name   bt_cte_length_set
+*   ---------------------------
+*   descrition: set ctelen to global variable
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   ctelen      IN          int                 ctelen
+*   rsp         OUT         char *              response result
+*   ----------------------------------------------------
+*   return
+*   0:exec successful
+*   -1:error
+*   ------------------
+*   other:
+*   CTE saved in g_bteut_tx, whether is not BT Chip
+*
+********************************************************************/
+int bt_cte_length_set(unsigned int ctelen, char *rsp){
+    g_bteut_tx.ctelen = ctelen;
+
+    strncpy(rsp, (BTEUT_BT_MODE_BLE == g_bt_mode ? EUT_BLE_OK : EUT_BT_OK),
+            BT_EUT_COMMAND_RSP_MAX_LEN);
+
+    RESPONSE_DUMP(rsp);
+    return 0;
+}
+
+
+/********************************************************************
+*   name   bt_cte_type_set
+*   ---------------------------
+*   descrition: set ctetype to global variable
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   ctetype      IN          int                 ctetype
+*   rsp         OUT         char *              response result
+*   ----------------------------------------------------
+*   return
+*   0:exec successful
+*   -1:error
+*   ------------------
+*   other:
+*   CTE saved in g_bteut_tx, whether is not BT Chip
+*
+********************************************************************/
+int bt_cte_type_set(unsigned int ctetype, char *rsp){
+    g_bteut_tx.ctetype = ctetype;
+
+    strncpy(rsp, (BTEUT_BT_MODE_BLE == g_bt_mode ? EUT_BLE_OK : EUT_BT_OK),
+            BT_EUT_COMMAND_RSP_MAX_LEN);
+
+    RESPONSE_DUMP(rsp);
+    return 0;
+}
+
+
+/********************************************************************
+*   name   bt_switch_pattern_length_set
+*   ---------------------------
+*   descrition: set switch_pattlen to global variable
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   switch_pattlen      IN          int                 switch_pattlen
+*   rsp         OUT         char *              response result
+*   ----------------------------------------------------
+*   return
+*   0:exec successful
+*   -1:error
+*   ------------------
+*   other:
+*   switch_pattlen saved in g_bteut_tx, whether is not BT Chip
+*
+********************************************************************/
+int bt_switch_pattern_length_set(unsigned int switch_pattlen, char *rsp){
+    g_bteut_tx.switch_pattlen = switch_pattlen;
+
+    strncpy(rsp, (BTEUT_BT_MODE_BLE == g_bt_mode ? EUT_BLE_OK : EUT_BT_OK),
+            BT_EUT_COMMAND_RSP_MAX_LEN);
+
+    RESPONSE_DUMP(rsp);
+    return 0;
+}
+
+
+/********************************************************************
+*   name   bt_attenna_id_set
+*   ---------------------------
+*   descrition: set attenna_id to global variable
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   attenna_id      IN          int                 attenna_id
+*   rsp         OUT         char *              response result
+*   ----------------------------------------------------
+*   return
+*   0:exec successful
+*   -1:error
+*   ------------------
+*   other:
+*   attenna_id saved in g_bteut_tx, whether is not BT Chip
+*
+********************************************************************/
+int bt_attenna_id_set(uint8_t *attenna_id, char *rsp){
+    g_bteut_tx.attenna_id = attenna_id;
+
+    strncpy(rsp, (BTEUT_BT_MODE_BLE == g_bt_mode ? EUT_BLE_OK : EUT_BT_OK),
+            BT_EUT_COMMAND_RSP_MAX_LEN);
+
+    RESPONSE_DUMP(rsp);
+    return 0;
 }

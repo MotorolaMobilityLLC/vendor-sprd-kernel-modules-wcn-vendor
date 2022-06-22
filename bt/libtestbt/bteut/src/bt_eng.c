@@ -745,6 +745,14 @@ int engpc_bt_dut_mode_send(uint16_t opcode, uint8_t *buf, uint8_t len) {
     }
 }
 
+int engpc_bt_set_sar_send(uint16_t opcode, uint8_t *buf, uint8_t len) {
+    if (opcode == HCI_SET_SAR) {
+        BTD("start call set_sar_send\n");
+        return bt_test_kit->set_sar_send(opcode, buf, len);
+    } else {
+        return -1;
+    }
+}
 
 int engpc_bt_get_nonsig_rx_data(uint16_t le, char *buf, uint16_t buf_len, uint16_t *read_len) {
     int ret = -1;
@@ -778,6 +786,18 @@ int engpc_bt_get_nonsig_rx_data(uint16_t le, char *buf, uint16_t buf_len, uint16
     return ret;
 }
 
+int engpc_bt_read_local_version(void)
+{
+    int ret;
+    BTD();
+    ret = bt_test_kit->read_local_version();
+
+    if (ret != 0) {
+        BTE("ret: %d", ret);
+        return -1;
+    }
+    return 0;
+}
 int engpc_bt_le_enhanced_receiver(uint8_t channel, uint8_t phy, uint8_t modulation_index)
 {
     int ret;
@@ -811,6 +831,67 @@ int engpc_bt_le_enhanced_transmitter(uint8_t channel, uint8_t length, uint8_t pa
     ret = bt_test_kit->le_enhanced_transmitter(channel, length, payload, phy);
 
     if (ret != 0) {
+        BTE("ret: %d", ret);
+        return -1;
+    }
+    return 0;
+}
+
+int engpc_bt_le_enhanced_transmitter_v3(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy,
+                                        uint8_t cte_length, uint8_t cte_type, uint8_t switching_pattern_length,
+                                        uint8_t *attenna_ids)
+{
+    int ret, j;
+
+    BTD();
+
+    BTD("channel     = %u", channel);
+    BTD("length      = %u", length);
+    BTD("payload     = %u", payload);
+    BTD("phy         = %u", phy);
+    BTD("cte_length  = %u", cte_length);
+    BTD("cte_type    = %u", cte_type);
+    BTD("switching_pattern_length = %u", switching_pattern_length);
+    if(attenna_ids != NULL){
+        for(j = 0; j <switching_pattern_length; j++){
+            BTD("attenna_ids[%d] = %d",j, attenna_ids[j]);
+        }
+    }
+
+    ret = bt_test_kit->le_enhanced_transmitter_v3(channel, length, payload, phy, cte_length, cte_type, switching_pattern_length, attenna_ids);
+
+    if (ret) {
+        BTE("ret: %d", ret);
+        return -1;
+    }
+    return 0;
+}
+
+int engpc_bt_le_enhanced_transmitter_v4(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy,
+                                        uint8_t cte_length, uint8_t cte_type, uint8_t switching_pattern_length,
+                                        uint8_t *attenna_ids, uint8_t tramit_power_level)
+{
+    int ret, j;
+
+    BTD();
+
+    BTD("channel     = %u", channel);
+    BTD("length      = %u", length);
+    BTD("payload     = %u", payload);
+    BTD("phy         = %u", phy);
+    BTD("cte_length  = %u", cte_length);
+    BTD("cte_type    = %u", cte_type);
+    BTD("switching_pattern_length = %u", switching_pattern_length);
+    if(attenna_ids != NULL){
+        for(j = 0; j <switching_pattern_length; j++){
+            BTD("attenna_ids[%d] = %d",j, attenna_ids[j]);
+        }
+    }
+    BTD("tramit_power_level    = %u", tramit_power_level);
+
+    ret = bt_test_kit->le_enhanced_transmitter_v4(channel, length, payload, phy, cte_length, cte_type, switching_pattern_length, attenna_ids, tramit_power_level);
+
+    if (ret) {
         BTE("ret: %d", ret);
         return -1;
     }

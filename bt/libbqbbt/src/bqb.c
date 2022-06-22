@@ -55,6 +55,8 @@ int check_perf_cmd(int fd, char* buf, int len);
 void perf_recv_handler(char* buf);
 void close_perf(void);
 
+static void parse_cmd(char *line, int len, int size, void *buf, int base);
+
 static void thread_exit_handler(int sig) {
     ALOGD("receive signal %d , thread exit\n", sig);
     pthread_exit(0);
@@ -159,11 +161,37 @@ void eng_send_data(char * data, int data_len) {
     int count = data_len;
     char * data_ptr = data;
 
+    int count_temp = data_len;
+    char set_power[3] = {0};
+    int ret = -1;
+
     ALOGD("eng_send_data, fd=%d, len=%d", bt_fd, count);
     if(check_perf_cmd(at_fd, data, data_len)) {
         ALOGD("eng_send_data,cmd %s is perf_cmd", data);
         return;
     }
+
+    for (int count_test = 0; count_test < count_temp; count_test++) {
+        ALOGD("eng_send_data,set power %c", data[count_test]);
+    }
+    //bug1860988:add set power interface for engineer,it is customer requirement
+    if (strstr(data, SET_POWER_TEST)) {
+        ALOGD("start call parse_cmd");
+        parse_cmd(data, 3, 1, set_power, 10);
+        for (int count_test = 0; count_test < 3; count_test++) {
+            ALOGD("set power value: %d\n", set_power[count_test]);
+        }
+        ALOGD("start call vendor_set_power");
+        ret = vendor_set_power(set_power);
+        if (ret) {
+            ALOGD("send fail");
+            write(at_fd, NOTIFY_SET_POWER_SEND_ERROR, strlen(NOTIFY_SET_POWER_SEND_ERROR));
+        } else {
+            ALOGD("send ok");
+            write(at_fd, NOTIFY_SET_POWER_SEND, strlen(NOTIFY_SET_POWER_SEND));
+        }
+    }
+
     lmp_assert();
     while (count) {
         nWritten = write(bt_fd, data, data_len);
@@ -824,6 +852,14 @@ void perf_recv_handler(char* buf) {
                     perf_dev.acl_num = ((uint16_t)buf[11] << 8) | buf[10];
                     perf_dev.sco_num = ((uint16_t)buf[13] << 8) | buf[12];
                     ALOGD("acl_num = %d,sco_num = %d",perf_dev.acl_num, perf_dev.sco_num);
+                } else if (opcode == HCI_SET_SAR) {
+                    if (buf[6] == 0) {
+                        ALOGD("response ok");
+                        write(at_fd, NOTIFY_SET_POWER_REV, strlen(NOTIFY_SET_POWER_REV));
+                    } else {
+                        ALOGD("response error");
+                        write(at_fd, NOTIFY_SET_POWER_REV_ERROR, strlen(NOTIFY_SET_POWER_REV_ERROR));
+                    }
                 }
                 break;
             }

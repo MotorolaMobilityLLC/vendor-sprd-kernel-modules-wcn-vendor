@@ -110,6 +110,10 @@ static int recv_event(tINT_CMD_CBACK callback) {
     int i = 0;
     int read_data_len = 0;
     uint8_t new_state = BT_VND_LPM_WAKE_ASSERT;
+    if ( callback == NULL ) {
+        ALOGI("callback is null");
+        return -1;
+    }
     char *event_resp = malloc(RESPONSE_LENGTH + sizeof(HC_BT_HDR) - 1);
     if (event_resp == NULL)
         return -1;
@@ -185,7 +189,7 @@ static uint8_t transmit_cb(UNUSED_ATTR uint16_t opcode, void *buffer, tINT_CMD_C
   HC_BT_HDR *p_buf = (HC_BT_HDR *)buffer;
   int len = p_buf->len+1;
   uint8_t *p = (uint8_t *)buffer;
-  if (opcode == HCI_PSKEY || opcode == HCI_VSC_ENABLE_COMMMAND || opcode == HCI_RF_PARA) {
+  if (opcode == HCI_PSKEY || opcode == HCI_VSC_ENABLE_COMMMAND || opcode == HCI_RF_PARA || opcode ==HCI_SET_SAR) {
     p = p + sizeof(HC_BT_HDR) - 1;
     *p  = 0x01;    // hci command
     send_cmd(p, len);
@@ -266,6 +270,16 @@ static void vendor_close(void) {
 
   lib_interface = NULL;
   lib_handle = NULL;
+}
+
+int vendor_set_power(char * parameters) {
+    if (lib_interface->op(BT_VND_OP_SET_POWER, parameters)) {
+        ALOGD("libbt set power op fail");
+        return -1;
+    } else {
+        ALOGD("libbt set power op success");
+        return 0;
+    }
 }
 
 

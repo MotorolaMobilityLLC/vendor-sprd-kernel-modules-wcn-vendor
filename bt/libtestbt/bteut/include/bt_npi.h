@@ -20,6 +20,9 @@ int get_sprd_sub_str(const char *buf, char **revdata, char a, char *delim, unsig
 #define EUT_BT_ERROR ("+SPBTTEST:ERR=")
 #define EUT_BT_REQ ("+SPBTTEST:EUT=")
 
+#define BT_SET_SAR_OK ("+SPBTTEST:SETSAR OK")
+#define BT_SET_SAR_ERROR ("+SPBTTEST:SETSAR ERROR")
+
 #define EUT_BLE_OK ("+SPBLETEST:OK")
 #define EUT_BLE_ERROR ("+SPBLETEST:ERR=")
 #define EUT_BLE_REQ ("+SPBLETEST:EUT=")
@@ -30,6 +33,10 @@ int get_sprd_sub_str(const char *buf, char **revdata, char a, char *delim, unsig
 
 #define ENG_BT_TX_REQ ("TX?")
 #define ENG_BT_TX ("TX")
+
+#define ENG_BT_TX_V3 ("TX_V3")
+#define ENG_BT_TX_V4 ("TX_V4")
+
 #define ENG_BT_RX_REQ ("RX?")
 #define ENG_BT_RX ("RX")
 
@@ -56,6 +63,8 @@ int get_sprd_sub_str(const char *buf, char **revdata, char a, char *delim, unsig
 
 #define ENG_BT_TXPWR_REQ ("TXPWR?")
 #define ENG_BT_TXPWR ("TXPWR")
+
+#define ENG_BT_TXSAR ("SETSAR")
 
 #define ENG_BT_RXGAIN_REQ ("RXGAIN?")
 #define ENG_BT_RXGAIN ("RXGAIN")
@@ -85,6 +94,13 @@ int get_sprd_sub_str(const char *buf, char **revdata, char a, char *delim, unsig
 
 #define ENG_BT_CHIP_REQ ("CHIP?")
 
+#define ENG_BT_CTELEN ("CTELEN")
+
+#define ENG_BT_CTETYPE ("CTETYPE")
+
+#define ENG_BT_SWITCH_PATTERNLEN ("SWITCH_PATTERNLEN")
+
+#define ENG_BT_ATTENNAID ("ATTENNAID")
 typedef enum {
     EUT_BT_MODULE_INDEX = 0,
     EUT_WIFI_MODULE_INDEX,
@@ -97,6 +113,10 @@ typedef enum {
     BT_TX_INDEX,
     BT_RX_REQ_INDEX,
     BT_RX_INDEX,
+
+    /* BT TX 5.1&5.2 */
+    BT_TX_INDEX_V3,
+    BT_TX_INDEX_V4,
 
     /* BT TX CHANNEL */
     BT_TXCH_REQ_INDEX,
@@ -129,6 +149,9 @@ typedef enum {
     /* TXPWR */
     BT_TXPWR_REQ_INDEX,
     BT_TXPWR_INDEX,
+
+    /* TXPWR */
+    BT_TXSAR_INDEX,
 
     /* RX Gain */
     BT_RXGAIN_REQ_INDEX,
@@ -168,6 +191,17 @@ typedef enum {
     /* CHIP */
     BT_CHIP_REQ_INDEX,
 
+    /*CTELEN*/
+    BT_CTELEN_INDEX,
+
+    /*CTETYPE*/
+    BT_CTETYPE_INDEX,
+
+    /*SWITCH_PATTERNLEN*/
+    BT_SWITCH_PATTERNLEN_INDEX,
+
+    /*ATTENNAID*/
+    BT_ATTENNAID_INDEX,
 } eut_cmd_enum;
 
 struct bt_eut_cmd {
@@ -249,6 +283,12 @@ struct bt_eut_cmd {
 #define BT_EUT_POWER_TYPE_DEAFULT_VALUE (0)
 #define BT_EUT_POWER_VALUE_DEAFULT_VALUE (0)
 #define BT_EUT_PAC_CNT_DEAFULT_VALUE (0)
+/*v3*/
+#define BT_EUT_CTELEN_DEAFULT_VALUE (0)
+#define BT_EUT_CTETYPE_DEAFULT_VALUE (0)
+#define BT_EUT_SWITCH_PATTERNLEN_DEAFULT_VALUE (2)
+#define BT_EUT_ATTENNAID_DEAFULT_VALUE (0)
+#define BT_EUT_TRAMIT_POWER_DEAFULT_VALUE (0)
 
 /* Default Value RX */
 #define BT_EUT_RX_PATTERN_DEAFULT_VALUE (7) /* RX Pattern is only 7 */
@@ -328,6 +368,11 @@ typedef struct {
     int pkttype;
     int pktlen;
     uint8_t phy;
+    uint8_t ctelen;
+    uint8_t ctetype;
+    uint8_t switch_pattlen;
+    uint8_t *attenna_id;
+    uint8_t tramit_power_level;
     BT_EUT_POWER txpwr;
 } BTEUT_TX_ELEMENT;
 
@@ -377,4 +422,13 @@ typedef enum {
     BTEUT_RFPATH_UNKNOWN = 0xFF,
 } bteut_rfpath_index;
 
+typedef enum {
+    core_spc_version_4_0 = 6,
+    core_spc_version_4_1,
+    core_spc_version_4_2,
+    core_spc_version_5_0,
+    core_spc_version_5_1,
+    core_spc_version_5_2,
+    core_spc_version_5_3,
+} core_spc_version;
 #endif

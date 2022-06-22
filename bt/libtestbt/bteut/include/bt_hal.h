@@ -32,10 +32,15 @@
 #define HCI_BLE_TRANSMITTER_TEST (0x001E | HCI_GRP_BLE_CMDS)
 #define HCI_BLE_ENHANCED_RECEIVER_TEST (0x0033 | HCI_GRP_BLE_CMDS)
 #define HCI_BLE_ENHANCED_TRANSMITTER_TEST (0x0034 | HCI_GRP_BLE_CMDS)
+#define HCI_BLE_ENHANCED_TRANSMITTER_TEST_V3 (0x0050 | HCI_GRP_BLE_CMDS)
+#define HCI_BLE_ENHANCED_TRANSMITTER_TEST_V4 (0x007B | HCI_GRP_BLE_CMDS)
 #define HCI_BLE_TEST_END                (0x001F | HCI_GRP_BLE_CMDS)
 
 #define HCI_DUT_SET_RF_PATH (0x00DB | HCI_GRP_VENDOR_SPECIFIC)
 #define HCI_DUT_GET_RF_PATH (0x00DC | HCI_GRP_VENDOR_SPECIFIC)
+
+#define HCI_READ_LOCAL_VERSION (0x1001)
+
 
 
 typedef void (*dut_mode_recv_callback)(uint16_t opcode, uint8_t *buf, uint8_t len);
@@ -74,12 +79,21 @@ typedef struct {
     int (*get_nonsig_rx_data)(uint16_t le);
     int (*le_enhanced_receiver)(uint8_t channel, uint8_t phy, uint8_t modulation_index);
     int (*le_enhanced_transmitter)(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy);
+    int (*le_enhanced_transmitter_v3)(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy,
+                        uint8_t cte_length, uint8_t cte_type, uint8_t switching_pattern_length,
+                        uint8_t *attenna_ids);
+    int (*le_enhanced_transmitter_v4)(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy,
+                        uint8_t cte_length, uint8_t cte_type, uint8_t switching_pattern_length,
+                        uint8_t *attenna_ids, uint8_t tramit_power_level);
     int (*le_test_end)(void);
     int (*set_rf_path)(uint8_t path);
     int (*get_rf_path)(void);
     int (*read_local_address)(bt_bdaddr_t *addr);
     int (*discovery)(bool inq_status);
     int (*scan_results)(bdremote_t* bdrmt_dev);
+    int (*set_sar_send)(uint16_t opcode, uint8_t *buf, uint8_t len);
+    int (*read_local_version)(void);
+
 } bt_test_kit_t;
 
 const bt_test_kit_t *bt_test_kit_get_interface(void);

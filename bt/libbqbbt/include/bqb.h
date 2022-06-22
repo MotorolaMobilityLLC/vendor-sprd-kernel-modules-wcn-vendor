@@ -34,6 +34,13 @@
 #define NOTIFY_START_ERROR "\r\n+SPRDTESTSTART ERROR\r\n"
 #define NOTIFY_STOP_ERROR "\r\n+SPRDTESTSTOP ERROR\r\n"
 
+#define SET_POWER_TEST "AT+SPRDSETPOWER"
+#define NOTIFY_SET_POWER_SEND  "\r\n+SPRDSETPOWER SEND OK\r\n"
+#define NOTIFY_SET_POWER_SEND_ERROR  "\r\n+SPRDSETPOWER SEND ERROR\r\n"
+#define NOTIFY_SET_POWER_REV  "\r\n+SPRDSETPOWER RECEIVE OK\r\n"
+#define NOTIFY_SET_POWER_REV_ERROR  "\r\n+SPRDSETPOWER RECEIVE ERROR\r\n"
+#define HCI_SET_SAR 0xFCEA
+
 
 #define UNUSED_ATTR __attribute__((unused))
 #define MAX_LINKS 7
@@ -123,5 +130,7 @@ void lmp_deassert(void);
 
 int get_bqb_state(void);
 void set_bqb_state(int state);
+
+int vendor_set_power(char * parameters);
 
 #endif  // BT_LIBBQBBT_INCLUDE_BQB_H_

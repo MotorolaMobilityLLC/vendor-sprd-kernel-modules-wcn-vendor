@@ -23,6 +23,8 @@
 #define HCI_DUT_SET_RXGIAN (0x00E2 | HCI_GRP_VENDOR_SPECIFIC)
 #define HCI_DUT_GET_RXDATA (0x00E3 | HCI_GRP_VENDOR_SPECIFIC)
 
+#define HCI_SET_SAR (0x00EA | HCI_GRP_VENDOR_SPECIFIC)
+
 #define HCI_LE_RECEIVER_TEST_OPCODE (0x201D)
 #define HCI_LE_TRANSMITTER_TEST_OPCODE (0x201E)
 #define HCI_LE_END_TEST_OPCODE (0x201F)
@@ -43,6 +45,9 @@
 
 #define CMD_LE_ENHANCED_REVEIVER_TEST_STR "le_enhanced_receiver_test"
 #define CMD_LE_ENHANCED_TRANSMITTER_TEST_STR "le_enhanced_transmitter_test"
+#define CMD_LE_ENHANCED_TRANSMITTER_TEST_STR_V3 "le_enhanced_transmitter_test_v3"
+#define CMD_LE_ENHANCED_TRANSMITTER_TEST_STR_V4 "le_enhanced_transmitter_test_v4"
+
 #define CMD_LE_TEST_END_STR "le_test_end"
 #define CMD_SET_RF_PATH_STR "set_rf_path"
 
@@ -73,6 +78,12 @@ int engpc_bt_le_test_mode(uint16_t opcode, uint8_t *buf, uint8_t len);
 
 int engpc_bt_le_enhanced_receiver(uint8_t channel, uint8_t phy, uint8_t modulation_index);
 int engpc_bt_le_enhanced_transmitter(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy);
+int engpc_bt_le_enhanced_transmitter_v3(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy,
+                                        uint8_t cte_length, uint8_t cte_type, uint8_t switching_pattern_length,
+                                        uint8_t *attenna_ids);
+int engpc_bt_le_enhanced_transmitter_v4(uint8_t channel, uint8_t length, uint8_t payload, uint8_t phy,
+                                        uint8_t cte_length, uint8_t cte_type, uint8_t switching_pattern_length,
+                                        uint8_t *attenna_ids, uint8_t tramit_power_level);
 int engpc_bt_le_test_end(void);
 
 int engpc_bt_set_rf_path(uint8_t path);

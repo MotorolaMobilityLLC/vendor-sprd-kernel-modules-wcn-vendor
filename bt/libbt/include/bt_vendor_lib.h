@@ -210,6 +210,18 @@ typedef enum {
    */
   BT_VND_OP_EVENT_CALLBACK,
 
+  /*  [operation]
+   *      send host set power command event to libbt.
+   *  [input param]
+   *      0xFCEA command event
+   *      hci event packet.
+   *  [return]
+   *      0 - default, don't care.
+   *  [callback]
+   *      None.
+   */
+  BT_VND_OP_SET_POWER,
+
 } bt_vendor_opcode_t;
 
 /** Power on/off control states */

@@ -294,6 +294,8 @@
 #define HCI_VSC_MULTI_AV_HANDLE         0x0AAA
 #define HCI_VSC_BURST_MODE_HANDLE       0x0BBB
 
+#define HCI_READ_LOCAL_VERION           0x1001
+
 /* BLE HCI */
 #define HCI_GRP_BLE_CMDS                (0x08 << 10)
 /* Commands of BLE Controller setup and configuration */

@@ -271,7 +271,8 @@ static void btu_hcif_hdl_command_complete (UINT16 opcode, UINT8 *p, UINT16 evt_l
             break;
 
         default:
-            if ((opcode & HCI_GRP_VENDOR_SPECIFIC) == HCI_GRP_VENDOR_SPECIFIC)
+            if ((opcode & HCI_GRP_VENDOR_SPECIFIC) == HCI_GRP_VENDOR_SPECIFIC
+                || opcode == HCI_READ_LOCAL_VERION)
                 btm_vsc_complete (p, opcode, evt_len, (tBTM_CMPL_CB *)p_cplt_cback);
             break;
     }
@@ -355,6 +356,7 @@ void btu_hcif_send_cmd (UNUSED_ATTR UINT8 controller_id, BT_HDR *p_buf)
     if ((opcode & HCI_GRP_VENDOR_SPECIFIC) == HCI_GRP_VENDOR_SPECIFIC
         || (opcode == HCI_BLE_RAND)
         || (opcode == HCI_BLE_ENCRYPT)
+        || (opcode == HCI_READ_LOCAL_VERION)
        ) {
         vsc_callback = *((void **)(p_buf + 1));
     }
