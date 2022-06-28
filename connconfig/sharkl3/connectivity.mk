@@ -57,6 +57,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.wcn.hardware.etcpath=/$(SPRD_WCN_ETC_PATH) \
+    persist.bluetooth.a2dp_offload.aidl_flag="aidl" \
     ro.bt.bdaddr_path="/data/vendor/bluetooth/btmac.txt"
 
 PRODUCT_ODM_PROPERTIES += \

@@ -29,6 +29,11 @@ namespace hardware {
 namespace bluetooth {
 namespace audio {
 
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+AudioConfiguration audio_code_config = {};
+//#endif
+
+
 static constexpr int kFmqSendTimeoutMs = 1000;  // 1000 ms timeout for sending
 static constexpr int kFmqReceiveTimeoutMs =
     1000;                               // 1000 ms timeout for receiving
@@ -49,6 +54,14 @@ void BluetoothAudioSession::OnSessionStarted(
     const DataMQDesc* mq_desc, const AudioConfiguration& audio_config,
     const std::vector<LatencyMode>& latency_modes) {
   std::lock_guard<std::recursive_mutex> guard(mutex_);
+
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+    if (audio_config.getTag() == AudioConfiguration::a2dpConfig) {
+      audio_code_config.set<AudioConfiguration::a2dpConfig>(
+          audio_config.get<AudioConfiguration::a2dpConfig>());
+    }
+//#endif
+
   if (stack_iface == nullptr) {
     LOG(ERROR) << __func__ << " - SessionType=" << toString(session_type_)
                << ", IBluetoothAudioPort Invalid";
@@ -68,6 +81,16 @@ void BluetoothAudioSession::OnSessionStarted(
     ReportSessionStatus();
   }
 }
+
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+  /***
+   * The control function is for the bluetooth_audio module to get the current
+   * CodecConfiguration
+  ***/
+const CodecConfiguration BluetoothAudioSession::GetCurrentCodecConfig() {
+   return audio_code_config.get<AudioConfiguration::a2dpConfig>();
+}
+//#endif
 
 void BluetoothAudioSession::OnSessionEnded() {
   std::lock_guard<std::recursive_mutex> guard(mutex_);

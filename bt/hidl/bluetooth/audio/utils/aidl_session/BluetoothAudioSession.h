@@ -124,6 +124,14 @@ class BluetoothAudioSession {
                         const AudioConfiguration& audio_config,
                         const std::vector<LatencyMode>& latency_modes);
 
+//#ifdef SPRD_FEATURE_A2DPOFFLOAD
+  /***
+   * The control function is for the bluetooth_audio module to get the current
+   * CodecConfiguration
+  ***/
+  const CodecConfiguration GetCurrentCodecConfig();
+//#endif
+
   /***
    * The report function is used to report that the Bluetooth stack has ended
    * the session, and will invoke session_changed_cb_ to notify registered
