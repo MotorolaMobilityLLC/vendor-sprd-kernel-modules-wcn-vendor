@@ -166,6 +166,12 @@ Return<void> BluetoothHci::close() {
 }
 
 Return<void> BluetoothHci::sendHciCommand(const hidl_vec<uint8_t>& command) {
+//#if (defined(SPRD_FEATURE_AOBFIX) && SPRD_FEATURE_AOBFIX == TRUE)
+  //Bug 1899860, sleep for 15 ms and then send the reset command
+  if(0x3 == command.data()[0] && 0xc == command.data()[1] && 3== command.size()){
+	  usleep(15 * 1000); // sleep 15ms
+  }
+//#endif
   sendDataToController(HCI_DATA_TYPE_COMMAND, command);
   return Void();
 }
