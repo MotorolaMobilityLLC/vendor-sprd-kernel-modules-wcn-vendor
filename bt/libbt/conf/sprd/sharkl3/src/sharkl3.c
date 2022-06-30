@@ -438,10 +438,9 @@ static int get_file_name(char *name_t) {
 
     ret = read(fd, id_str, sizeof(id_str));
     close(fd);
-    if (ret < 0) {
-        ALOGE("read %s faild", SYSFS_CHIPID_NODE);
+    if (ret <= 0) {
+        ALOGE("read %s faild, ret:%d", SYSFS_CHIPID_NODE, ret);
         goto normal;
-
     }
 
     id_str[ret - 1] = 0;
