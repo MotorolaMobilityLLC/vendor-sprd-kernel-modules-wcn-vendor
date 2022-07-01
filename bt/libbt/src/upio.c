@@ -504,8 +504,8 @@ void upio_set(uint8_t pio, uint8_t action, uint8_t polarity)
         }
         fd_btwrite = open(VENDOR_BTWRITE_PROC_NODE, O_WRONLY);
         if (fd_btwrite < 0) {
-            ALOGE("upio_set : open(%s) for write failed: %s (%d)",
-                  VENDOR_BTWRITE_PROC_NODE, strerror(errno), errno);
+            // ALOGE("upio_set : open(%s) for write failed: %s (%d)",
+            //       VENDOR_BTWRITE_PROC_NODE, strerror(errno), errno);
         }
 #if (PROC_BTWRITE_TIMER_TIMEOUT_MS != 0)
         else {
@@ -579,8 +579,8 @@ void upio_set(uint8_t pio, uint8_t action, uint8_t polarity)
         if (action == UPIO_DEASSERT) return;
 #endif
         if (fd_btwrite < 0) {
-            ALOGE("upio_set : %s(%d) incorrent", VENDOR_BTWRITE_PROC_NODE,
-                  fd_btwrite);
+            //ALOGE("upio_set : %s(%d) incorrent", VENDOR_BTWRITE_PROC_NODE,
+                  //fd_btwrite);
             return;
         }
 #if (BT_WAKE_VIA_PROC_NOTIFY_DEASSERT == TRUE)
@@ -591,8 +591,8 @@ void upio_set(uint8_t pio, uint8_t action, uint8_t polarity)
             buffer = BT_WAKE_PROC_ASSERT;
 
         if (write(fd_btwrite, &buffer, 1) < 0) {
-            ALOGE("upio_set : write(%s) failed: %s (%d)", VENDOR_BTWRITE_PROC_NODE,
-                  strerror(errno), errno);
+            // ALOGE("upio_set : write(%s) failed: %s (%d)", VENDOR_BTWRITE_PROC_NODE,
+            //       strerror(errno), errno);
         }
 #if (PROC_BTWRITE_TIMER_TIMEOUT_MS != 0)
         else {
