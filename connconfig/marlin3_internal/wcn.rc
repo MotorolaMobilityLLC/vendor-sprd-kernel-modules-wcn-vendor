@@ -21,11 +21,10 @@ on property:sys.boot_completed=1
     chmod 660 /sys/devices/platform/sprd-mtty/dumpmem
     chown bluetooth net_bt_admin /sys/devices/platform/sprd-mtty/dumpmem
     restorecon -R /sys/devices/platform/sprd-mtty/dumpmem
-    
-    
+
 on cali-fs
     insmod /vendor/lib/modules/wcn_bsp.ko
-    insmod /vendor/lib/modules/sc2355_sipc_wlan.ko
+    insmod /vendor/lib/modules/sprd_wlan_combo.ko
     insmod /vendor/lib/modules/gnss_common_ctl_all.ko
     insmod /vendor/lib/modules/sprdbt_tty.ko
     insmod /vendor/lib/modules/sprd_fm.ko
@@ -50,7 +49,7 @@ on cali-fs
 
 on factorytest
     insmod /vendor/lib/modules/wcn_bsp.ko
-    insmod /vendor/lib/modules/sc2355_sipc_wlan.ko
+    insmod /vendor/lib/modules/sprd_wlan_combo.ko
     insmod /vendor/lib/modules/gnss_common_ctl_all.ko
     insmod /vendor/lib/modules/sprdbt_tty.ko
     insmod /vendor/lib/modules/sprd_fm.ko
