@@ -44,7 +44,7 @@
 
 #define BT_EUT_SLEEP_MAX_COUNT (50)
 
-#define SYSFS_MARLIN3_CHIPID_NODE "/sys/devices/platform/sprd-mtty/chipid"
+#define SYSFS_MARLIN3_CHIPID_NODE "/sys/devices/platform/sprd-marlin3/sprd-marlin3:sprd-mtty/chipid"
 #define SYSFS_MARLIN3_INTERNAL_CHIPID_NODE "/sys/devices/platform/wcn_bt/chipid"
 
 #define CHANNEL_BIT_MOVE(n)  (0x01 << n)
