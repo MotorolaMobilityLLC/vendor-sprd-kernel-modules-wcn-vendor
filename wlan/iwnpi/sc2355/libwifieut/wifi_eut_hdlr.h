@@ -37,7 +37,7 @@ struct wifi_rate_t {
 #define WIFI_DRIVER_UNLOAD "ifconfig wlan0 down"
 
 #define NV_MAC_ADDR_PATH       "/mnt/vendor/wifimac.txt"
-#define AT_CMD_INTF            "/proc/mdbg/at_cmd"
+#define AT_CMD_INTF            "/sys/class/misc/wcn/devices/sw_ver"
 
 #define WCN_PRODUCT_MARLIN  1
 #define WCN_PRODUCT_MARLIN2 2

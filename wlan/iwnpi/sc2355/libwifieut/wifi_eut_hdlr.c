@@ -1007,42 +1007,26 @@ int get_mac_addr_new(char *mac_addr)
 
 int get_cp2_info(char *buf, int buf_len)
 {
-	int i;
-	int max_try = 10;
-	int fd;
-	int ret;
-	int count=0;
 
-	fd = open(AT_CMD_INTF, O_RDWR);
+	int fd = -1;
+	int ret = -1;
+
+	fd = open(AT_CMD_INTF, O_RDONLY);
 	if (fd < 0) {
 		ENG_LOG("wifi_eut: open %s faild, ret = %d", AT_CMD_INTF, fd);
-		return -1;
+		return ret;
 	}
 
-	write(fd, AT_CMD_GET_CP2_INFO, sizeof(AT_CMD_GET_CP2_INFO));
-
-	do {
-		ret = read(fd, buf, buf_len);
-		max_try--;
-                count+=ret;
-	} while(ret == 0 && max_try > 0);
+	buf_len = read(fd, buf, buf_len);
+	if (buf_len <= 0) {
+		ENG_LOG("wifi_eut: read %s faild, ret = %d", AT_CMD_INTF, buf_len);
+	} else {
+		ret = 0;
+	}
 
 	close(fd);
 
-	while(*buf&&count--) {
-		if (*buf == 0x7e) {
-			if (buf[1] == '\0') {
-				*buf = '\0';
-				break;
-			}
-			else
-				*buf = ',';
-		}
-
-		buf++;
-	}
-
-	return 0;
+	return ret;
 }
 
 /* description: check if eut has permission to execute
