@@ -44,7 +44,10 @@
 
 #define BT_EUT_SLEEP_MAX_COUNT (50)
 
-#define SYSFS_MARLIN3_CHIPID_NODE "/sys/devices/platform/sprd-marlin3/sprd-marlin3:sprd-mtty/chipid"
+#define SYSFS_MARLIN3_CHIPID_NODE "/sys/devices/platform/sipc-virt/subsystem/devices/sprd-marlin3:sprd-mtty/chipid"
+#define SYSFS_SPRD_MTTY_CHIPID_NODE "/sys/devices/platform/sipc-virt/subsystem/devices/sipc-virt:core@3:sprd-mtty/chipid"
+#define SYSFS_WCN_BT_CHIPID_NODE "/sys/devices/platform/sipc-virt/subsystem/devices/sipc-virt:core@3:wcn_bt/chipid"
+
 #define SYSFS_MARLIN3_INTERNAL_CHIPID_NODE "/sys/devices/platform/wcn_bt/chipid"
 
 #define CHANNEL_BIT_MOVE(n)  (0x01 << n)
@@ -1850,25 +1853,41 @@ int bt_prf_path_get(char *rsp) {
 
 int bt_chipid_get(char *rsp) {
     int fd, ret;
-    char id_str[30] = {0}, *id_str_pt[2];
-	int count_id = 10;
-    /* chip id check */
-    fd = open(SYSFS_MARLIN3_CHIPID_NODE, O_RDONLY);
-	while(fd < 0 && count_id --)
-    {
-		usleep(500 * 1000); // sleep 500ms
-		ALOGE("chipid open fail, sleep 500ms try time:", count_id);
-		fd = open(SYSFS_MARLIN3_CHIPID_NODE, O_RDONLY);
-    }
+    int count = 0;
+    int access_ret = -1;
+    char id_str[35] = {0}, *id_str_pt[2];
+    const char *sysfs_chipid_node = SYSFS_MARLIN3_CHIPID_NODE;
+    /* determine the readble path for chipid */
+    do{
+        if(access("/sys/devices/platform/sipc-virt/subsystem/devices/sprd-marlin3:sprd-mtty",F_OK) == 0){
+            sysfs_chipid_node = SYSFS_MARLIN3_CHIPID_NODE;
+            access_ret = 0;
+            BTD("chipid readble path: %s.", sysfs_chipid_node);
+        }else if(access("/sys/devices/platform/sipc-virt/subsystem/devices/sipc-virt:core@3:sprd-mtty",F_OK) == 0){
+            sysfs_chipid_node = SYSFS_SPRD_MTTY_CHIPID_NODE;
+            access_ret = 0;
+            BTD("chipid readble path: %s.", sysfs_chipid_node);
+        }else if(access("/sys/devices/platform/sipc-virt/subsystem/devices/sipc-virt:core@3:wcn_bt",F_OK) == 0){
+            sysfs_chipid_node = SYSFS_WCN_BT_CHIPID_NODE;
+            access_ret = 0;
+            BTD("chipid readble path: %s.", sysfs_chipid_node);
+        }else{
+            usleep(500*1000);
+            count ++;
+            ALOGE("chipid path access fail, sleep 500ms and try again!");
+        }
+    }while((access_ret != 0) && (count <= 10));
 
+    /* chip id check */
+    fd = open(sysfs_chipid_node, O_RDONLY);
     if (fd < 0) {
-        BTD("open %s faild", SYSFS_MARLIN3_CHIPID_NODE);
+        BTD("open %s faild", sysfs_chipid_node);
         goto error;
     }
     ret = read(fd, id_str, sizeof(id_str));
     close(fd);
     if (ret < 0) {
-        BTD("read %s faild", SYSFS_MARLIN3_CHIPID_NODE);
+        BTD("read %s faild", sysfs_chipid_node);
         goto error;
     }
     BTD("%s ret: %d, id_str: %s", __func__, ret, id_str);
