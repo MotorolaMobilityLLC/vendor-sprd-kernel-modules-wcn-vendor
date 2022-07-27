@@ -1240,7 +1240,8 @@ int wlnpi_show_get_reg(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
 	    ret = sprintf((str +  p), "\n");
 	    p = p + ret;
 	}
-	ret = sprintf((str +  p),  "0x%08X\t",  *((int *)(r_buf + i*4)));
+	ret = sprintf((str + (long)p),  "0x%08X\t",
+		      *((int *)(r_buf + (long)i*4)));
 	p = p + ret;
     }
 
@@ -2081,6 +2082,7 @@ static char *wlnpi_bss_get_ie(const char *bss, char ieid)
 {
     short ie_len = 0;
     const char *end, *pos;
+    long temp = 2;
 
     /* get length of ies */
     ie_len = bss[0] + bss[1];
@@ -2101,7 +2103,7 @@ static char *wlnpi_bss_get_ie(const char *bss, char ieid)
             return (char *)pos;
         }
 
-        pos += 2 + pos[1];
+        pos += temp + pos[1];
     }
 
     return NULL;
@@ -3044,7 +3046,7 @@ int wlnpi_show_get_sbw(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
 }
 
 /*-----CMD ID:84-----------*/
-int wlnpi_cmd_set_ampdu_cnt(int argc, char **argv, signed char *s_buf, int *s_len )
+int wlnpi_cmd_set_ampdu_cnt(int argc, char **argv, unsigned char *s_buf, int *s_len )
 {
 	char *err;
 
@@ -4146,7 +4148,7 @@ int wlnpi_cmd_set_efuse(int argc, char **argv,  unsigned char *s_buf, int *s_len
 	return 0;
 }
 
-int wlnpi_cmd_get_efuse(int argc, char **argv, signed char *s_buf, int *s_len )
+int wlnpi_cmd_get_efuse(int argc, char **argv, unsigned char *s_buf, int *s_len )
 {
 	signed char  *index  = s_buf;
 	char *err;
@@ -4366,7 +4368,7 @@ int wlnpi_cmd_set_rxstbc_status(int argc, char **argv, unsigned char *s_buf, int
 	return 0;
 }
 
-int wlnpi_cmd_set_lte_avoid(int argc, char **argv, signed char *s_buf, int *s_len)
+int wlnpi_cmd_set_lte_avoid(int argc, char **argv, unsigned char *s_buf, int *s_len)
 {
 	char *err;
 
