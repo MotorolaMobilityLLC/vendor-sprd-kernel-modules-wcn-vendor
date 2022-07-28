@@ -187,14 +187,13 @@ static void hw_rf_cback(void *p_mem)
 {
     HC_BT_HDR *p_evt_buf = (HC_BT_HDR *) p_mem;
     uint8_t     *p, status;
-    uint16_t    opcode, mode;
+    uint16_t    opcode;
 
     p = (uint8_t *)(p_evt_buf + 1) + HCI_EVT_CMD_CMPL_OPCODE;
     STREAM_TO_UINT16(opcode,p);
-    STREAM_TO_UINT16(mode,p);
     STREAM_TO_UINT8(status,p);
 
-    ALOGI("%s hw_core_cback response: [0x%04X, 0x%04X, 0x%02X]", __func__, opcode, mode, status);
+    ALOGI("%s hw_core_cback response: [0x%04X, 0x%02X]", __func__, opcode, status);
     if (bt_vendor_cbacks)
     {
         /* Must free the RX event buffer */
