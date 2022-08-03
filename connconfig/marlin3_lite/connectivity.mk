@@ -60,6 +60,8 @@ else
             $(error wcn firmware bin $(own) miss. please fix it, and don't take a random one)))
 endif
 
+VER_BTWF=vendor/sprd/release/unisoc_bin/$(BOARD_HAVE_SPRD_WCN_BRANCH)/version.txt
+VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3lite/version.txt
 
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
