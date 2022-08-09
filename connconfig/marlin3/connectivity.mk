@@ -5,6 +5,9 @@ CONNECTIVITY_OWN_FILES := \
     wifi_board_config_ab.ini\
     fm_board_config.ini
 
+WIFI_INI_FILES := \
+	wifi_board_config.ini\
+
 SPRD_WCN_ETC_PATH ?= vendor/etc
 SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
 
@@ -16,7 +19,7 @@ SPRD_WCN_FIRMWARE_FILES := \
     wcnmodem.bin\
     gnssmodem.bin
 
-SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/(BOARD_HAVE_SPRD_WCN_BRANCH)/sc2355_marlin3_pcie_builddir/EXEC_KERNEL_IMAGE.bin
+SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/$(BOARD_HAVE_SPRD_WCN_BRANCH)/sc2355_marlin3_pcie_builddir/EXEC_KERNEL_IMAGE.bin
 SPRD_GNSS_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3/marlin3_gnss_cm4_builddir/gnssmodem.bin
 GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
@@ -27,7 +30,11 @@ GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_FM_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WCN_FM_PATH)/$(own), \
         $(error wcn chip fm ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
-
+#copy wifi ini to vendor/firmware to use request_firmware in driver
+GENERATE_WIFI_INI_COPY_FILES += $(foreach own, $(WIFI_INI_FILES), \
+    $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
+        $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WIFI_FIRMWARE_PATH)/$(own), \
+        $(error wifi ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
 
 ifneq ($(wildcard $(SPRD_WCN_MODEM_FIRMWARE)), )
     GENERATE_WCN_PRODUCT_COPY_FILES += \
@@ -45,6 +52,7 @@ VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3/version.txt
 
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
+     $(GENERATE_WIFI_INI_COPY_FILES) \
         $(LOCAL_PATH)/wcn.rc:/vendor/etc/init/wcn.rc \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:vendor/etc/permissions/android.hardware.bluetooth_le.xml
 
