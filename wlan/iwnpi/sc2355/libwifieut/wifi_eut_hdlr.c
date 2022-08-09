@@ -367,6 +367,21 @@ static struct wifi_eut_t wifi_eut[] = {
 	}
 };
 
+/* description: wrap system func to protect signal SIGCHLD.
+ * set handler is SIG_DFL. (bug1972210)
+ */
+static int pox_system(char *cmd_line)
+{
+	int ret = 0;
+	sighandler_t old_handler;
+
+	old_handler = signal(SIGCHLD, SIG_DFL);
+	ret = system(cmd_line);
+	signal(SIGCHLD, old_handler);
+
+	return ret;
+}
+
 /* description: insmod driver
  * param:
  *     path: module path
@@ -380,14 +395,14 @@ static int load_driver(void)
 	int ret;
 	int count_num = 10;
 
-	ret = system(WIFI_DRIVER_LOAD);
+	ret = pox_system(WIFI_DRIVER_LOAD);
 	while (ret != 0 && count_num--){
-		ret = system(WIFI_DRIVER_LOAD);
+		ret = pox_system(WIFI_DRIVER_LOAD);
 		usleep(500 * 1000);
 	}
 	if (ret != 0){
-		ENG_LOG("wifi_eut: load drv(%s) failed, ret = %d\n",
-			WIFI_DRIVER_LOAD, ret);
+		ENG_LOG("wifi_eut: load drv(%s) failed, ret = %d, %s\n",
+			WIFI_DRIVER_LOAD, ret, strerror(ret));
 		return -1;
 	}
 
@@ -1283,7 +1298,7 @@ static int set_eut_mode(struct wifi_eut_t *eut, char *at_cmd)
 		if (check_npi_status(buf) < 0)
 			return -1;
 
-		if (system(WIFI_DRIVER_UNLOAD) < 0) {
+		if (pox_system(WIFI_DRIVER_UNLOAD) < 0) {
 			ENG_LOG("wifi_eut: %s %d\n", __func__, __LINE__);
 			return -1;
 		}

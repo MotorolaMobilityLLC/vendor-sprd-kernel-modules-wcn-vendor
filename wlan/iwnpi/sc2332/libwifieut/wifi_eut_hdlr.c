@@ -358,6 +358,21 @@ static int get_eut_cmd_index(int eut_cmd_id)
 	return -1;
 }
 
+/* description: wrap system func to protect signal SIGCHLD.
+ * set handler is SIG_DFL. (bug1972210)
+ */
+static int pox_system(char *cmd_line)
+{
+	int ret = 0;
+	sighandler_t old_handler;
+
+	old_handler = signal(SIGCHLD, SIG_DFL);
+	ret = system(cmd_line);
+	signal(SIGCHLD, old_handler);
+
+	return ret;
+}
+
 /* description: load driver
  * return value:
  *     0: success
@@ -368,14 +383,14 @@ static int load_driver(void)
 	int ret;
 	int count_num = 10;
 
-	ret = system(WIFI_DRIVER_LOAD);
+	ret = pox_system(WIFI_DRIVER_LOAD);
 	while (ret != 0 && count_num--){
-		ret = system(WIFI_DRIVER_LOAD);
+		ret = pox_system(WIFI_DRIVER_LOAD);
 		usleep(500 * 1000);
 	}
 	if (ret != 0){
-		ENG_LOG("wifi_eut: load drv(%s) failed, ret = %d\n",
-			WIFI_DRIVER_LOAD, ret);
+		ENG_LOG("wifi_eut: load drv(%s) failed, ret = %d, %s\n",
+			WIFI_DRIVER_LOAD, ret, strerror(ret));
 		return -1;
 	}
 
@@ -1165,7 +1180,7 @@ int process_after_npi_command(int eut_cmd_id)
 		case WIFI_EUT_CMD_SET_EUT_MODE:
 			/* Exit EUT mode: unload wifi driver */
 			if (get_ext_data(eut_cmd_id) == WIFI_EUT_EXIT) {
-				if (system(WIFI_DRIVER_UNLOAD) < 0) {
+				if (pox_system(WIFI_DRIVER_UNLOAD) < 0) {
 					ENG_LOG("wifi_eut: %s %d\n", __func__, __LINE__);
 					return -1;
 				}
