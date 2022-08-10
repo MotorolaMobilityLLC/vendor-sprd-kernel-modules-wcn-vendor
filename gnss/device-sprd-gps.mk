@@ -6,9 +6,25 @@ PRODUCT_COPY_FILES += \
 	vendor/sprd/modules/wcn/vendor/gnss/misc/supl.xml:/vendor/etc/supl.xml \
 	vendor/sprd/modules/wcn/vendor/gnss/misc/config.xml:/vendor/etc/config.xml
 $(warning shell echo "device-sprd-gps_mk_entry1")
+
+ifneq (,$(filter $(strip $(SPRD_MODULES_NAVC_PATH)),lite lite-Integ))
+GNSSSOC := marlin3lite
+else
+ifneq (,$(filter $(strip $(SPRD_MODULES_NAVC_PATH)),ge2))
+GNSSSOC := ge2
+else
+GNSSSOC := marlin3
+endif
+endif
+$(warning shell echo "device-sprd-gps_mk gnss chip "$(GNSSSOC))
+$(call add_soong_config_namespace, navcore)
+$(call add_soong_config_var_value, navcore, gnsschip, $(GNSSSOC))
+
+
 PRODUCT_PACKAGES += \
     gpsd \
-    liblte
+    liblte \
+    libnavcore
 
 $(warning shell echo "device-sprd-gps_mk_end")
 endif
