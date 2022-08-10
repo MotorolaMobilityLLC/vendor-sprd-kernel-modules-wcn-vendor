@@ -24,9 +24,9 @@
 #include <endian.h>
 #include <linux/types.h>
 
-#define ETH_ALEN 					(6)
+#define ETH_ALEN                    (6)
 #define IWNPI_SSID_LEN              (32)
-#define IWNPI_ASSOC_RESP_DATA_LEN   (280)
+#define IWNPI_ASSOC_RESP_DATA_LEN   (768)
 
 
 #define WLNPI_CMD_CONN_STATUS_STR               ("conn_status")

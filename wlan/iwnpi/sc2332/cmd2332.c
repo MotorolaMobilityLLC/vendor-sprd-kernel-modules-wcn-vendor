@@ -2110,8 +2110,10 @@ static char *wlnpi_bss_get_ie(const char *bss, char ieid)
     ie_len = bss[0] + bss[1];
     ENG_LOG("%s(), ie_len = %d\n", __func__, ie_len);
 
-    pos = (const char *) (bss + 2 + 6);/* 6 is capability's length + status code length + AID length */
-    end = pos + ie_len - 6;
+    /* ies format: length(2) + IE1 + IE2 + IE3 + ... */
+    /* IE format: Tag Number(1) + Tag Length(1) + data */
+    pos = (const char *) (bss + 2);
+    end = pos + ie_len;
 
     while (pos + 1 < end)
     {
@@ -2153,8 +2155,8 @@ static char *iwnpi_bss_get_vendor_ie(const char *bss, int vendor_type)
     /* get length of ies */
     ie_len = bss[0] + bss[1];
 
-    pos = (const char *)(bss + 2+6);
-    end = pos + ie_len - 6;
+    pos = (const char *)(bss + 2);
+    end = pos + ie_len;
 
     while (pos + 1 < end)
     {
