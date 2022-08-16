@@ -21,6 +21,9 @@ SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/marlin2_18a/pike2_cm4_
 SPRD_GNSS_BD_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/greeneye2_cm4_bds_builddir/gnssbdmodem.bin
 SPRD_GNSS_GL_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/greeneye2_cm4_glonass_builddir/gnssmodem.bin
 
+VER_BTWF=vendor/sprd/release/unisoc_bin/marlin2_18a/pike2_cm4_v2_builddir/version.txt
+VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20a/bds_gal_integration_builddir/version.txt
+
 SPRD_WCN_ETC_AB_PATH := $(SPRD_WCN_ETC_PATH)/wcn
 
 GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
