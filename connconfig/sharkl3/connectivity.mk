@@ -48,8 +48,8 @@ else
             $(error wcn firmware bin $(own) miss. please fix it, and don't take a random one)))
 endif
 
-VER_BTWF=vendor/sprd/release/unisoc_bin/marlin2_18a/9863_integration_cm4_v2_builddir/version.txt
-VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20a/bds_gal_integration_builddir/version.txt
+VER_BTWF=vendor/sprd/release/unisoc_bin/marlin2_18a/version.txt
+VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20a/version.txt
 
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
