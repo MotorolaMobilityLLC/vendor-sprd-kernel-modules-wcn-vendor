@@ -2445,7 +2445,7 @@ int wlnpi_show_get_ar_retcnt(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int 
     return 0;
 }
 
-/*-----CMD ID:51-----------*/
+/*-----CMD ID:50-----------*/
 int wlnpi_cmd_roam(int argc, char **argv,  unsigned char *s_buf, int *s_len)
 {
     char *err;
@@ -4503,8 +4503,7 @@ int wlnpi_show_get_beamforming_status(struct wlnpi_cmd_t *cmd, unsigned char *r_
 	}
 
 	beamf_status = *( (unsigned char *)r_buf );
-	printf("ret: status: %d :end\n", beamf_status);
-	snprintf(ret_buf, WLNPI_RESULT_BUF_LEN, "ret: status: %d :end\n", beamf_status);
+	snprintf(ret_buf, WLNPI_RESULT_BUF_LEN, "ret: beamf_status: %d :end\n", beamf_status);
 	printf("%s", ret_buf);
 
 	if(NULL != (fp = fopen(IWNPI_EXEC_BEAMF_STATUS_FILE, "w+"))) {
