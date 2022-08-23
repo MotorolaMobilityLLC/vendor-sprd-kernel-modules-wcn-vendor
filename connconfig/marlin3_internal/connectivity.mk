@@ -46,7 +46,7 @@ endif
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
 	$(GENERATE_WIFI_INI_COPY_FILES) \
-        $(LOCAL_PATH)/wcn.rc:/vendor/etc/init/wcn.rc \
+        $(LOCAL_PATH)/wcn.rc:/$(TARGET_COPY_OUT_ODM)/etc/init/wcn.rc \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:vendor/etc/permissions/android.hardware.bluetooth_le.xml
 
 PRODUCT_PROPERTY_OVERRIDES += \

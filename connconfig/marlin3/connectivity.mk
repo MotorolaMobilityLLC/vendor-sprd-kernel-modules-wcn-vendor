@@ -8,11 +8,11 @@ CONNECTIVITY_OWN_FILES := \
 WIFI_INI_FILES := \
 	wifi_board_config.ini\
 
-SPRD_WCN_ETC_PATH ?= vendor/etc
-SPRD_WIFI_FIRMWARE_PATH := vendor/firmware
+SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/etc
+SPRD_WIFI_FIRMWARE_PATH := $(TARGET_COPY_OUT_ODM)/firmware
 
 CONNECTIVITY_FM_FILES := fm_board_config.ini
-SPRD_WCN_FM_PATH := vendor/firmware
+SPRD_WCN_FM_PATH := $(TARGET_COPY_OUT_ODM)/firmware
 
 BOARD_HAVE_SPRD_WCN_BRANCH ?= marlin3_20a
 SPRD_WCN_FIRMWARE_FILES := \
@@ -53,7 +53,7 @@ VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3/version.txt
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
      $(GENERATE_WIFI_INI_COPY_FILES) \
-        $(LOCAL_PATH)/wcn.rc:/vendor/etc/init/wcn.rc \
+        $(LOCAL_PATH)/wcn.rc:/$(TARGET_COPY_OUT_ODM)/etc/init/wcn.rc \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:vendor/etc/permissions/android.hardware.bluetooth_le.xml
 
 PRODUCT_PROPERTY_OVERRIDES += \
