@@ -1,18 +1,56 @@
+soong_config_string_variable {
+    name: "gnsschip",
+    values: ["ge2", "marlin3", "marlin3lite"],
+}
 
-cc_prebuilt_library_shared {
+soong_config_module_type {
+    name: "navcore_cc_prebuilt_library_shared",
+    module_type:"cc_prebuilt_library_shared",
+    config_namespace: "navcore",
+    variables: ["gnsschip"],
+    properties: ["srcs", "multilib.lib32.srcs", "multilib.lib64.srcs"],
+}
 
+navcore_cc_prebuilt_library_shared {
     name: "libnavcore",
 
-    compile_multilib: "both",
-    multilib: {
-        lib32: {           
-            srcs: ["marlin3lite/lib32bit/libnavcore.so"],
-        },
-        lib64: {
-            srcs: ["marlin3lite/lib64bit/libnavcore.so"],
-        },
+    soong_config_variables: {
+        gnsschip : {
+            ge2 : {
+                multilib: {
+                    lib32: {
+                        srcs: ["ge2/lib32bit/libnavcore.so"],
+                    },
+                    lib64: {
+                        srcs: ["ge2/lib64bit/libnavcore.so"],
+                    },
+                },
+            },
+/*
+            marlin3 : {
+                multilib: {
+                    lib32: {
+                        srcs: ["marlin3/lib32bit/libnavcore.so"],
+                    },
+                    lib64: {
+                        srcs: ["marlin3/lib64bit/libnavcore.so"],
+                    },
+                },
+            },
+*/
+            marlin3lite : {
+                multilib: {
+                    lib32: {
+                        srcs: ["marlin3lite/lib32bit/libnavcore.so"],
+                    },
+                    lib64: {
+                        srcs: ["marlin3lite/lib64bit/libnavcore.so"],
+                    },
+                },
+            },
+        }
     },
-
+    
     vendor: true,
 
     shared_libs: [
@@ -21,8 +59,6 @@ cc_prebuilt_library_shared {
         "liblog",
         "libpower",
         "libui",
-        "libutils",
+        "libutils"
     ],
-
 }
-
