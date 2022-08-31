@@ -2,14 +2,14 @@
 #define __WIFI_EUT_HDLR_H__
 
 struct wifi_eut_t {
-	int  eut_cmd_id;
+	int eut_cmd_id;
 
 	/* ext_data: depend on each command */
-	int  ext_data;
+	int ext_data;
 
-	/* android version*/
-	int  android_version;
-	int  wcn_product_type;
+	/* android version */
+	int android_version;
+	int wcn_product_type;
 
 	char *at_pattern;
 	char *at_rsp_fmt;
@@ -17,7 +17,7 @@ struct wifi_eut_t {
 };
 
 struct wifi_rate_t {
-	int  index;
+	int index;
 	char *type_name;
 };
 

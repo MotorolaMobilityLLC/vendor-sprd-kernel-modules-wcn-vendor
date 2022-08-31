@@ -7,8 +7,8 @@
 
 typedef struct android_wifi_priv_cmd {
 	char *buf;
-	int  used_len;
-	int  total_len;
+	int used_len;
+	int total_len;
 } android_wifi_priv_cmd;
 
 int sprdwl_handle_test(int argc, char **argv);

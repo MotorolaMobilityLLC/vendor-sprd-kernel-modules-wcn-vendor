@@ -28,7 +28,6 @@
 #define IWNPI_SSID_LEN              (32)
 #define IWNPI_ASSOC_RESP_DATA_LEN   (768)
 
-
 #define WLNPI_CMD_CONN_STATUS_STR               ("conn_status")
 #define WLNPI_CMD_MSC_INDEX_STR                 ("mcs")
 #define WLNPI_CMD_SET_AUTORATE_STR              ("set_ar")
@@ -38,15 +37,13 @@
 #define WLNPI_CMD_SET_AUTORATE_RETCNT_STR       ("set_ar_retcnt")
 #define WLNPI_CMD_GET_AUTORATE_RETCNT_STR       ("get_ar_retcnt")
 
-enum wlan_nl_commands
-{
+enum wlan_nl_commands {
 	WLAN_NL_CMD_UNSPEC,
 	WLAN_NL_CMD_NPI,
 	WLAN_NL_CMD_GET_INFO,
 	WLAN_NL_CMD_MAX,
 };
-enum wlan_nl_attrs
-{
+enum wlan_nl_attrs {
 	WLAN_NL_ATTR_UNSPEC,
 	WLAN_NL_ATTR_DEVINDEX,
 	WLAN_NL_ATTR_COMMON_USR_TO_DRV,
@@ -54,85 +51,84 @@ enum wlan_nl_attrs
 	WLAN_NL_ATTR_MAX,
 };
 
-enum WLNPI_CMD_LIST
-{
-    WLNPI_CMD_START,
-    WLNPI_CMD_STOP,
-    WLNPI_CMD_SET_MAC,
-    WLNPI_CMD_GET_MAC,
-    WLNPI_CMD_SET_MAC_FILTER,
-    WLNPI_CMD_GET_MAC_FILTER,  // 5
-    WLNPI_CMD_SET_CHANNEL,
-    WLNPI_CMD_GET_CHANNEL,
-    WLNPI_CMD_GET_RSSI,
-    WLNPI_CMD_SET_TX_MODE,
-    WLNPI_CMD_GET_TX_MODE,  // 10
-    WLNPI_CMD_SET_RATE,
-    WLNPI_CMD_GET_RATE,
-    WLNPI_CMD_SET_BAND,
-    WLNPI_CMD_GET_BAND,
-    WLNPI_CMD_SET_BW,  // 15
-    WLNPI_CMD_GET_BW,
-    WLNPI_CMD_SET_PKTLEN,
-    WLNPI_CMD_GET_PKTLEN,
-    WLNPI_CMD_SET_PREAMBLE,
-    WLNPI_CMD_SET_GUARD_INTERVAL,  // 20
-    WLNPI_CMD_GET_GUARD_INTERVAL,
-    WLNPI_CMD_SET_BURST_INTERVAL,
-    WLNPI_CMD_GET_BURST_INTERVAL,
-    WLNPI_CMD_SET_PAYLOAD,
-    WLNPI_CMD_GET_PAYLOAD,  // 25
-    WLNPI_CMD_SET_TX_POWER,
-    WLNPI_CMD_GET_TX_POWER,
-    WLNPI_CMD_SET_TX_COUNT,
-    WLNPI_CMD_GET_RX_OK_COUNT,
-    WLNPI_CMD_TX_START,  // 30
-    WLNPI_CMD_TX_STOP,
-    WLNPI_CMD_RX_START,
-    WLNPI_CMD_RX_STOP,
-    WLNPI_CMD_GET_REG,
-    WLNPI_CMD_SET_REG,  // 35
-    WLNPI_CMD_SIN_WAVE,
-    WLNPI_CMD_LNA_ON,
-    WLNPI_CMD_LNA_OFF,
-    WLNPI_CMD_GET_LNA_STATUS,
-    WLNPI_CMD_SET_WLAN_CAP,
-    WLNPI_CMD_GET_WLAN_CAP,
-    WLNPI_CMD_GET_CONN_AP_INFO,
-    WLNPI_CMD_GET_MCS_INDEX,
+enum WLNPI_CMD_LIST {
+	WLNPI_CMD_START,
+	WLNPI_CMD_STOP,
+	WLNPI_CMD_SET_MAC,
+	WLNPI_CMD_GET_MAC,
+	WLNPI_CMD_SET_MAC_FILTER,
+	WLNPI_CMD_GET_MAC_FILTER, // 5
+	WLNPI_CMD_SET_CHANNEL,
+	WLNPI_CMD_GET_CHANNEL,
+	WLNPI_CMD_GET_RSSI,
+	WLNPI_CMD_SET_TX_MODE,
+	WLNPI_CMD_GET_TX_MODE, // 10
+	WLNPI_CMD_SET_RATE,
+	WLNPI_CMD_GET_RATE,
+	WLNPI_CMD_SET_BAND,
+	WLNPI_CMD_GET_BAND,
+	WLNPI_CMD_SET_BW, // 15
+	WLNPI_CMD_GET_BW,
+	WLNPI_CMD_SET_PKTLEN,
+	WLNPI_CMD_GET_PKTLEN,
+	WLNPI_CMD_SET_PREAMBLE,
+	WLNPI_CMD_SET_GUARD_INTERVAL, // 20
+	WLNPI_CMD_GET_GUARD_INTERVAL,
+	WLNPI_CMD_SET_BURST_INTERVAL,
+	WLNPI_CMD_GET_BURST_INTERVAL,
+	WLNPI_CMD_SET_PAYLOAD,
+	WLNPI_CMD_GET_PAYLOAD, // 25
+	WLNPI_CMD_SET_TX_POWER,
+	WLNPI_CMD_GET_TX_POWER,
+	WLNPI_CMD_SET_TX_COUNT,
+	WLNPI_CMD_GET_RX_OK_COUNT,
+	WLNPI_CMD_TX_START, // 30
+	WLNPI_CMD_TX_STOP,
+	WLNPI_CMD_RX_START,
+	WLNPI_CMD_RX_STOP,
+	WLNPI_CMD_GET_REG,
+	WLNPI_CMD_SET_REG, // 35
+	WLNPI_CMD_SIN_WAVE,
+	WLNPI_CMD_LNA_ON,
+	WLNPI_CMD_LNA_OFF,
+	WLNPI_CMD_GET_LNA_STATUS,
+	WLNPI_CMD_SET_WLAN_CAP,
+	WLNPI_CMD_GET_WLAN_CAP,
+	WLNPI_CMD_GET_CONN_AP_INFO,
+	WLNPI_CMD_GET_MCS_INDEX,
 
-    /* AutoRate */
-    WLNPI_CMD_SET_AUTORATE_FLAG,
-    WLNPI_CMD_GET_AUTORATE_FLAG,
+	/* AutoRate */
+	WLNPI_CMD_SET_AUTORATE_FLAG,
+	WLNPI_CMD_GET_AUTORATE_FLAG,
 
-    WLNPI_CMD_SET_AUTORATE_PKTCNT,
-    WLNPI_CMD_GET_AUTORATE_PKTCNT,
+	WLNPI_CMD_SET_AUTORATE_PKTCNT,
+	WLNPI_CMD_GET_AUTORATE_PKTCNT,
 
-    WLNPI_CMD_SET_AUTORATE_RETCNT,
-    WLNPI_CMD_GET_AUTORATE_RETCNT,
+	WLNPI_CMD_SET_AUTORATE_RETCNT,
+	WLNPI_CMD_GET_AUTORATE_RETCNT,
 
-    WLNPI_CMD_ROAM,
-    WLNPI_CMD_SET_WMM_PARAM,
+	WLNPI_CMD_ROAM,
+	WLNPI_CMD_SET_WMM_PARAM,
 
-    /* Adaptive Mode */
-    WLNPI_CMD_SET_ENG_MODE, //52
-    WLNPI_CMD_SET_NOISE_SCAN, //53
+	/* Adaptive Mode */
+	WLNPI_CMD_SET_ENG_MODE, //52
+	WLNPI_CMD_SET_NOISE_SCAN, //53
 
-    WLNPI_CMD_SET_SAR_POWER = 54,
-    WLNPI_CMD_GET_SAR_POWER,
-    WLNPI_CMD_SET_FCC_EN = 56,
-    WLNPI_CMD_SET_POWER_BACKOFF = 57,
-    WLNPI_CMD_GET_POWER_BACKOFF = 58,
-    WLNPI_CMD_SET_SOFTAP_WFA_PARA = 60,
-    WLNPI_CMD_GET_SOFTAP_WFA_PARA = 61,
+	WLNPI_CMD_SET_SAR_POWER = 54,
+	WLNPI_CMD_GET_SAR_POWER,
+	WLNPI_CMD_SET_FCC_EN = 56,
+	WLNPI_CMD_SET_POWER_BACKOFF = 57,
+	WLNPI_CMD_GET_POWER_BACKOFF = 58,
+	WLNPI_CMD_SET_SOFTAP_WFA_PARA = 60,
+	WLNPI_CMD_GET_SOFTAP_WFA_PARA = 61,
 
-    WLNPI_CMD_SET_STA_WFA_PARA = 62,
-    WLNPI_CMD_GET_STA_WFA_PARA = 63,
-    WLNPI_CMD_SET_RAND_MAC_FLAG = 199,
-    WLNPI_CMD_SET_COUNTRY = 200,
+	WLNPI_CMD_SET_STA_WFA_PARA = 62,
+	WLNPI_CMD_GET_STA_WFA_PARA = 63,
+	WLNPI_CMD_SET_RAND_MAC_FLAG = 199,
+	WLNPI_CMD_SET_COUNTRY = 200,
 
-    /* Max */
-    WLNPI_CMD_MAX,
+	/* Max */
+	WLNPI_CMD_MAX,
 };
 
 enum GET_STATUS_SUBTYPE {
@@ -140,71 +136,63 @@ enum GET_STATUS_SUBTYPE {
 	GET_STATUS_MAX,
 };
 
-struct wlan_nl_sock_state
-{
+struct wlan_nl_sock_state {
 	struct nl_sock *sock;
 	int nl_id;
 	int nl_cmd_id;
 };
 
-typedef struct
-{
+typedef struct {
 	struct nl_sock *sock;
 	unsigned int devindex;
 	int nl_id;
 	int nl_cmd_id;
 	unsigned char mac[6];
-}wlnpi_t;
+} wlnpi_t;
 
 typedef struct wlnpi_cmd_t wlnpi_cmd_t___;
-typedef  int (*P_FUNC_1)(int, char **,  unsigned char *, int * );
-typedef  int (*P_FUNC_2)(struct wlnpi_cmd_t *, unsigned char *, int);
-struct wlnpi_cmd_t
-{
-	char    *name;
-	char    *help;
+typedef int (*P_FUNC_1) (int, char **, unsigned char *, int *);
+typedef int (*P_FUNC_2) (struct wlnpi_cmd_t *, unsigned char *, int);
+struct wlnpi_cmd_t {
+	char *name;
+	char *help;
 	P_FUNC_1 parse;
 	P_FUNC_2 show;
-	char     id;
+	char id;
 };
 
-typedef struct
-{
-	unsigned char  type;
-	unsigned char  subtype;
+typedef struct {
+	unsigned char type;
+	unsigned char subtype;
 	unsigned short len;
-}WLNPI_CMD_HDR_T;
+} WLNPI_CMD_HDR_T;
 
-enum WLNPI_CMD_TYPE
-{
+enum WLNPI_CMD_TYPE {
 	HOST_TO_MARLIN_CMD = 1,
-	MARLIN_TO_HOST_REPLY  ,
+	MARLIN_TO_HOST_REPLY,
 };
 
-typedef struct iwnpi_rate_table_t
-{
-    int  phy_rate;
-    char *str_rate;
-}iwnpi_rate_table;
+typedef struct iwnpi_rate_table_t {
+	int phy_rate;
+	char *str_rate;
+} iwnpi_rate_table;
 
-typedef struct assoc_resp_t
-{
-    char connect_status;
-    char ssid[IWNPI_SSID_LEN+1];
-    char conn_mode;
+typedef struct assoc_resp_t {
+	char connect_status;
+	char ssid[IWNPI_SSID_LEN + 1];
+	char conn_mode;
 
-    int  rssi;
-    int  snr;
-    int  noise;
+	int rssi;
+	int snr;
+	int noise;
 
-    char channel;
-    char bssid[ETH_ALEN];
+	char channel;
+	char bssid[ETH_ALEN];
 
-    char assoc_resp_info[IWNPI_ASSOC_RESP_DATA_LEN];
+	char assoc_resp_info[IWNPI_ASSOC_RESP_DATA_LEN];
 } assoc_resp;
 
-struct power_backoff
-{
+struct power_backoff {
 	unsigned char phy_mode;
 	unsigned char channel;
 	char power_bo_value;
@@ -214,4 +202,3 @@ extern wlnpi_t g_wlnpi;
 extern struct wlnpi_cmd_t *match_cmd_table(char *name);
 
 #endif
-

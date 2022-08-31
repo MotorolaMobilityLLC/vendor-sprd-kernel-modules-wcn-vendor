@@ -51,177 +51,177 @@ do { \
 
 /* new rate table for marlin3 */
 static struct wifi_rate_t g_wifi_rate_table[] = {
-    {0, "DSSS-1"},    /*1M_Long*/      {1, "DSSS-2"},    /*2M_Long*/      {2, "DSSS-2S"},   /*2M_Short*/
-	{3, "CCK-5.5"},   /*5.5M_Long*/    {4, "CCK-5.5S"},  /*5.5M_Short*/   {5, "CCK-11"},    /*11M_Long*/
-	{6, "CCK-11S"},   /*11M_Short*/    {7, "OFDM-6"},    /*6M*/           {8, "OFDM-9"},    /*9M*/
-	{9, "OFDM-12"},   /*12M*/          {10, "OFDM-18"},  /*18M*/          {11, "OFDM-24"},  /*24M*/
-	{12, "OFDM-36"},  /*36M*/          {13, "OFDM-48"},  /*48M*/          {14, "OFDM-54"},  /*54M*/
-    {15, "MCS-0"},    /*HT_MCS0*/      {16, "MCS-1"},    /*HT_MCS1*/      {17, "MCS-2"},    /*HT_MCS2*/
-	{18, "MCS-3"},    /*HT_MCS3*/      {19, "MCS-4"},    /*HT_MCS4*/      {20, "MCS-5"},    /*HT_MCS5*/
-	{21, "MCS-6"},    /*HT_MCS6*/      {22, "MCS-7"},    /*HT_MCS7*/      {23, "MCS-8"},    /*HT_MCS8*/
-	{24, "MCS-9"},    /*HT_MCS9*/      {25, "MCS-10"},   /*HT_MCS10*/     {26, "MCS-11"},   /*HT_MCS11*/
-	{27, "MCS-12"},   /*HT_MCS12*/     {28, "MCS-13"},   /*HT_MCS13*/     {29, "MCS-14"},   /*HT_MCS14*/
-    {30, "MCS-15"},   /*HT_MCS15*/     {31, "MCS0_1SS"}, /*VHT_MCS0_1SS*/ {32, "MCS1_1SS"}, /*VHT_MCS1_1SS*/
-	{33, "MCS2_1SS"}, /*VHT_MCS2_1SS*/ {34, "MCS3_1SS"}, /*VHT_MCS3_1SS*/ {35, "MCS4_1SS"}, /*VHT_MCS4_1SS*/
-	{36, "MCS5_1SS"}, /*VHT_MCS5_1SS*/ {37, "MCS6_1SS"}, /*VHT_MCS6_1SS*/ {38, "MCS7_1SS"}, /*VHT_MCS7_1SS*/
-	{39, "MCS8_1SS"}, /*VHT_MCS8_1SS*/ {40, "MCS9_1SS"}, /*VHT_MCS9_1SS*/ {41, "MCS0_2SS"}, /*VHT_MCS0_2SS*/
-	{42, "MCS1_2SS"}, /*VHT_MCS1_2SS*/ {43, "MCS2_2SS"}, /*VHT_MCS2_2SS*/ {44, "MCS3_2SS"}, /*VHT_MCS3_2SS*/
-    {45, "MCS4_2SS"}, /*VHT_MCS4_2SS*/ {46, "MCS5_2SS"}, /*VHT_MCS5_2SS*/ {47, "MCS6_2SS"}, /*VHT_MCS6_2SS*/
-	{48, "MCS7_2SS"}, /*VHT_MCS7_2SS*/ {49, "MCS8_2SS"}, /*VHT_MCS8_2SS*/
-    {50, "MCS9_2SS"}, /*VHT_MCS9_2SS*/ {-1, "null"}
+	{0, "DSSS-1"},    /* 1M_Long */      {1, "DSSS-2"},    /* 2M_Long */      {2, "DSSS-2S"},   /* 2M_Short */
+	{3, "CCK-5.5"},   /* 5.5M_Long */    {4, "CCK-5.5S"},  /* 5.5M_Short */   {5, "CCK-11"},    /* 11M_Long */
+	{6, "CCK-11S"},   /* 11M_Short */    {7, "OFDM-6"},    /* 6M */           {8, "OFDM-9"},    /* 9M */
+	{9, "OFDM-12"},   /* 12M */          {10, "OFDM-18"},  /* 18M */          {11, "OFDM-24"},  /* 24M */
+	{12, "OFDM-36"},  /* 36M */          {13, "OFDM-48"},  /* 48M */          {14, "OFDM-54"},  /* 54M */
+	{15, "MCS-0"},    /* HT_MCS0 */      {16, "MCS-1"},    /* HT_MCS1 */      {17, "MCS-2"},    /* HT_MCS2 */
+	{18, "MCS-3"},    /* HT_MCS3 */      {19, "MCS-4"},    /* HT_MCS4 */      {20, "MCS-5"},    /* HT_MCS5 */
+	{21, "MCS-6"},    /* HT_MCS6 */      {22, "MCS-7"},    /* HT_MCS7 */      {23, "MCS-8"},    /* HT_MCS8 */
+	{24, "MCS-9"},    /* HT_MCS9 */      {25, "MCS-10"},   /* HT_MCS10 */     {26, "MCS-11"},   /* HT_MCS11 */
+	{27, "MCS-12"},   /* HT_MCS12 */     {28, "MCS-13"},   /* HT_MCS13 */     {29, "MCS-14"},   /* HT_MCS14 */
+	{30, "MCS-15"},   /* HT_MCS15 */     {31, "MCS0_1SS"}, /* VHT_MCS0_1SS */ {32, "MCS1_1SS"}, /* VHT_MCS1_1SS */
+	{33, "MCS2_1SS"}, /* VHT_MCS2_1SS */ {34, "MCS3_1SS"}, /* VHT_MCS3_1SS */ {35, "MCS4_1SS"}, /* VHT_MCS4_1SS */
+	{36, "MCS5_1SS"}, /* VHT_MCS5_1SS */ {37, "MCS6_1SS"}, /* VHT_MCS6_1SS */ {38, "MCS7_1SS"}, /* VHT_MCS7_1SS */
+	{39, "MCS8_1SS"}, /* VHT_MCS8_1SS */ {40, "MCS9_1SS"}, /* VHT_MCS9_1SS */ {41, "MCS0_2SS"}, /* VHT_MCS0_2SS */
+	{42, "MCS1_2SS"}, /* VHT_MCS1_2SS */ {43, "MCS2_2SS"}, /* VHT_MCS2_2SS */ {44, "MCS3_2SS"}, /* VHT_MCS3_2SS */
+	{45, "MCS4_2SS"}, /* VHT_MCS4_2SS */ {46, "MCS5_2SS"}, /* VHT_MCS5_2SS */ {47, "MCS6_2SS"}, /* VHT_MCS6_2SS */
+	{48, "MCS7_2SS"}, /* VHT_MCS7_2SS */ {49, "MCS8_2SS"}, /* VHT_MCS8_2SS */
+	{50, "MCS9_2SS"}, /* VHT_MCS9_2SS */ {-1, "null"}
 };
 
 /* rate table-1 for marlin2, it will replace by array g_wifi_rate_table for marlin3 */
 static struct wifi_rate_t g_wifi_rate_table_1[] = {
-    {1, "DSSS-1"},   {2, "DSSS-2"},   {5, "CCK-5.5"},  {11, "CCK-11"},
-    {6, "OFDM-6"},   {9, "OFDM-9"},   {12, "OFDM-12"}, {18, "OFDM-18"},
-    {24, "OFDM-24"}, {36, "OFDM-36"}, {48, "OFDM-48"}, {54, "OFDM-54"},
-    {7, "MCS-0"},    {13, "MCS-1"},   {19, "MCS-2"},   {26, "MCS-3"},
-    {39, "MCS-4"},   {52, "MCS-5"},   {58, "MCS-6"},   {65, "MCS-7"},
-    {-1, "null"}
+	{1, "DSSS-1"},   {2, "DSSS-2"},   {5, "CCK-5.5"},  {11, "CCK-11"},
+	{6, "OFDM-6"},   {9, "OFDM-9"},   {12, "OFDM-12"}, {18, "OFDM-18"},
+	{24, "OFDM-24"}, {36, "OFDM-36"}, {48, "OFDM-48"}, {54, "OFDM-54"},
+	{7, "MCS-0"},    {13, "MCS-1"},   {19, "MCS-2"},   {26, "MCS-3"},
+	{39, "MCS-4"},   {52, "MCS-5"},   {58, "MCS-6"},   {65, "MCS-7"},
+	{-1, "null"}
 };
 
 static struct wifi_eut_t wifi_eut[] = {
-	/*fixme: should be load/unload wifi driver before/after iwnpi command*/
+	/* fixme: should be load/unload wifi driver before/after iwnpi command */
 	{
-		.at_pattern = "EUT,%d\r\n",
-		.at_rsp_fmt = NULL,
-		/* 0: stop, 1: start */
-		.npi_cmd = "iwnpi wlan0 %s",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_EUT_MODE,
-	},
+	 .at_pattern = "EUT,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 /* 0: stop, 1: start */
+	 .npi_cmd = "iwnpi wlan0 %s",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_EUT_MODE,
+	 },
 	{
-		.at_pattern = "EUT?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:EUT=%d",
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_GET_EUT_MODE,
-	},
+	 .at_pattern = "EUT?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:EUT=%d",
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_EUT_MODE,
+	 },
 	{
-		.at_pattern = "ANT,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_chain %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_ANT,
-	},
+	 .at_pattern = "ANT,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_chain %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_ANT,
+	 },
 	{
-		.at_pattern = "ANT?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:ANT=%d",
-		.npi_cmd = "iwnpi wlan0 get_chain",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_ANT,
-	},
+	 .at_pattern = "ANT?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:ANT=%d",
+	 .npi_cmd = "iwnpi wlan0 get_chain",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_ANT,
+	 },
 	{
-		.at_pattern = "BAND,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_band %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_BAND,
-	},
+	 .at_pattern = "BAND,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_band %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_BAND,
+	 },
 	{
-		.at_pattern = "BAND?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:BAND=%d",
-		.npi_cmd = "iwnpi wlan0 get_band",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_BAND,
-	},
+	 .at_pattern = "BAND?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:BAND=%d",
+	 .npi_cmd = "iwnpi wlan0 get_band",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_BAND,
+	 },
 	{
-		.at_pattern = "BW,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_cbw %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_BW,
-	},
+	 .at_pattern = "BW,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_cbw %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_BW,
+	 },
 	{
-		.at_pattern = "BW?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:BW=%d",
-		.npi_cmd = "iwnpi wlan0 get_cbw",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_BW,
-	},
+	 .at_pattern = "BW?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:BW=%d",
+	 .npi_cmd = "iwnpi wlan0 get_cbw",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_BW,
+	 },
 	{
-		.at_pattern = "SBW,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_sbw %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_SBW,
-	},
+	 .at_pattern = "SBW,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_sbw %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_SBW,
+	 },
 	{
-		.at_pattern = "SBW?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:SBW=%d",
-		.npi_cmd = "iwnpi wlan0 get_sbw",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_SBW,
-	},
+	 .at_pattern = "SBW?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:SBW=%d",
+	 .npi_cmd = "iwnpi wlan0 get_sbw",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_SBW,
+	 },
 	{
-		.at_pattern = "CH,%d,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_channel %d %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_CHANNEL,
-	},
+	 .at_pattern = "CH,%d,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_channel %d %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_CHANNEL,
+	 },
 	{
-		.at_pattern = "CH?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:CH=%d,%d",
-		.npi_cmd = "iwnpi wlan0 get_channel",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_CHANNEL,
-	},
+	 .at_pattern = "CH?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:CH=%d,%d",
+	 .npi_cmd = "iwnpi wlan0 get_channel",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_CHANNEL,
+	 },
 	{
-		.at_pattern = "RATE,%s\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_rate %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_RATE,
-	},
+	 .at_pattern = "RATE,%s\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_rate %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_RATE,
+	 },
 	{
-		.at_pattern = "RATE?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:RATE=%s",
-		.npi_cmd = "iwnpi wlan0 get_rate",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_RATE,
-	},
+	 .at_pattern = "RATE?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:RATE=%s",
+	 .npi_cmd = "iwnpi wlan0 get_rate",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_RATE,
+	 },
 	{
-		.at_pattern = "PREAMBLE,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_preamble %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_PREAMBLE,
-	},
+	 .at_pattern = "PREAMBLE,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_preamble %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_PREAMBLE,
+	 },
 	{
-		.at_pattern = "PAYLOAD,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_payload %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_PAYLOAD,
-	},
+	 .at_pattern = "PAYLOAD,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_payload %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_PAYLOAD,
+	 },
 	{
-		.at_pattern = "PAYLOAD?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:PAYLOAD=%d",
-		.npi_cmd = "iwnpi wlan0 get_payload",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_PAYLOAD,
-	},
+	 .at_pattern = "PAYLOAD?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:PAYLOAD=%d",
+	 .npi_cmd = "iwnpi wlan0 get_payload",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_PAYLOAD,
+	 },
 	{
-		.at_pattern = "PKTLEN,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_pkt_len %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_PKT_LEN,
-	},
+	 .at_pattern = "PKTLEN,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_pkt_len %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_PKT_LEN,
+	 },
 	{
-		.at_pattern = "PKTLEN?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:PKTLEN=%d",
-		.npi_cmd = "iwnpi wlan0 get_pkt_len",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_PKT_LEN,
-	},
+	 .at_pattern = "PKTLEN?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:PKTLEN=%d",
+	 .npi_cmd = "iwnpi wlan0 get_pkt_len",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_PKT_LEN,
+	 },
 	{
-		.at_pattern = "GUARDINTERVAL,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_gi %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_GUARDINTER,
-	},
+	 .at_pattern = "GUARDINTERVAL,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_gi %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_GUARDINTER,
+	 },
 	{
-		.at_pattern = "GUARDINTERVAL?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:GUARDINTERVAL=%d",
-		.npi_cmd = "iwnpi wlan0 get_gi",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_GUARDINTER,
-	},
+	 .at_pattern = "GUARDINTERVAL?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:GUARDINTERVAL=%d",
+	 .npi_cmd = "iwnpi wlan0 get_gi",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_GUARDINTER,
+	 },
 	{
-		.at_pattern = "TXPWRLV,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_tx_power %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_TX_POWER,
-	},
+	 .at_pattern = "TXPWRLV,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_tx_power %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_TX_POWER,
+	 },
 	{
-		.at_pattern = "TXPWRLV?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:TXPWRLV=%d",
-		.npi_cmd = "iwnpi wlan0 get_tx_power",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_TX_POWER,
-	},
+	 .at_pattern = "TXPWRLV?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:TXPWRLV=%d",
+	 .npi_cmd = "iwnpi wlan0 get_tx_power",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_TX_POWER,
+	 },
 	/* more than one iwnpi command to be run
 	 * CW mode(id = 0):
 	 *     1.iwnpi wlan0 tx_stop
@@ -230,17 +230,17 @@ static struct wifi_eut_t wifi_eut[] = {
 	 *     1.iwnpi wlan0 set_tx_mode
 	 */
 	{
-		.at_pattern = "TXMODE,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_SET_TX_MODE,
-	},
+	 .at_pattern = "TXMODE,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_TX_MODE,
+	 },
 	{
-		.at_pattern = "TXMODE?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:TXMODE=%d",
-		.npi_cmd = "iwnpi wlan0 get_tx_mode",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_TX_MODE,
-	},
+	 .at_pattern = "TXMODE?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:TXMODE=%d",
+	 .npi_cmd = "iwnpi wlan0 get_tx_mode",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_TX_MODE,
+	 },
 	/* more than one iwnpi command to be run
 	 * param1 = open:
 	 *     1.iwnpi wlan0 set_tx_count pkt_count
@@ -249,122 +249,122 @@ static struct wifi_eut_t wifi_eut[] = {
 	 *     1.iwnpi wlan0 tx_stop
 	 */
 	{
-		.at_pattern = "TX,%d,%d,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_SET_TX,
-	},
+	 .at_pattern = "TX,%d,%d,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_TX,
+	 },
 	{
-		.at_pattern = "TX?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:TX=%d",
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_GET_TX,
-	},
+	 .at_pattern = "TX?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:TX=%d",
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_TX,
+	 },
 	{
-		.at_pattern = "DECODEMODE,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 set_fec %d",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_DECODEMODE,
-	},
+	 .at_pattern = "DECODEMODE,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 set_fec %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_DECODEMODE,
+	 },
 	{
-		.at_pattern = "DECODEMODE?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:DECODEMODE=%d",
-		.npi_cmd = "iwnpi wlan0 get_fec",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_DECODEMODE,
-	},
+	 .at_pattern = "DECODEMODE?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:DECODEMODE=%d",
+	 .npi_cmd = "iwnpi wlan0 get_fec",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_DECODEMODE,
+	 },
 	/* fixme: not implement */
 	{
-		.at_pattern = "MACFILTER,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_SET_MAC_FILTER,
-	},
+	 .at_pattern = "MACFILTER,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_MAC_FILTER,
+	 },
 	/* fixme: not implement */
 	{
-		.at_pattern = "MACFILTER?\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 get_macfilter",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_MAC_FILTER,
-	},
+	 .at_pattern = "MACFILTER?\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 get_macfilter",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_MAC_FILTER,
+	 },
 	{
-		.at_pattern = "LNA,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 %s",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_LNA_STATUS,
-	},
+	 .at_pattern = "LNA,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 %s",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_LNA_STATUS,
+	 },
 	{
-		.at_pattern = "LNA?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:LNA=%d",
-		.npi_cmd = "iwnpi wlan0 lna_status",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_LNA_STATUS,
-	},
+	 .at_pattern = "LNA?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:LNA=%d",
+	 .npi_cmd = "iwnpi wlan0 lna_status",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_LNA_STATUS,
+	 },
 	{
-		.at_pattern = "RX,%d\r\n",
-		.at_rsp_fmt = NULL,
-		.npi_cmd = "iwnpi wlan0 %s",
-		.eut_cmd_id = WIFI_EUT_CMD_SET_RX,
-	},
+	 .at_pattern = "RX,%d\r\n",
+	 .at_rsp_fmt = NULL,
+	 .npi_cmd = "iwnpi wlan0 %s",
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_RX,
+	 },
 	{
-		.at_pattern = "RX?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:RX=%d",
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_GET_RX,
-	},
+	 .at_pattern = "RX?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:RX=%d",
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_RX,
+	 },
 	{
-		.at_pattern = "RSSI?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:RSSI=%d",
-		.npi_cmd = "iwnpi wlan0 get_rssi",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_RSSI,
-	},
+	 .at_pattern = "RSSI?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:RSSI=%d",
+	 .npi_cmd = "iwnpi wlan0 get_rssi",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_RSSI,
+	 },
 	{
-		.at_pattern = "RXPACKCOUNT?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:RXPACKCOUNT=%d,%d,%d",
-		.npi_cmd = "iwnpi wlan0 get_rx_ok",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_RXPACKCOUNT,
-	},
+	 .at_pattern = "RXPACKCOUNT?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:RXPACKCOUNT=%d,%d,%d",
+	 .npi_cmd = "iwnpi wlan0 get_rx_ok",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_RXPACKCOUNT,
+	 },
 	{
-		.at_pattern = "GET_EFUSE,%d\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:GET_EFUSE=%s",
-		.npi_cmd = "iwnpi wlan0 get_efuse %d",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_EFUSE,
-	},
+	 .at_pattern = "GET_EFUSE,%d\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:GET_EFUSE=%s",
+	 .npi_cmd = "iwnpi wlan0 get_efuse %d",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_EFUSE,
+	 },
 	/* invalid for marlin3 */
 	{
-		.at_pattern = "NETMODE,%d\r\n",
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_SET_NETMODE,
-	},
+	 .at_pattern = "NETMODE,%d\r\n",
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_NETMODE,
+	 },
 	{
-		.at_pattern = "MAC,%02X%02X%02X%02X%02X%02X\r\n",
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_SET_MAC,
-	},
+	 .at_pattern = "MAC,%02X%02X%02X%02X%02X%02X\r\n",
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_SET_MAC,
+	 },
 	{
-		.at_pattern = "MAC?\r\n",
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_GET_MAC,
-	},
+	 .at_pattern = "MAC?\r\n",
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_MAC,
+	 },
 	{
-		.at_pattern = "CP2INFO?\r\n",
-		.npi_cmd = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_GET_CP2INFO,
-	},
+	 .at_pattern = "CP2INFO?\r\n",
+	 .npi_cmd = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_CP2INFO,
+	 },
 	{
-		.at_pattern = "ANTINFO?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:ANTINFO=%d,%d",
-		.npi_cmd = "iwnpi wlan0 get_rf_config",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_ANTINFO,
-	},
+	 .at_pattern = "ANTINFO?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:ANTINFO=%d,%d",
+	 .npi_cmd = "iwnpi wlan0 get_rf_config",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_ANTINFO,
+	 },
 	{
-		.at_pattern = "CHIP?\r\n",
-		.at_rsp_fmt = "+SPWIFITEST:CHIP=%s",
-		.npi_cmd = "iwnpi wlan0 get_chip_id",
-		.eut_cmd_id = WIFI_EUT_CMD_GET_CHIPID,
-	},
+	 .at_pattern = "CHIP?\r\n",
+	 .at_rsp_fmt = "+SPWIFITEST:CHIP=%s",
+	 .npi_cmd = "iwnpi wlan0 get_chip_id",
+	 .eut_cmd_id = WIFI_EUT_CMD_GET_CHIPID,
+	 },
 	{
-		.at_pattern = NULL,
-		.eut_cmd_id = WIFI_EUT_CMD_DEFAULT,
-	}
+	 .at_pattern = NULL,
+	 .eut_cmd_id = WIFI_EUT_CMD_DEFAULT,
+	 }
 };
 
 /* description: wrap system func to protect signal SIGCHLD.
@@ -396,18 +396,17 @@ static int load_driver(void)
 	int count_num = 10;
 
 	ret = pox_system(WIFI_DRIVER_LOAD);
-	while (ret != 0 && count_num--){
+	while (ret != 0 && count_num--) {
 		ret = pox_system(WIFI_DRIVER_LOAD);
 		usleep(500 * 1000);
 	}
-	if (ret != 0){
+	if (ret != 0) {
 		ENG_LOG("wifi_eut: load drv(%s) failed, ret = %d, %s\n",
 			WIFI_DRIVER_LOAD, ret, strerror(ret));
 		return -1;
 	}
 
-	ENG_LOG("wifi_eut: load drv(%s) success, ret = %d",
-			WIFI_DRIVER_LOAD, ret);
+	ENG_LOG("wifi_eut: load drv(%s) success, ret = %d", WIFI_DRIVER_LOAD, ret);
 	return 0;
 }
 
@@ -427,7 +426,7 @@ static int get_rate_index(int prod_type, char *modulation)
 	if (modulation == NULL)
 		return -1;
 
-	switch(prod_type) {
+	switch (prod_type) {
 	case WCN_PRODUCT_MARLIN3:
 		rate_tab = g_wifi_rate_table;
 		break;
@@ -453,7 +452,7 @@ static char *get_modulation_name(int prod_type, int index)
 	if (index < 0)
 		return "null";
 
-	switch(prod_type) {
+	switch (prod_type) {
 	case WCN_PRODUCT_MARLIN3:
 		rate_tab = g_wifi_rate_table;
 		break;
@@ -536,7 +535,6 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 		if (val != 0 && val != 1)
 			return -1;
 
-
 		eut->ext_data = val;
 		sprintf(npi_cmd_buf, eut->npi_cmd, val == 1 ? "rx_start" : "rx_stop");
 		break;
@@ -554,7 +552,6 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 			return -1;
 
 		break;
-
 
 	case WIFI_EUT_CMD_SET_LNA_STATUS:
 		ret = sscanf(at_cmd, eut->at_pattern, &val);
@@ -577,7 +574,7 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 
 		rate_index = get_rate_index(eut->wcn_product_type, rate_buf);
 		ENG_LOG("wifi_eut: %s %d, rate = %s, rate_index = %d\n",
-				__func__, __LINE__, rate_buf, rate_index);
+			__func__, __LINE__, rate_buf, rate_index);
 		if (rate_index < 0) {
 			return -1;
 		}
@@ -585,7 +582,7 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 		sprintf(npi_cmd_buf, eut->npi_cmd, rate_index);
 		break;
 
-	/* Only one paramter with int type */
+		/* Only one paramter with int type */
 	case WIFI_EUT_CMD_SET_PREAMBLE:
 	case WIFI_EUT_CMD_SET_SBW:
 	case WIFI_EUT_CMD_SET_BW:
@@ -665,14 +662,14 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 	int ch1, ch2;
 	int rf_2g, rf_5g;
 	int rx_count, rx_err, rx_fail;
-	char output[256] = {0};
-	char res_chip[256] = {0};
-	char efuse[256] = {0};
+	char output[256] = { 0 };
+	char res_chip[256] = { 0 };
+	char efuse[256] = { 0 };
 
 	if (eut == NULL || rsp == NULL)
 		return -1;
 
-	strncpy(output, npi_output, sizeof(output)-1);
+	strncpy(output, npi_output, sizeof(output) - 1);
 
 	ret = sscanf(output, "ret: %d :end", &result);
 	if (ret == 1) {
@@ -719,13 +716,15 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 			strcpy(rsp, AT_CMD_RESP_OK);
 
 			ENG_LOG("wifi_eut: %s %d default handle(eut_cmd_id = %d)\n",
-					__func__, __LINE__, eut->eut_cmd_id);
+				__func__, __LINE__, eut->eut_cmd_id);
 			break;
 		}
 	} else {
 		switch (eut->eut_cmd_id) {
 		case WIFI_EUT_CMD_GET_CHANNEL:
-			ret = sscanf(output, "ret: primary_channel:%d,center_channel:%d :end", &ch1, &ch2);
+			ret =
+			    sscanf(output, "ret: primary_channel:%d,center_channel:%d :end", &ch1,
+				   &ch2);
 			if (ret != 2) {
 				ENG_LOG("wifi_eut: %s %d ret = %d\n", __func__, __LINE__, ret);
 				return -1;
@@ -736,8 +735,10 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 			break;
 
 		case WIFI_EUT_CMD_GET_RXPACKCOUNT:
-			ret = sscanf(output, "ret: reg value: rx_end_count=%d rx_err_end_count=%d fcs_fail_count=%d :end",
-					&rx_count, &rx_err, &rx_fail);
+			ret =
+			    sscanf(output,
+				   "ret: reg value: rx_end_count=%d rx_err_end_count=%d fcs_fail_count=%d :end",
+				   &rx_count, &rx_err, &rx_fail);
 			if (ret != 3) {
 				ENG_LOG("wifi_eut: %s %d ret = %d\n", __func__, __LINE__, ret);
 				return -1;
@@ -823,9 +824,9 @@ int check_npi_status(char *npi_output)
 {
 	int ret;
 	int status;
-	char buf[64]={0};
+	char buf[64] = { 0 };
 
-	strncpy(buf, npi_output, sizeof(buf)-1);
+	strncpy(buf, npi_output, sizeof(buf) - 1);
 	strip_white_space(buf);
 	ret = sscanf(buf, "ret:status%d:end", &status);
 	if (ret != 1) {
@@ -849,8 +850,8 @@ static int run_npi_command(char *npi_cmd, char *npi_buf, int npi_buf_len)
 {
 	int i;
 	char *p;
-	char *argv[16] = {0};
-	char npi[128] = {0};
+	char *argv[16] = { 0 };
+	char npi[128] = { 0 };
 	int len, ret;
 	int pfd[2];
 	pid_t pid;
@@ -867,8 +868,7 @@ static int run_npi_command(char *npi_cmd, char *npi_buf, int npi_buf_len)
 
 	ENG_LOG("wifi_eut: npi command: %s\n", npi_cmd);
 	pid = fork();
-	if (pid < 0)
-	{
+	if (pid < 0) {
 		ENG_LOG("wifi_eut: %s fork failed\n", __func__);
 		close(pfd[0]);
 		close(pfd[1]);
@@ -920,20 +920,20 @@ int set_mac_addr(char *mac)
 {
 	int fd;
 	int ret;
-	char mac_addr[32] = {0};
+	char mac_addr[32] = { 0 };
 
-	(void *) mac_addr;
+	(void *)mac_addr;
 	fd = open(NV_MAC_ADDR_PATH, O_CREAT | O_WRONLY, 0666);
 	if (fd < 0)
 		return -1;
 
 	sprintf(mac_addr, "%02x:%02x:%02x:%02x:%02x:%02x",
-			mac[0], mac[1], mac[2], mac[3], mac[4],mac[5]);
+		mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
 	ENG_LOG("wifi_eut: %s MAC=%s", __func__, mac_addr);
-	if(fd >= 0){
-	    if (-1 == chmod(NV_MAC_ADDR_PATH, 0666))
-		    ENG_LOG("%s chmod failed", __func__);
+	if (fd >= 0) {
+		if (-1 == chmod(NV_MAC_ADDR_PATH, 0666))
+			ENG_LOG("%s chmod failed", __func__);
 	}
 	ret = write(fd, mac_addr, strlen(mac_addr));
 	fsync(fd);
@@ -948,7 +948,7 @@ int set_mac_addr_new(char *mac)
 {
 	int fd;
 	int ret;
-	char mac_addr[32] = {0};
+	char mac_addr[32] = { 0 };
 
 	fd = open(NV_MAC_ADDR_PATH, O_CREAT | O_WRONLY, 0666);
 	if (fd < 0)
@@ -959,9 +959,9 @@ int set_mac_addr_new(char *mac)
 		mac[6], mac[7], mac[8], mac[9], mac[10], mac[11]);
 	ENG_LOG("wifi_eut: %s MAC=%s", __func__, mac_addr);
 
-	if(fd >= 0){
-	    if (-1 == chmod(NV_MAC_ADDR_PATH, 0666))
-		    ENG_LOG("%s chmod failed", __func__);
+	if (fd >= 0) {
+		if (-1 == chmod(NV_MAC_ADDR_PATH, 0666))
+			ENG_LOG("%s chmod failed", __func__);
 	}
 	ret = write(fd, mac_addr, strlen(mac_addr));
 	fsync(fd);
@@ -990,8 +990,8 @@ int get_mac_addr(char *mac_addr)
 	close(fd);
 	ENG_LOG("wifi_eut: %s MAC=%s\n", __func__, buf);
 	ret = sscanf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",
-			&mac_addr[0], &mac_addr[1], &mac_addr[2],
-			&mac_addr[3], &mac_addr[4], &mac_addr[5]);
+		     &mac_addr[0], &mac_addr[1], &mac_addr[2],
+		     &mac_addr[3], &mac_addr[4], &mac_addr[5]);
 
 	if (ret != 6)
 		return -1;
@@ -1071,7 +1071,7 @@ static int permission_check(struct wifi_eut_t *eut)
 
 	case WIFI_EUT_CMD_GET_ANTINFO:
 		if (load_driver() < 0)
-			ret =  -1;
+			ret = -1;
 		else
 			ret = 0;
 
@@ -1138,7 +1138,6 @@ static int set_tx_mode(struct wifi_eut_t *eut, char *at_cmd)
 		if (check_npi_status(line) < 0)
 			return -1;
 
-
 		ret = run_npi_command("iwnpi wlan0 sin_wave", npi_output, sizeof(npi_output));
 		if (ret < 0)
 			return -1;
@@ -1167,7 +1166,7 @@ static int set_tx_mode(struct wifi_eut_t *eut, char *at_cmd)
 int set_tx(struct wifi_eut_t *eut, char *at_cmd)
 {
 	int ret;
-	char npi_cmd[64] = {0};
+	char npi_cmd[64] = { 0 };
 	char npi_output[256];
 	char line[128];
 	int stat, mode, pkt_count;
@@ -1181,7 +1180,7 @@ int set_tx(struct wifi_eut_t *eut, char *at_cmd)
 	if (ret < 0)
 		return -1;
 
-	/* Turn off tx*/
+	/* Turn off tx */
 	if (stat == 0) {
 		ret = run_npi_command("iwnpi wlan0 tx_stop", npi_output, sizeof(npi_output));
 		if (ret < 0) {
@@ -1200,12 +1199,12 @@ int set_tx(struct wifi_eut_t *eut, char *at_cmd)
 		}
 
 		SET_EXT_DATA(WIFI_EUT_TX_STATUS, WIFI_TX_STOP);
-	/* Turn on tx */
+		/* Turn on tx */
 	} else if (stat == 1) {
 		switch (ret) {
 		case 2:
 		case 3:
-			/*mode == 0; continue mode*/
+			/* mode == 0; continue mode */
 			if (mode == 0)
 				pkt_count = 0;
 			else {
@@ -1232,7 +1231,8 @@ int set_tx(struct wifi_eut_t *eut, char *at_cmd)
 
 			/* ignore break */
 		case 1:
-			ret = run_npi_command("iwnpi wlan0 tx_start", npi_output, sizeof(npi_output));
+			ret =
+			    run_npi_command("iwnpi wlan0 tx_start", npi_output, sizeof(npi_output));
 			if (ret < 0) {
 				ENG_LOG("wifi_eut: %s %d", __func__, __LINE__);
 				return -1;
@@ -1266,7 +1266,7 @@ static int set_eut_mode(struct wifi_eut_t *eut, char *at_cmd)
 	char *drv_path;
 	char buf[64];
 	char npi_cmd[64];
-	char npi_output[128] = {0};
+	char npi_output[128] = { 0 };
 
 	ret = at2npi(eut, at_cmd, npi_cmd);
 	if (ret < 0)
@@ -1341,7 +1341,7 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 	char *pout;
 	int npi_flag = 0;
 
-	if (strncmp(WIFI_EUT_KEYWORD, diag_cmd, WIFI_EUT_KEYWORD_LEN)!=0)
+	if (strncmp(WIFI_EUT_KEYWORD, diag_cmd, WIFI_EUT_KEYWORD_LEN) != 0)
 		at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
 	else
 		at_cmd = diag_cmd;
@@ -1372,7 +1372,7 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 	if (ret < 0) {
 		ENG_LOG("wifi_eut: permission denied(line:%d)\n", __LINE__);
 		ENG_LOG("wifi_eut: WIFI EUT mode = %d, eut cmd id = %d\n",
-				GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);
+			GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);
 
 		goto err;
 	}
@@ -1387,7 +1387,7 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 		break;
 
 	case WIFI_EUT_CMD_SET_TX_MODE:
-		if(set_tx_mode(eut, at_cmd) < 0)
+		if (set_tx_mode(eut, at_cmd) < 0)
 			goto err;
 
 		strcpy(at_rsp, AT_CMD_RESP_OK);
@@ -1395,22 +1395,22 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 
 	case WIFI_EUT_CMD_SET_MAC:
 		ret = sscanf(at_cmd, eut->at_pattern,
-				&mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]);
+			     &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]);
 		if (ret != 6)
 			goto err;
 
-		if(set_mac_addr(mac) < 0)
+		if (set_mac_addr(mac) < 0)
 			goto err;
 
 		strcpy(at_rsp, AT_CMD_RESP_OK);
 		break;
 
 	case WIFI_EUT_CMD_GET_MAC:
-		if(get_mac_addr(mac) < 0)
+		if (get_mac_addr(mac) < 0)
 			goto err;
 
 		sprintf(at_rsp, "+SPWIFITEST:MAC=%02x%02x%02x%02x%02x%02x",
-				mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+			mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
 		break;
 
@@ -1462,7 +1462,7 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 		pout += ret;
 
 		ret = check_npi_status(buff);
-		if(ret < 0) {
+		if (ret < 0) {
 			ENG_LOG("wifi_eut: npi status = %d (line:%d)", ret, __LINE__);
 			goto err;
 		}
@@ -1541,16 +1541,15 @@ int wifi_mac_get_addr(char *diag_cmd, char *at_rsp)
 	if (ret < 0) {
 		ENG_LOG("wifi_eut: permission denied(line:%d)\n", __LINE__);
 		ENG_LOG("wifi_eut: WIFI EUT mode = %d, eut cmd id = %d\n",
-				GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);
+			GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);
 
 		goto err;
 	}
 
 	if (eut->eut_cmd_id == WIFI_EUT_CMD_GET_MAC) {
-		if(get_mac_addr_new(at_rsp) < 0)
+		if (get_mac_addr_new(at_rsp) < 0)
 			goto err;
-	}
-	else {
+	} else {
 		ENG_LOG("wifi_eut eut_cmd_id not find!\n");
 		goto err;
 	}
@@ -1580,7 +1579,7 @@ int wifi_mac_set_addr(char *diag_cmd, char *at_rsp)
 	at_cmd[len] = 0;
 
 	ENG_LOG("wifi_eut: AT command = %s", at_cmd);
-	if(strncmp(WIFI_EUT_SET_ADDR, at_cmd, WIFI_EUT_ADDR_LEN) != 0) {
+	if (strncmp(WIFI_EUT_SET_ADDR, at_cmd, WIFI_EUT_ADDR_LEN) != 0) {
 		ENG_LOG("wifi_eut: keywords not match(%s)", at_cmd);
 		goto err;
 	}
@@ -1600,18 +1599,17 @@ int wifi_mac_set_addr(char *diag_cmd, char *at_rsp)
 	if (ret < 0) {
 		ENG_LOG("wifi_eut: permission denied(line:%d)\n", __LINE__);
 		ENG_LOG("wifi_eut: WIFI EUT mode = %d, eut cmd id = %d\n",
-				GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);
+			GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);
 
 		goto err;
 	}
 
 	if (eut->eut_cmd_id == WIFI_EUT_CMD_SET_MAC) {
-		if(set_mac_addr_new(at_cmd + 4) < 0)
+		if (set_mac_addr_new(at_cmd + 4) < 0)
 			goto err;
 
 		strncpy(at_rsp, "+SETWIFIADDR:OK", 16);
-	}
-	else {
+	} else {
 		ENG_LOG("wifi_eut eut_cmd_id not find!\n");
 		goto err;
 	}
@@ -1627,7 +1625,7 @@ err:
 
 void wifi_eut_init()
 {
-	char name[PROPERTY_VALUE_MAX] = {0};
+	char name[PROPERTY_VALUE_MAX] = { 0 };
 	int wcn_product_type;
 
 	property_get(WCN_HARDWARE_PRODUCT, name, "invalid");
@@ -1649,14 +1647,14 @@ void wifi_eut_init()
 	/* set default eut mode: (0: EXIT EUT; 1: ENTER EUT) */
 	SET_EXT_DATA(WIFI_EUT_MODE, WIFI_EUT_EXIT);
 
-	/* set default rx status: (0: rx_stop, 1: rx_start)*/
+	/* set default rx status: (0: rx_stop, 1: rx_start) */
 	SET_EXT_DATA(WIFI_EUT_RX_STATUS, WIFI_RX_STOP);
 
-	/* set default tx status: (0: tx_stop, 1: tx_start)*/
+	/* set default tx status: (0: tx_stop, 1: tx_start) */
 	SET_EXT_DATA(WIFI_EUT_TX_STATUS, WIFI_TX_STOP);
 }
 
-void register_this_module_ext(struct eng_callback * reg, int *num)
+void register_this_module_ext(struct eng_callback *reg, int *num)
 {
 	int modules_num = 0;
 	ALOGD("file:%s, func:%s\n", __FILE__, __func__);
