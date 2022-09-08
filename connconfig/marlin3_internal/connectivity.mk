@@ -14,10 +14,10 @@ SPRD_WCN_FIRMWARE_FILES := \
     wcnmodem.bin\
     gnssmodem.bin
 
-SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/wcn_trunk/umw2631_qogirL6_builddir/PM_umw2631_qogirL6.bin
+SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/wcn_trunk_22a/umw2631_qogirL6_builddir/PM_umw2631_qogirL6.bin
 SPRD_GNSS_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20b_new/qogirl6/QogirL6_gnss_cm4_builddir/PM_QogirL6_gnss_cm4.bin
 
-VER_BTWF=vendor/sprd/release/unisoc_bin/wcn_trunk/version.txt
+VER_BTWF=vendor/sprd/release/unisoc_bin/wcn_trunk_22a/version.txt
 VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20b_new/qogirl6/version.txt
 
 GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
