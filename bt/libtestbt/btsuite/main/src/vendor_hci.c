@@ -200,7 +200,9 @@ void transmit_command(
   wait_entry->context = context;
 
   BTD("Send Cmd: 0x%04X", wait_entry->opcode);
-
+  if(wait_entry->opcode == 0xFCD1){
+    usleep(500*1000);
+  }
   // Store the command message type in the event field
   // in case the upper layer didn't already
   command->event = MSG_STACK_TO_HC_HCI_CMD;
