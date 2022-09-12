@@ -147,5 +147,5 @@ cc_library_shared {
         "libcutils",
         "liblog",
     ],
-    proprietary: true,
+    device_specific: true,
 }

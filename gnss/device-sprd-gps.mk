@@ -23,7 +23,6 @@ $(call add_soong_config_var_value, navcore, gnsschip, $(GNSSSOC))
 
 PRODUCT_PACKAGES += \
     gpsd \
-    liblte \
     libnavcore
 
 $(warning shell echo "device-sprd-gps_mk_end")

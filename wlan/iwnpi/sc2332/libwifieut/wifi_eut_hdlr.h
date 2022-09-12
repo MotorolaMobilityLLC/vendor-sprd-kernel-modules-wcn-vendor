@@ -2,14 +2,14 @@
 #define __WIFI_EUT_HDLR_H__
 
 struct eut_cmd_t {
-	int  eut_cmd_id;
+	int eut_cmd_id;
 
 	/* ext_data: depend on each command */
-	int  ext_data;
+	int ext_data;
 
-	/* android version*/
-	int  android_version;
-	int  hw_product_type;
+	/* android version */
+	int android_version;
+	int hw_product_type;
 
 	char *at_cmd;
 	char *at_rsp_fmt;
@@ -17,16 +17,16 @@ struct eut_cmd_t {
 };
 
 struct wifi_rate_t {
-	int  index;
+	int index;
 	char *type_name;
 };
 
 enum {
-HW_PRODUCT_UNKNOWN = 0,
-HW_PRODUCT_MARLIN = 1,
-HW_PRODUCT_MARLIN2 = 2,
-HW_PRODUCT_MARLIN3 = 3,
-HW_PRODUCT_MAX,
+	HW_PRODUCT_UNKNOWN = 0,
+	HW_PRODUCT_MARLIN = 1,
+	HW_PRODUCT_MARLIN2 = 2,
+	HW_PRODUCT_MARLIN3 = 3,
+	HW_PRODUCT_MAX,
 };
 
 #define MAX_SIZE 8

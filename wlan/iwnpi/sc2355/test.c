@@ -23,14 +23,14 @@ static int sprdwl_add_mc_addr(char *mc_addr, int port)
 	struct sockaddr_in from;
 	socklen_t socklen = sizeof(from);
 	struct ip_mreq req;
-	char buf[128] = {0x00};
+	char buf[128] = { 0x00 };
 
 	printf("mc addr : %s, socket_port : %d\n", mc_addr, port);
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (fd < 0) {
 		printf("create socket failed\n");
 		return -1;
-	}else
+	} else
 		printf("create socket success\n");
 
 	memset((void *)&addr, 0, sizeof(addr));
@@ -38,7 +38,7 @@ static int sprdwl_add_mc_addr(char *mc_addr, int port)
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = INADDR_ANY;
 
-	ret = bind(fd, (void*)&addr, sizeof(addr));
+	ret = bind(fd, (void *)&addr, sizeof(addr));
 	if (ret < 0) {
 		printf("bind error\n");
 		close(fd);
@@ -47,10 +47,10 @@ static int sprdwl_add_mc_addr(char *mc_addr, int port)
 		printf("bind success\n");
 
 	req.imr_interface.s_addr = htonl(INADDR_ANY);
-	req.imr_multiaddr.s_addr =  inet_addr(mc_addr);
+	req.imr_multiaddr.s_addr = inet_addr(mc_addr);
 
 	ret = setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &req, sizeof(req));
-	if(ret < 0) {
+	if (ret < 0) {
 		printf("set opt failed.\n");
 		close(fd);
 		return -1;
@@ -58,7 +58,7 @@ static int sprdwl_add_mc_addr(char *mc_addr, int port)
 		printf("set opt success\n");
 	}
 
-	while(1) {
+	while (1) {
 		memset(buf, 0, sizeof(buf));
 
 		ret = recvfrom(fd, buf, sizeof(buf), 0, (struct sockaddr *)&from, &socklen);
@@ -85,13 +85,11 @@ int sprdwl_handle_test(int argc, char **argv)
 		}
 		if (argc == 3) {
 			sprdwl_add_mc_addr(argv[1], atoi(argv[2]));
-		}
-		else {
+		} else {
 			printf("%s test using default paras\n", argv[0]);
 			sprdwl_add_mc_addr(MULTICAST_ADDR, SOCKET_PORT);
 		}
-	}
-	else
+	} else
 		printf("unsupported test : %s\n", argv[0]);
 
 	return 0;
