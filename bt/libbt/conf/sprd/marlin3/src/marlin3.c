@@ -423,8 +423,8 @@ static int marlin3_init(void) {
     ALOGI("%s", __func__);
     memset(&marlin3_pskey, 0, sizeof(marlin3_pskey));
     memset(&marlin3_rf_config, 0, sizeof(marlin3_rf_config));
-    vnd_load_configure("/vendor/etc/bt_configure_pskey.ini", &marlin3_pksey_table[0]);
-    vnd_load_configure("/vendor/etc/bt_configure_rf.ini", &marlin3_rf_table[0]);
+    vnd_load_configure("/odm/etc/bt_configure_pskey.ini", &marlin3_pksey_table[0]);
+    vnd_load_configure("/odm/etc/bt_configure_rf.ini", &marlin3_rf_table[0]);
 
     set_mac_address(marlin3_pskey.device_addr);
 
