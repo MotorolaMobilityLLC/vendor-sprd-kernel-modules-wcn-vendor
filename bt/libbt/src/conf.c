@@ -184,7 +184,7 @@ static void sprd_vnd_reload(void)
               (pskey->feature_set[6] & 0xF7));
         pskey->feature_set[6] &= 0xF7;
     }
-    adapter_module->pskey_dump(NULL);
+    adapter_module->pskey_dump(((void*)1));
 }
 
 /*****************************************************************************
