@@ -128,7 +128,11 @@ static int init(const bt_vendor_callbacks_t* p_cb,
 
     userial_vendor_init();
     upio_init();
-    sprd_vendor_hci_init();
+    char value[92] = {'\0'};
+    property_get(BUILD_TYPE_PROP_KEY, value, "");
+    if (strstr(value,USER_DEBUG_VERSION_STR)) {
+        sprd_vendor_hci_init();
+    }
 
     adapter_module = get_adapter_module();
 
