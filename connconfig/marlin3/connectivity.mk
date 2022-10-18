@@ -8,7 +8,7 @@ CONNECTIVITY_OWN_FILES := \
 WIFI_INI_FILES := \
 	wifi_board_config.ini\
 
-SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/etc
+SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/firmware
 SPRD_WIFI_FIRMWARE_PATH := $(TARGET_COPY_OUT_ODM)/firmware
 
 CONNECTIVITY_FM_FILES := fm_board_config.ini
