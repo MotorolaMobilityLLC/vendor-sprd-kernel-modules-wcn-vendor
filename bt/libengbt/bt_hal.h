@@ -97,6 +97,7 @@ typedef struct {
     int (*get_rf_path)(void);
     int (*set_nosig_send_cw)(uint16_t enable, uint16_t is_le, uint16_t channel);
     int (*set_modulation_send_cw)(uint16_t enable, uint16_t is_le, uint16_t channel);
+    int (*set_sar_send)(uint16_t opcode, uint8_t *buf, uint8_t len);
 } bt_test_kit_t;
 
 const bt_test_kit_t *bt_test_kit_get_interface(void);

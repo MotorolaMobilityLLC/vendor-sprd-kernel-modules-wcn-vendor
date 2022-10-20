@@ -662,6 +662,72 @@ static int action_set_modulation_send_cw(int argc, char **argv)
     return ret;
 }
 
+int engineer_bt_set_sar_send(uint16_t opcode, uint8_t *buf, uint8_t len) {
+    if (opcode == HCI_SET_SAR) {
+        BTD("start call set_sar_send\n");
+        return bt_test_kit->set_sar_send(opcode, buf, len);
+    } else {
+        return -1;
+    }
+}
+
+static int action_set_sar (int argc, char **argv) {
+    int ret = -1,i;
+    int8_t data[3] = { 0 }, *p = data;
+
+    UNUSED(argc);
+    UNUSED(argv);
+
+    if (argc != 4) {
+        BTE("parameter invalid.");
+       return -1;
+    } else {
+        for (i = 0; i < argc - 1; i++)
+            data[i] = atoi(argv[i + 1]);
+    }
+
+    BTD();
+
+    uint8_t type = *p++;
+    uint8_t channel = *p++;
+    int8_t power = *p++;
+
+    int move_count = 0;
+
+    uint8_t command[HCI_SPRD_SET_CHANNEL_POWER_SIZE];
+    uint8_t* command_ptr = command;
+    memset(command, 0, HCI_SPRD_SET_CHANNEL_POWER_SIZE);
+
+    BTD("txpwr_type = %d, channel = %d, value = %d", type, channel, power);
+
+    channel &= 0xff;
+    type &= 0x0f;
+
+    /* fill command */
+    UINT8_TO_STREAM(command_ptr, type);
+    for (move_count = 0; move_count <= CHANNEL_MAX_BIT; move_count++) {
+        if (channel & CHANNEL_BIT_MOVE(move_count)) {
+            INT8_TO_STREAM(command_ptr, power);
+        } else {
+            INT8_TO_STREAM(command_ptr, 0);
+        }
+    }
+
+    BTD("start call engpc_bt_set_sar_send %s ", __func__);
+    ret = engineer_bt_set_sar_send(HCI_SET_SAR, command, HCI_SPRD_SET_CHANNEL_POWER_SIZE);
+
+    if (ret == 0) {
+        BTD("SUCCESS");
+        action_result_transmit(socket_cb, "set sar ok", RES_OK);
+    } else {
+        BTE("FAILED");
+        action_result_transmit(socket_cb, "set sar fail", RES_FAIL);
+        ret = -1;
+    }
+
+    return ret;
+}
+
 btif_eng_t btif_eng[] = {
     {CMD_BT_ON_STR, action_bt_on},
     {CMD_BT_OFF_STR, action_bt_off},
@@ -678,6 +744,7 @@ btif_eng_t btif_eng[] = {
     {CMD_LE_ENHANCED_REVEIVER_TEST_STR, action_le_enhanced_receiver_test},
     {CMD_LE_TEST_END_STR, action_le_test_end},
     {CMD_SET_RF_PATH_STR, action_set_rf_path},
+    {CMD_SET_SAR_STR, action_set_sar},
     {NULL, NULL}
 };
 
