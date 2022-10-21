@@ -55,3 +55,50 @@ on factorytest
     insmod /vendor/lib/modules/sprd_fm.ko
     insmod /vendor/lib/modules/gnss_dbg.ko
     insmod /vendor/lib/modules/gnss_pmnotify_ctl.ko
+
+
+service wifisar0 /vendor/bin/wifisar0.sh
+    user root
+    group system
+    oneshot
+    disabled
+
+service wifisar1 /vendor/bin/wifisar1.sh
+    user root
+    group system
+    oneshot
+    disabled
+
+service wifisar2 /vendor/bin/wifisar2.sh
+    user root
+    group system
+    oneshot
+    disabled
+
+service wifisar3 /vendor/bin/wifisar3.sh
+    user root
+    group system
+    oneshot
+    disabled
+
+service wifisar7 /vendor/bin/wifisar7.sh
+    user root
+    group system
+    oneshot
+    disabled
+
+on property:persist.sys.longcheer.wifisar=0
+    start wifisar0
+
+on property:persist.sys.longcheer.wifisar=1
+    start wifisar1
+
+on property:persist.sys.longcheer.wifisar=2
+    start wifisar2
+
+on property:persist.sys.longcheer.wifisar=3
+    start wifisar3
+
+on property:persist.sys.longcheer.wifisar=6
+    start wifisar7
+
