@@ -436,19 +436,31 @@ int COM_get_chip_id(int fd, int *chipid)
     return ret;
 }
 
-int COM_get_rssi(int fd, int *rssi)
+
+int COM_get_rssi(int fd, int *rssi) //change rssi to soft_rssi. bug:2052683
 {
     int ret = 0;
     int32_t tmp = 0;
-
+    int soft_rssi[10] = {0};
+    int soft_rssi_num = 10;
+    int rssi_temp = 0;
     FMR_ASSERT(rssi);
+    for(int i = 0; i < soft_rssi_num; i++){
+        ret = ioctl(fd, FM_IOCTL_GETRSSI, &tmp);
+        if(ret == 0){
+            soft_rssi[i] = int(tmp);
+        } else {
+            LOGE("%s, failed\n", __func__);
+            return ret;
+        }
+        rssi_temp = soft_rssi[i] + rssi_temp;
 
-    ret = ioctl(fd, FM_IOCTL_GETRSSI, &tmp);
-    *rssi = (int)tmp;
-    if (ret) {
-        LOGE("%s, failed\n", __func__);
     }
-    LOGD("%s, [fd=%d] [rssi=%x] [ret=%d]\n", __func__, fd, *rssi, ret);
+
+    *rssi = rssi_temp / soft_rssi_num;
+
+    LOGD("%s, [fd=%d] [get_cur_rssi=-%d] [ret=%d]\n", __func__, fd, int(*rssi), ret);
+
     return ret;
 }
 
@@ -485,7 +497,7 @@ int COM_get_snr(int fd, int *snr)
         LOGE("%s, failed\n", __func__);
     }
 
-    LOGD("%s, [fd=%d] [snr=%x] [ret=%d]\n", __func__, fd, *snr, ret);
+    LOGD("%s, [fd=%d] [snr=-%d] [ret=%d]\n", __func__, fd, int(*snr), ret);
 
     return ret;
 }
