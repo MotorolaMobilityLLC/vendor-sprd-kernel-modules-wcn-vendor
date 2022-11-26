@@ -90,7 +90,7 @@ service wifisar7 /vendor/bin/wifisar7.sh
 on property:persist.sys.longcheer.wifisar=0
     start wifisar0
 
-on property:persist.sys.longcheer.wifisar=1
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=1
     start wifisar1
 
 on property:persist.sys.longcheer.wifisar=2
@@ -99,6 +99,18 @@ on property:persist.sys.longcheer.wifisar=2
 on property:persist.sys.longcheer.wifisar=3
     start wifisar3
 
-on property:persist.sys.longcheer.wifisar=6
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=1
+    start wifisar7
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=2
+    start wifisar1
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=2
+    start wifisar7
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=3
+    start wifisar1
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=3
     start wifisar7
 
