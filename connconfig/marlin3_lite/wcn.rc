@@ -15,15 +15,6 @@ on boot
     chown system system /sys/class/misc/wcn/devices/atcmd
     
 on property:sys.boot_completed=1 
-    chown system system /sys/class/misc/gnss_common_ctl/gnss_power_enable
-    chown system system /sys/class/misc/gnss_common_ctl/gnss_dump
-    chown system system /sys/class/misc/gnss_common_ctl/gnss_subsys
-    chown system system /dev/gnss_pmnotify_ctl
-    chmod  220 /sys/class/misc/gnss_common_ctl/gnss_power_enable
-    chmod 660 /sys/class/misc/gnss_common_ctl/gnss_dump
-    chmod 660 /sys/class/misc/gnss_common_ctl/gnss_subsys
-    chmod 660  /dev/gnss_pmnotify_ctl
-
     chmod 660 /sys/class/rfkill/rfkill0/state
     chown bluetooth net_bt_admin /sys/class/rfkill/rfkill0/state
     chmod 660 /sys/class/rfkill/rfkill0/type
