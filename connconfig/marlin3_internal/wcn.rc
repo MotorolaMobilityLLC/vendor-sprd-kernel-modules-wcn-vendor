@@ -114,3 +114,10 @@ on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=3
 on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=3
     start wifisar7
 
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=4
+    start wifisar1
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=4
+    start wifisar7
+
+
