@@ -8,7 +8,6 @@ CONNECTIVITY_FIRMWARE_FILES := \
     connectivity_calibration.ab.ini \
     connectivity_configure.ab.ini
 
-SUFFIX_AB_NAME := .ab.ini
 SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/firmware
 SPRD_WIFI_FIRMWARE_PATH := $(TARGET_COPY_OUT_ODM)/firmware
 
@@ -24,17 +23,10 @@ SPRD_GNSS_GL_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/glo_gal_i
 VER_BTWF=vendor/sprd/release/unisoc_bin/marlin2_18a/version.txt
 VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20a/version.txt
 
-SPRD_WCN_ETC_AB_PATH := $(SPRD_WCN_ETC_PATH)/wcn
-
 GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
         $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own):$(SPRD_WCN_ETC_PATH)/$(own), \
         $(error wcn chip ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
-
-GENERATE_WCN_PRODUCT_COPY_AB_FILE += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
-    $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(addsuffix $(SUFFIX_AB_NAME), $(basename $(own)))), \
-    $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(addsuffix $(SUFFIX_AB_NAME), $(basename $(own))):$(SPRD_WCN_ETC_AB_PATH)/$(own), \
-    $(error wcn chip ini $(SPRD_WCN_HW_CONFIG) $(own) miss. please fix it, and don't take a random one)))
 
 #copy wifi ini to vendor/firmware to use request_firmware in driver
 GENERATE_WIFI_INI_COPY_FILES += $(foreach own, $(CONNECTIVITY_FIRMWARE_FILES), \
@@ -56,7 +48,6 @@ endif
 
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
-    $(GENERATE_WCN_PRODUCT_COPY_AB_FILE) \
     $(GENERATE_WIFI_INI_COPY_FILES) \
     $(LOCAL_PATH)/wcn.rc:/$(TARGET_COPY_OUT_ODM)/etc/init/wcn.rc \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:vendor/etc/permissions/android.hardware.bluetooth_le.xml
