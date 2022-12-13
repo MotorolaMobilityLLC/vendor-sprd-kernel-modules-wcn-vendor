@@ -93,6 +93,16 @@ struct chan_t g_chan_list[] = {
 	{101, 149, 155}, {102, 153, 155}, {103, 157, 155}, {104, 161, 155},
 };
 
+bool is_big_endian(void)
+{
+	unsigned short num = 0xaabb;
+	unsigned char *p = (unsigned char*)&num;
+	if (*p == 0xaa)
+		return true;
+
+	return false;
+}
+
 /********************************************************************
 *   name   iwnpi_get_be16
 *   ---------------------------
@@ -3883,16 +3893,42 @@ int wlnpi_cmd_get_efuse(int argc, char **argv, unsigned char *s_buf, int *s_len)
 
 int wlnpi_show_get_efuse(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
 {
+	FILE *fp = NULL;
+
 	if (4 != r_len) {
 		printf("get_efuse err, the rlen is not 4\n");
 		ENG_LOG("ADL leaving %s(), r_len is ERROR, return -1\n", __func__);
 
 		return -1;
 	}
-	printf("ret: efuse:%02x%02x%02x%02x :end\n", r_buf[0], r_buf[1], r_buf[2], r_buf[3]);
-	snprintf(iwnpi_ret_buf, WLNPI_RESULT_BUF_LEN, "ret: efuse:%02x%02x%02x%02x :end\n",
-		 r_buf[0], r_buf[1], r_buf[2], r_buf[3]);
+
+	if (is_big_endian()) {
+		printf("ret: efuse:%02x%02x%02x%02x :end\n",
+		       r_buf[0],r_buf[1], r_buf[2], r_buf[3]);
+		snprintf(iwnpi_ret_buf, WLNPI_RESULT_BUF_LEN,
+			 "ret: efuse:%02x%02x%02x%02x :end\n",
+			 r_buf[0],r_buf[1], r_buf[2], r_buf[3]);
+	} else {
+		printf("ret: efuse:%02x%02x%02x%02x :end\n",
+		       r_buf[3],r_buf[2], r_buf[1], r_buf[0]);
+		snprintf(iwnpi_ret_buf, WLNPI_RESULT_BUF_LEN,
+			 "ret: efuse:%02x%02x%02x%02x :end\n",
+			 r_buf[3],r_buf[2], r_buf[1], r_buf[0]);
+	}
+
 	printf("iwnpi_ret_buf is %s\n", iwnpi_ret_buf);
+
+	if(NULL != (fp = fopen(IWNPI_EXEC_TMP_FILE, "w+")))
+	{
+		int write_cnt = 0;
+
+		write_cnt = fputs(iwnpi_ret_buf, fp);
+		ENG_LOG("ADL %s(), write_cnt = %d ret_buf %s", __func__, write_cnt, iwnpi_ret_buf);
+
+		fsync(fileno(fp));
+		fclose(fp);
+	}
+
 	return 0;
 }
 
