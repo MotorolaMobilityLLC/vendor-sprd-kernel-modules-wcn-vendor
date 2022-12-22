@@ -99,8 +99,8 @@ bool is_big_endian(void)
 	unsigned char *p = (unsigned char*)&num;
 	if (*p == 0xaa)
 		return true;
-
-	return false;
+	else
+		return false;
 }
 
 /********************************************************************
