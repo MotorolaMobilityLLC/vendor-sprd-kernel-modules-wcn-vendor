@@ -87,6 +87,12 @@ service wifisar7 /vendor/bin/wifisar7.sh
     oneshot
     disabled
 
+service wifisar6 /vendor/bin/wifisar6.sh
+    user root
+    group system
+    oneshot
+    disabled
+
 on property:persist.sys.longcheer.wifisar=0
     start wifisar0
 
@@ -122,4 +128,7 @@ on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=4
 
 on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=5
     start wifisar7
+
+on property:persist.sys.longcheer.wifisar=3 && property:ro.boot.sku=6
+    start wifisar6
 
