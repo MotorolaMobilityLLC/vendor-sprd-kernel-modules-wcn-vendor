@@ -434,7 +434,7 @@ static int get_file_name(char *name_rf_t, char *name_pskey_t) {
     strcat(filename_rf, "/bt_configure_rf.ini");
     ret = property_get(VENDOR_LIB_CONF_PROPERTY_PATH, filename_pskey, VENDOR_LIB_CONF_PATH);
     if (ret <0) {
-        ALOGE("get rf ini path from %s error", VENDOR_LIB_CONF_PROPERTY_PATH);
+        ALOGE("get pskey ini path from %s error", VENDOR_LIB_CONF_PROPERTY_PATH);
     }
     strcat(filename_pskey, "/bt_configure_pskey.ini");
 

@@ -264,6 +264,13 @@ static int bt_dut_mode_send(uint16_t opcode, uint8_t* buf, uint8_t len)
     return 0;
 }
 
+static int bt_set_sar_send(uint16_t opcode, uint8_t* buf, uint8_t len)
+{
+    if (lib_interface)
+        lib_interface->hci_cmd_send(opcode, len, buf, NULL);
+    return 0;
+}
+
 static int bt_le_test_mode(uint16_t opcode, uint8_t* buf, uint8_t len)
 {
     if (lib_interface)
@@ -558,6 +565,7 @@ static bt_test_kit_t bt_test_kit = {
     .get_rf_path = bt_rf_get_path,
     .set_nosig_send_cw = bt_set_nosig_send_cw,
     .set_modulation_send_cw = bt_set_modulation_send_cw,
+    .set_sar_send = bt_set_sar_send,
 };
 
 const bt_test_kit_t *bt_test_kit_get_interface(void) {

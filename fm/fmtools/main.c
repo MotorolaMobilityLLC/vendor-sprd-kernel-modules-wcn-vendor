@@ -34,6 +34,7 @@
 #define FM_IOCTL_STOP_SCAN     _IO(FM_IOC_MAGIC,   9)
 
 #define FM_IOCTL_RW_REG        _IOWR(FM_IOC_MAGIC, 0xC, struct fm_reg_ctl_parm*)
+#define FM_IOCTL_GET_SNR       _IOWR(FM_IOC_MAGIC, 0x4D, int32_t*)
 
 
 #define FM_DEV_NAME "/dev/fm"
@@ -108,6 +109,7 @@ static void usage(void){
     );
 }
 
+
 static void hrw_usage(void){
     printf(
     "Usage: fm_tools [OPTION...] [filter]\n"
@@ -135,6 +137,8 @@ static void get_target(char *target_t)
     }
 }
 
+
+
 int main(int argc, char* argv[])
 {
     int fd = -1, ret = 0;
@@ -149,7 +153,7 @@ int main(int argc, char* argv[])
 
 	if (argc == 1)
 		usage();
-	while ((opt=getopt_long(argc, argv, "r:w:ocpdstmug", main_options, NULL)) != -1) {
+	while ((opt=getopt_long(argc, argv, "r:w:ocpdst::mugn", main_options, NULL)) != -1) {//nargc, nargv, options, long_options, index
 		switch(opt) {
 			case 'r':
 				fm_action = ACTION_READ;
@@ -178,7 +182,8 @@ int main(int argc, char* argv[])
 				struct fm_tune_parm parm_powerup;
 
 				parm_powerup.band = 1;    /* 1 for default bandrand US  87.5 - 108*/
-				parm_powerup.freq = 1000;
+
+				parm_powerup.freq = 9750;
 				parm_powerup.hilo = FM_AUTO_HILO_OFF;
 				parm_powerup.space = FM_SEEK_SPACE;
 
@@ -248,13 +253,14 @@ int main(int argc, char* argv[])
 				struct fm_tune_parm parm_tune;
 
 				parm_tune.band = 1;    /* 1 for default bandrand US  87.5 - 108*/
-				parm_tune.freq = rx_parm.freq;
+				parm_tune.freq = rx_parm.freq;//add juge tune pram
+				parm_tune.freq = strtoul(argv[optind], 0, 0);
 				parm_tune.hilo = FM_AUTO_HILO_OFF;
 
 				if (fd >= 0 && power_up) {
 					ret = ioctl(fd, FM_IOCTL_TUNE, &parm_tune);
 					if (ret == 0) {
-						printf("tune successful, ret: %d\n", ret);
+						printf("tune successful, ret: %d,freq is %d\n", ret,parm_tune.freq);
 					} else {
 						printf("tune failed, ret: %d\n", ret);
 					}
@@ -307,23 +313,64 @@ int main(int argc, char* argv[])
 				break;
 			}
 
-			case 'g' : {
+			case 'g' :  {
 				printf("------------------- Test Fm get rssi ---------------------\n");
-				int rssi;
+				int temp = 0;
+				int soft_rssi[10] = {0};
+				int soft_rssi_num = 10;
+				int rssi = 0;
+				int flag = 1;
 
 				if (fd >= 0 && power_up) {
-					ret = ioctl(fd, FM_IOCTL_GETRSSI, &rssi);
-					if (ret == 0) {
-						printf("get rssi successful, ret: %d, rssi: %d \n", ret,rssi);
+
+
+					for(int i = 0; i < soft_rssi_num; i++){
+					ret = ioctl(fd, FM_IOCTL_GETRSSI, &temp);
+					if (ret == 0){
+						soft_rssi[i] = temp;
+
 					} else {
 						printf("get rssi failed, ret: %d\n", ret);
+						flag = 0;
+						break;
 					}
+					rssi = soft_rssi[i] + rssi ;
+
+					}
+					if(flag != 0){
+					printf("get rssi successful!,rssi: -%d\n", rssi/soft_rssi_num);
+					}
+
+
 				} else if (fd < 0) {
 					printf("Fm Device havn't opnned.\n");
 				} else {
 					printf("Fm Device is power down.\n");
 				}
 				printf("------------------- Test Fm get rssi End -----------------\n\n");
+				break;
+			}
+			case 'n' : {
+				printf("------------------- Test Fm get snr ---------------------\n");
+
+
+				int snr = 0;
+				if (fd >= 0 && power_up) {
+
+
+
+				    ret = ioctl(fd, FM_IOCTL_GET_SNR, &snr);
+					if (ret == 0) {
+						printf("get snr successful!,snr: -%d\n", snr);
+					} else {
+						printf("get snr failed, ret: %d\n", ret);
+					}
+				} else if (fd < 0) {
+					printf("Fm Device havn't opnned.\n");
+				} else {
+					printf("Fm Device is power down.\n");
+				}
+				printf("------------------- Test Fm get snr End -----------------\n\n");
 				break;
 			}
 

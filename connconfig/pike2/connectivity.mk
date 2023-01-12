@@ -9,7 +9,7 @@ CONNECTIVITY_FIRMWARE_FILES := \
     connectivity_configure.ab.ini
 
 SUFFIX_AB_NAME := .ab.ini
-SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/etc
+SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/firmware
 SPRD_WIFI_FIRMWARE_PATH := $(TARGET_COPY_OUT_ODM)/firmware
 
 SPRD_WCN_FIRMWARE_FILES := \
@@ -18,8 +18,8 @@ SPRD_WCN_FIRMWARE_FILES := \
     gpsgl.bin
 
 SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/marlin2_18a/pike2_cm4_v2_builddir/PM_pike2_cm4_v2.bin
-SPRD_GNSS_BD_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/greeneye2_cm4_bds_builddir/gnssbdmodem.bin
-SPRD_GNSS_GL_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/greeneye2_cm4_glonass_builddir/gnssmodem.bin
+SPRD_GNSS_BD_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/bds_gal_integration_builddir/gnssbdmodem_integration.bin
+SPRD_GNSS_GL_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20a/glo_gal_integration_builddir/gnssmodem_integration.bin
 
 VER_BTWF=vendor/sprd/release/unisoc_bin/marlin2_18a/version.txt
 VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20a/version.txt

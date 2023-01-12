@@ -31,6 +31,11 @@
 #include "bt_vendor_hcidefs.h"
 #include "bt_vendor_types.h"
 
+#include <string.h>
+#include <cutils/properties.h>
+#define BUILD_TYPE_PROP_KEY "ro.build.type"
+#define USER_DEBUG_VERSION_STR "userdebug"
+
 #define HCI_EVT_CMD_CMPL_LEN    1
 #define HCI_EVT_CMD_CMPL_VSC    3
 #define HCI_CMD_PREAMBLE_SIZE   3

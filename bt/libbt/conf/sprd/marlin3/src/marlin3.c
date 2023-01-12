@@ -415,16 +415,40 @@ static void marlin3_epilog_process() {
     hw_core_enable(0);
 }
 
+static int get_file_name(char *name_rf_t, char *name_pskey_t) {
+    int ret;
+    char filename_rf[128] = {0}, filename_pskey[128] = {0};
+    /* property check */
+    ret = property_get(VENDOR_LIB_CONF_PROPERTY_PATH, filename_rf, VENDOR_LIB_CONF_PATH);
+    if (ret <0) {
+        ALOGE("get rf ini path from %s error", VENDOR_LIB_CONF_PROPERTY_PATH);
+    }
+    strcat(filename_rf, "/bt_configure_rf.ini");
+    ret = property_get(VENDOR_LIB_CONF_PROPERTY_PATH, filename_pskey, VENDOR_LIB_CONF_PATH);
+    if (ret <0) {
+        ALOGE("get pskey ini path from %s error", VENDOR_LIB_CONF_PROPERTY_PATH);
+    }
+    strcat(filename_pskey, "/bt_configure_pskey.ini");
+
+    ALOGI("%s, set ini file: %s, %s", __func__, filename_rf, filename_pskey);
+    memcpy(name_rf_t, filename_rf, strlen(filename_rf));
+    memcpy(name_pskey_t, filename_pskey, strlen(filename_pskey));
+    return 0;
+}
+
 
 static int marlin3_init(void) {
     int ret;
+    char filename_rf[128] = {0};
+    char filename_pskey[128] = {0};
     char ssp_property[128] = {0};
 
     ALOGI("%s", __func__);
     memset(&marlin3_pskey, 0, sizeof(marlin3_pskey));
     memset(&marlin3_rf_config, 0, sizeof(marlin3_rf_config));
-    vnd_load_configure("/odm/etc/bt_configure_pskey.ini", &marlin3_pksey_table[0]);
-    vnd_load_configure("/odm/etc/bt_configure_rf.ini", &marlin3_rf_table[0]);
+    get_file_name(filename_rf, filename_pskey);
+    vnd_load_configure(filename_pskey, &marlin3_pksey_table[0]);
+    vnd_load_configure(filename_rf, &marlin3_rf_table[0]);
 
     set_mac_address(marlin3_pskey.device_addr);
 

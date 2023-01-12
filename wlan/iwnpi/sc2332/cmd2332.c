@@ -2693,6 +2693,49 @@ int wlnpi_cmd_get_sta_wfa_para(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, in
 	return 0;
 }
 
+int wlnpi_cmd_set_cca_param(int argc, char **argv, unsigned char *s_buf,
+			    int *s_len)
+{
+	int flag, value;
+	char *err;
+	char *p = s_buf;
+
+	if (2 != argc || p == NULL) {
+		printf("%s invalid argc : %d\n", __func__, argc);
+		return -1;
+	}
+
+	ENG_LOG("ADL entry %s(), argc = %d\n", __func__, argc);
+
+	/* flag: 0, turn off; flag: 1, absolute; flag: 2, relative */
+	flag = strtol(argv[0], &err, 10);
+	if (err == argv[0] || (0 != flag && 1 != flag && 2 != flag))
+	{
+		ENG_LOG("ADL %s(), input flag ERROR, return -1\n", __func__);
+		printf("invalid input flag, only 0, 1 or 2\n");
+		return -1;
+	}
+	ENG_LOG("ADL %s(), flag: %d\n", __func__, flag);
+
+	*p++ = flag;
+
+	/* value: -127 ~ +127 */
+	value = strtol(argv[1], &err, 10);
+	if (err == argv[1] || -127 > value || 127 < value)
+	{
+		ENG_LOG("ADL %s(), input value ERROR, return -1\n", __func__);
+		printf("invalid input value, only -127 ~ +127\n");
+		return -1;
+	}
+	ENG_LOG("ADL %s(), value: %d\n", __func__, value);
+
+	*p = value;
+	*s_len = 2;
+
+	ENG_LOG("ADL leaving %s()", __func__);
+	return 0;
+}
+
 int wlnpi_cmd_set_rand_mac_flag(int argc, char **argv, unsigned char *s_buf, int *s_len)
 {
 	char *err;
@@ -3212,6 +3255,14 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .help = "get_sta_wfa",
 	 .parse = wlnpi_cmd_no_argv,
 	 .show = wlnpi_cmd_get_sta_wfa_para,
+	 },
+	{
+	 /*----CMD ID:64------------*/
+	 .id   = WLNPI_CMD_SET_CCA_PARAM,
+	 .name  = "set_cca_param",
+	 .help  = "set_cca_param flag value",
+	 .parse = wlnpi_cmd_set_cca_param,
+	 .show  = wlnpi_show_only_status,
 	 },
 	{
 	 /*----CMD ID:199------------*/

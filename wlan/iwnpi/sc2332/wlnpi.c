@@ -225,6 +225,12 @@ int main(int argc, char **argv)
 	argc--;
 	argv++;
 
+	if(argc < 1 || NULL == argv[0])
+	{
+		printf("Type \"iwnpi wlan0\" for more information.\n");
+		return -1;
+	}
+
 	if (0 == strcmp(argv[0], TEST_CMD)) {
 		/* skip "test" */
 		argc--;

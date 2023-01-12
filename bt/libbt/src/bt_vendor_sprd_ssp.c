@@ -176,11 +176,11 @@ static uint8_t sprd_vnd_set_own_pp192_key(void)
 
     lib_interface->algo_p192_generate_private_key(p192_private_key);
     //char2bytes(PRIVATEK_P192_KEY, p192_private_key, sizeof(p192_private_key));
-    lib_interface->dump_hex("p192_private_key", p192_private_key, sizeof(p192_private_key));
+    //lib_interface->dump_hex("p192_private_key", p192_private_key, sizeof(p192_private_key));
 
     lib_interface->algo_p192_generate_public_key(p192_private_key, p192_public_key_x, p192_public_key_y);
-    lib_interface->dump_hex("p192_public_key_x", p192_public_key_x, sizeof(p192_public_key_x));
-    lib_interface->dump_hex("p192_public_key_y", p192_public_key_y, sizeof(p192_public_key_y));
+    //lib_interface->dump_hex("p192_public_key_x", p192_public_key_x, sizeof(p192_public_key_x));
+    //lib_interface->dump_hex("p192_public_key_y", p192_public_key_y, sizeof(p192_public_key_y));
 
     memcpy(p, p192_public_key_x, sizeof(p192_public_key_x));
     p += sizeof(p192_public_key_x);
@@ -205,11 +205,11 @@ static uint8_t sprd_vnd_set_own_pp256_key(void)
 
     lib_interface->algo_p256_generate_private_key(p256_private_key);
     //char2bytes(PRIVATEK_P256_KEY, p256_private_key, sizeof(p256_private_key));
-    lib_interface->dump_hex("p256_private_key", p256_private_key, sizeof(p256_private_key));
+    //lib_interface->dump_hex("p256_private_key", p256_private_key, sizeof(p256_private_key));
 
     lib_interface->algo_p256_generate_public_key(p256_private_key, p256_public_key_x, p256_public_key_y);
-    lib_interface->dump_hex("p256_public_key_x", p256_public_key_x, sizeof(p256_public_key_x));
-    lib_interface->dump_hex("p256_public_key_y", p256_public_key_y, sizeof(p256_public_key_y));
+    //lib_interface->dump_hex("p256_public_key_x", p256_public_key_x, sizeof(p256_public_key_x));
+    //lib_interface->dump_hex("p256_public_key_y", p256_public_key_y, sizeof(p256_public_key_y));
 
     memcpy(p, p256_public_key_x, sizeof(p256_public_key_x));
     p += sizeof(p256_public_key_x);
@@ -233,10 +233,10 @@ static uint8_t sprd_vnd_set_p192_dhkey(uint8_t *address, uint8_t *peer_pk_x, uin
     BDBG("%s", __FUNCTION__);
     p = msg_req;
 
-    lib_interface->dump_hex("peer_pk_x", peer_pk_x, 24);
-    lib_interface->dump_hex("peer_pk_y", peer_pk_y, 24);
+    //lib_interface->dump_hex("peer_pk_x", peer_pk_x, 24);
+    //lib_interface->dump_hex("peer_pk_y", peer_pk_y, 24);
     lib_interface->algo_p192_generate_dhkey(p192_private_key, peer_pk_x, peer_pk_y, dhkey);
-    lib_interface->dump_hex("dhkey", dhkey, sizeof(dhkey));
+    //lib_interface->dump_hex("dhkey", dhkey, sizeof(dhkey));
 
     memcpy(p, address, 6);
     p += 6;
@@ -255,10 +255,10 @@ static uint8_t sprd_vnd_set_p256_dhkey(uint8_t *address, uint8_t *peer_pk_x, uin
     BDBG("%s", __FUNCTION__);
     p = msg_req;
 
-    lib_interface->dump_hex("peer_pk_x", peer_pk_x, 32);
-    lib_interface->dump_hex("peer_pk_y", peer_pk_y, 32);
+    //lib_interface->dump_hex("peer_pk_x", peer_pk_x, 32);
+    //lib_interface->dump_hex("peer_pk_y", peer_pk_y, 32);
     lib_interface->algo_p256_generate_dhkey(p256_private_key, peer_pk_x, peer_pk_y, dhkey);
-    lib_interface->dump_hex("dhkey", dhkey, sizeof(dhkey));
+    //lib_interface->dump_hex("dhkey", dhkey, sizeof(dhkey));
 
     memcpy(p, address, 6);
     p += 6;
