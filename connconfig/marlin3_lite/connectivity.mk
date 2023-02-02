@@ -62,7 +62,7 @@ else
 endif
 
 VER_BTWF=vendor/sprd/release/unisoc_bin/$(BOARD_HAVE_SPRD_WCN_BRANCH)/version.txt
-VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3lite/version.txt
+VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20b_new/$(BOARD_HAVE_SPRD_GNSS_BRANCH)/version.txt
 
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
