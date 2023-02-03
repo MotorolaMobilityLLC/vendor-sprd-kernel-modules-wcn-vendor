@@ -812,7 +812,7 @@ Return<void> TunerSession::getParameters(const hidl_vec<hidl_string>&  keys,
             hidl_vec<VendorKeyValue> vec = {{"getaudioparm",output}};
             _hidl_cb(vec);
             return Void();
-       }else if((length >= 10) && memcmp(reg,keys[i].c_str(),10) == 0){
+       }else if((length >= 10 && length <= 30) && memcmp(reg,keys[i].c_str(),10) == 0){
             char regparm[30];
             char temp_regparm[20];
             char temp_err[4],temp_addr[15];
