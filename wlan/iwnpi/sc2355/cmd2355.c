@@ -2996,6 +2996,25 @@ int wlnpi_cmd_set_dpd_enable(int argc, char **argv, unsigned char *s_buf, int *s
 	return 0;
 }
 
+/*-----CMD ID:99-----------*/
+int wlnpi_show_get_txs_temperature(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
+{
+	short txs_temp = 0;
+	ENG_LOG("ADL entry %s(), r_len = %d", __func__, r_len);
+
+	if(2 != r_len)
+	{
+		printf("get_txs_temperature err\n");
+		ENG_LOG("ADL leaving %s(), r_len is ERROR, return -1", __func__);
+		return -1;
+	}
+	txs_temp = *((short *)r_buf);
+
+	printf("ret: temperature: %d :end\n", txs_temp);
+	ENG_LOG("ADL leaving %s(), txs_temperature = %d, return 0", __func__, txs_temp);
+	return 0;
+}
+
 int wlnpi_cmd_set_cbank_reg(int argc, char **argv, unsigned char *s_buf, int *s_len)
 {
 	char *err;
@@ -5245,7 +5264,7 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .name = "get_txs_temp",
 	 .help = "get_txs_temp",
 	 .parse = wlnpi_cmd_no_argv,
-	 .show = wlnpi_show_only_status,
+	 .show = wlnpi_show_get_txs_temperature,
 	 },
 	{
 	/*-----CMD ID:100-----------*/
