@@ -71,6 +71,35 @@ extern struct cmd __stop___cmd;
 #define STR_RET_END (":end")
 #define STR_RET_RET ("ret: ")
 
+/********************************************************************
+*   name   strcat_safe
+*   ---------------------------
+*   descrition: wrap strcat func to solve hacker attacks (bug2153526)
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   dest        IN          char *              dest string
+*   src         IN          const char *src     src string
+*   dest_size   IN          int                 dest space size
+*   ----------------------------------------------------
+*   return
+*   none
+*   ------------------
+*   other:
+*
+********************************************************************/
+void strcat_safe(char *dest, const char *src, int dest_size)
+{
+	int dest_len = strlen(dest);
+	int src_len = strlen(src);
+
+	if (dest_len + src_len + 1 > dest_size) {
+		ALOGD("ADL %s(), strcat err: src len is too long!\n", __func__);
+		return;
+	}
+
+	strcat(dest, src);
+}
+
 static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 {
 	const char *start, *lend, *end;
@@ -388,9 +417,9 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 		char *module_cmd = cmd_str;
 
 		while (NULL != argv[i]) {
-			strcat(cmd_str, argv[i]);
-			strcat(cmd_str, " ");	/* add a space */
-			i++;
+			strcat_safe(cmd_str, argv[i], WIFI_EUT_COMMAND_MAX_LEN);
+			if(argv[++i])
+				strcat_safe(cmd_str, " ", WIFI_EUT_COMMAND_MAX_LEN); /* add a space */
 		}
 
 		if (strstr(cmd_str, INSMOD_SPRWL_KO) > 0) {
