@@ -68,4 +68,5 @@ PRODUCT_PACKAGES += \
     libbt-ssp_bt \
     libfm-sprd_eut \
     autotestfm \
-    fm_tools
+    fm_tools \
+    btaudio_offload_if

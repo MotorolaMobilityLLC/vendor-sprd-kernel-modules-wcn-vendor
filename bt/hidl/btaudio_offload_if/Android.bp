@@ -1,0 +1,60 @@
+cc_library_shared {
+    name: "btaudio_offload_if",
+    srcs: [
+        "src/btaudio_offload_if.cc",
+    ],
+    local_include_dirs: ["include"],
+    header_libs: ["libhardware_headers"],
+    shared_libs: [
+        "android.hardware.bluetooth.audio@2.0",
+        "android.hardware.bluetooth.audio@2.1",
+        "libbase",
+        "libcutils",
+        "libbinder_ndk",
+        "libfmq",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "libdl",
+        "android.hardware.audio.common@5.0",
+        "libbluetooth_audio_session_aidl",
+        "android.hardware.bluetooth.audio-V2-ndk",
+        //"libbluetooth_audio_session",
+        //"libbluetooth_audio_session_qti_2_1",
+        //"libbluetooth_audio_session_qti",
+    ],
+    proprietary: true,
+    //check_elf_files: false,
+    //compile_multilib: "both",
+}
+
+
+/*
+cc_prebuilt_library_shared {
+    name: "btaudio_offload_if",
+    target:{
+        android_arm: {
+            srcs: ["lib/btaudio_offload_if.so"],
+        },
+        android_arm64: {
+            srcs: ["lib64/btaudio_offload_if.so"],
+        },
+    },
+    shared_libs: [
+        "libbase",
+        "libcutils",
+        "libfmq",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "libdl",
+        "android.hardware.bluetooth.audio@2.0",
+        "libbluetooth_audio_session",
+        "libbluetooth_audio_session_qti_2_1",
+        "libbluetooth_audio_session_qti",
+    ],
+    proprietary: true,
+    check_elf_files: false,
+    compile_multilib: "both",
+}
+*/
