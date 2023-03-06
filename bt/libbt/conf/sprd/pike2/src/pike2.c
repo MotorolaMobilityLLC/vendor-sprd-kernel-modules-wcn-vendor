@@ -28,8 +28,8 @@
 #include "conf.h"
 #include "upio.h"
 
-#define SYSFS_CHIPID_NODE "/sys/devices/platform/wcn_bt/chipid"
-#define CONFIGURATION_AA_FILE "wcn/connectivity_configure.ini"
+#define SYSFS_CHIPID_NODE "/sys/devices/platform/sipc-virt/sipc-virt:core@3/sipc-virt:core@3:sprd-mtty/chipid"
+#define CONFIGURATION_AA_FILE "connectivity_configure.ab.ini"
 
 // pskey file structure default value
 static pskey_config_t pike2_pskey;
@@ -446,12 +446,12 @@ static int get_file_name(char *name_t) {
 
     ALOGD("%s ret: %d, id: %s[%d]", __func__, ret, id_str, id);
 
-	if (id != WCN_PIKE2_CHIP_AA) {
-		strcat(file_name, CONFIGURATION_AA_FILE);
-		ALOGI("%s, set ini file: %s", __func__, file_name);
-		memcpy(name_t, file_name, strlen(file_name));
-		return 0;
-	}
+    if (id != WCN_PIKE2_CHIP_AA) {
+        strcat(file_name, CONFIGURATION_AA_FILE);
+        ALOGI("%s, set ini file: %s", __func__, file_name);
+        memcpy(name_t, file_name, strlen(file_name));
+        return 0;
+    }
 
 normal:;
 

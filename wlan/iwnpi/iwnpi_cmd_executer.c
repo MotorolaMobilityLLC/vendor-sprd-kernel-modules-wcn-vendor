@@ -44,6 +44,7 @@ extern struct cmd __stop___cmd;
 #define CMD_SET_ENG_MODE "set_eng_mode"
 #define CMD_RX_GET_OK "get_rx_ok"
 #define CMD_GET_REG "get_reg"
+#define CMD_GET_EFUSE	"get_efuse"
 #define CMD_GET_RECONNECT "get_reconnect"
 #define CMD_GET_RSSI	"get_rssi"
 #define INSMOD_SPRWL_KO     "insmod"
@@ -445,12 +446,14 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 			ALOGD("ADL %s(), call handle_reply_rx_ok_data()", __func__);
 			handle_reply_rx_ok_data(result_buf);
 		}
-	} else if (strstr(command, CMD_GET_REG) > 0) {
+	} else if ((strstr(command, CMD_GET_REG) > 0)
+		   || (strstr(command, CMD_GET_EFUSE) > 0)) {
 		if (result_buf) {
 			ALOGD("ADL %s(), call handle_reply_get_wifi_data()", __func__);
 			handle_reply_get_wifi_data(result_buf);
 		}
-	} else if ((strstr(command, CMD_GET_RECONNECT) > 0) || (strstr(command, CMD_GET_RSSI) > 0)) {
+	} else if ((strstr(command, CMD_GET_RECONNECT) > 0)
+		   || (strstr(command, CMD_GET_RSSI) > 0)) {
 		if (result_buf) {
 			ALOGD("ADL %s(), call handle_reply_get_wifi_data()", __func__);
 			handle_reply_get_wifi_data(result_buf);

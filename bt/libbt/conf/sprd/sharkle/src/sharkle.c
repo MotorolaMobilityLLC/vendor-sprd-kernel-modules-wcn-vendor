@@ -29,8 +29,8 @@
 #include "conf.h"
 #include "upio.h"
 
-#define SYSFS_CHIPID_NODE "/sys/devices/platform/wcn_bt/chipid"
-#define CONFIGURATION_AC_FILE "wcn/connectivity_configure.ini"
+#define SYSFS_CHIPID_NODE "/sys/devices/platform/sipc-virt/sipc-virt:core@3/sipc-virt:core@3:sprd-mtty/chipid"
+#define CONFIGURATION_AC_FILE "connectivity_configure.ad.ini"
 
 // pskey file structure default value
 static pskey_config_t sharkle_pskey;
