@@ -400,7 +400,7 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 #if 0
 	/* debug, print all paramters */
 	{
-		char i = 0;
+		unsigned int i = 0;
 		while (NULL != argv[i]) {
 			ALOGD("ADL %s(), line = %d, argv[%d] = %s", __func__, __LINE__, i, argv[i]);
 			i++;
@@ -412,7 +412,7 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 	}
 
 	{
-		char i = 0;
+		unsigned int i = 0;
 		char cmd_str[WIFI_EUT_COMMAND_MAX_LEN + 1] = { "iwnpi " };
 		char *module_cmd = cmd_str;
 
