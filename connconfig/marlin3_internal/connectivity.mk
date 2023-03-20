@@ -54,7 +54,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.bt.bdaddr_path="/data/vendor/bluetooth/btmac.txt" \
     persist.bluetooth.a2dp_offload.cap = "sbc" \
     persist.bluetooth.a2dp_offload.switch = "false" \
-    persist.bluetooth.a2dp_offload.aidl_flag="aidl" \
     ro.bluetooth.a2dp_offload.supported="true"
 
 
