@@ -207,6 +207,7 @@ enum WLNPI_CMD_LIST {
 	WLNPI_CMD_SET_RAND_MAC_FLAG = 199,
 	/* no need send command to firmware when set country */
 	WLNPI_CMD_SET_COUNTRY = 200,
+	WLNPI_CMD_SET_5GPW_BACKOFF_FLAG = 201,
 	/* Max */
 	WLNPI_CMD_MAX,
 };

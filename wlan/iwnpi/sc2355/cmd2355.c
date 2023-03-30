@@ -4610,7 +4610,51 @@ int wlnpi_cmd_set_country(int argc, char **argv, unsigned char *s_buf, int *s_le
 
 	return 0;
 }
+int wlnpi_cmd_set_5gpw_backoff(int argc, char **argv, unsigned char *s_buf, int *s_len)
+{
+	char *err;
+	unsigned char val;
 
+	if (5 != argc) {
+		printf("%s invalid argc : %d\n", __func__, argc);
+		return -1;
+	}
+
+	val = (unsigned char)strtol(argv[0], &err, 10);
+	if (err == argv[0]) {
+                return -1;
+        }
+	*((unsigned char *)s_buf) = val;
+
+	val = (unsigned char)strtol(argv[1], &err, 10);
+        if (err == argv[1]) {
+                return -1;
+        }
+	*((unsigned char *)s_buf + 1) = val;
+
+	val = (unsigned char)strtol(argv[2], &err, 10);
+        if (err == argv[2]) {
+                return -1;
+        }
+        *((unsigned char *)s_buf + 2) = val;
+
+	val = (unsigned char)strtol(argv[3], &err, 10);
+        if (err == argv[3]) {
+                return -1;
+        }
+	*((unsigned char *)s_buf + 3) = val;
+
+	val = (unsigned char)strtol(argv[4], &err, 10);
+        if (err == argv[4]) {
+                return -1;
+        }
+	*((unsigned char *)s_buf + 4) = val;
+
+	*s_len = 5;
+
+	ENG_LOG("ADL leaving %s()", __func__);
+        return 0;
+}
 struct wlnpi_cmd_t g_cmd_table[] = {
 	{
 	/*-----CMD ID:0-----------*/
@@ -5643,6 +5687,14 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .parse = wlnpi_cmd_set_country,
 	 .show = wlnpi_show_only_status,
 	 },
+	{
+	/*----CMD ID:201------------*/
+	 .id = WLNPI_CMD_SET_5GPW_BACKOFF_FLAG,
+	 .name = "set_5gpw_backoff",
+	 .help = "set_5gpw_backoff[band1 band2 band3 band4]",
+	 .parse = wlnpi_cmd_set_5gpw_backoff,
+	 .show = wlnpi_show_only_status,
+	}
 };
 
 struct wlnpi_cmd_t *match_cmd_table(char *name)
