@@ -86,7 +86,9 @@ bool BluetoothAddress::generate_local_address(uint8_t* local_addr, char* file_na
   fd = open(file_name, O_CREAT|O_RDWR|O_TRUNC, 0664);
   if (fd < 0) {
     ALOGE("%s open %s error: %s", __func__, file_name, strerror(errno));
-    return false;
+    ALOGE("%s write btmac address next time", __func__);
+    memcpy(local_addr, bdaddr, sizeof(bdaddr));
+    return true;
   }
 
   sprintf(bdstring, "%02x:%02x:%02x:%02x:%02x:%02x\n", bdaddr[0], bdaddr[1], bdaddr[2],
