@@ -1,5 +1,6 @@
 cc_library_shared {
-    name: "libbluetooth_audio_session",
+    name: "libbluetooth_audio_session_unisoc",
+    stem: "libbluetooth_audio_session",
     defaults: ["hidl_defaults"],
     vendor: true,
     srcs: [
@@ -20,12 +21,13 @@ cc_library_shared {
         "libhidlbase",
         "liblog",
         "libutils",
-        "libbluetooth_audio_session_aidl",
+        "libbluetooth_audio_session_aidl_unisoc",
     ],
 }
 
 cc_library_shared {
-    name: "libbluetooth_audio_session_aidl",
+    name: "libbluetooth_audio_session_aidl_unisoc",
+    stem: "libbluetooth_audio_session_aidl",
     vendor: true,
     srcs: [
         "aidl_session/BluetoothAudioCodecs.cpp",

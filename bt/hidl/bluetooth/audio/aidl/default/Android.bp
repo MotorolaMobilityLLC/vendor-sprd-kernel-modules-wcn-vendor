@@ -1,5 +1,6 @@
 cc_library_shared {
-    name: "android.hardware.bluetooth.audio-impl",
+    name: "vendor.sprd.hardware.bluetooth.audio-impl",
+    stem: "android.hardware.bluetooth.audio-impl",
     vendor: true,
     vintf_fragments: ["bluetooth_audio.xml"],
     srcs: [
@@ -21,6 +22,6 @@ cc_library_shared {
         "libfmq",
         "liblog",
         "android.hardware.bluetooth.audio-V2-ndk",
-        "libbluetooth_audio_session_aidl",
+        "libbluetooth_audio_session_aidl_unisoc",
     ],
 }
