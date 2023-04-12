@@ -10,7 +10,6 @@ WIFI_INI_FILES := \
     wifi_board_config_aa.ini\
 
 BOARD_HAVE_SPRD_WCN_BRANCH ?= marlin3_20a
-BOARD_HAVE_SPRD_GNSS_BRANCH ?= marlin3lite
 
 SPRD_WCN_ETC_PATH ?= $(TARGET_COPY_OUT_ODM)/firmware
 SPRD_WIFI_FIRMWARE_PATH := $(TARGET_COPY_OUT_ODM)/firmware
@@ -26,7 +25,7 @@ SPRD_WCN_FIRMWARE_FILES := \
     gnssmodem.bin
 
 SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/$(BOARD_HAVE_SPRD_WCN_BRANCH)/sc2355_marlin3_lite_ab_builddir/EXEC_KERNEL_IMAGE.bin
-SPRD_GNSS_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20b_new/$(BOARD_HAVE_SPRD_GNSS_BRANCH)/marlin3lite_gnss_cm4_builddir/gnssmodem.bin
+SPRD_GNSS_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3lite/marlin3lite_gnss_cm4_builddir/gnssmodem.bin
 
 GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \
     $(if $(wildcard $(LOCAL_PATH)/$(SPRD_WCN_HW_CONFIG)/$(own)), \
@@ -62,7 +61,7 @@ else
 endif
 
 VER_BTWF=vendor/sprd/release/unisoc_bin/$(BOARD_HAVE_SPRD_WCN_BRANCH)/version.txt
-VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20b_new/$(BOARD_HAVE_SPRD_GNSS_BRANCH)/version.txt
+VER_GNSS=vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3lite/version.txt
 
 PRODUCT_COPY_FILES += \
     $(GENERATE_WCN_PRODUCT_COPY_FILES) \
