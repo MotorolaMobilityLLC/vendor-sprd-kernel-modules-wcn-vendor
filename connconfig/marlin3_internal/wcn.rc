@@ -25,11 +25,11 @@ on property:sys.boot_completed=1
 on cali-fs
     insmod /vendor/lib/modules/unisoc_wcn_bsp.ko
     insmod /vendor/lib/modules/sprd_wlan_combo.ko
-    insmod /vendor/lib/modules/gnss_common_ctl_all.ko
+    insmod /vendor/lib/modules/unisoc_gnss_common_ctl_all.ko
     insmod /vendor/lib/modules/sprdbt_tty.ko
     insmod /vendor/lib/modules/sprd_fm.ko
-    insmod /vendor/lib/modules/gnss_dbg.ko
-    insmod /vendor/lib/modules/gnss_pmnotify_ctl.ko
+    insmod /vendor/lib/modules/unisoc_gnss_dbg.ko
+    insmod /vendor/lib/modules/unisoc_gnss_pmnotify_ctl.ko
 
     chmod 660 /sys/class/rfkill/rfkill0/state
     chown bluetooth net_bt_admin /sys/class/rfkill/rfkill0/state
@@ -50,8 +50,8 @@ on cali-fs
 on factorytest
     insmod /vendor/lib/modules/unisoc_wcn_bsp.ko
     insmod /vendor/lib/modules/sprd_wlan_combo.ko
-    insmod /vendor/lib/modules/gnss_common_ctl_all.ko
+    insmod /vendor/lib/modules/unisoc_gnss_common_ctl_all.ko
     insmod /vendor/lib/modules/sprdbt_tty.ko
     insmod /vendor/lib/modules/sprd_fm.ko
-    insmod /vendor/lib/modules/gnss_dbg.ko
-    insmod /vendor/lib/modules/gnss_pmnotify_ctl.ko
+    insmod /vendor/lib/modules/unisoc_gnss_dbg.ko
+    insmod /vendor/lib/modules/unisoc_gnss_pmnotify_ctl.ko

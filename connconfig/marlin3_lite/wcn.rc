@@ -56,8 +56,8 @@ on cali-fs
 on factorytest
     insmod /vendor/lib/modules/unisoc_wcn_bsp.ko
     insmod /vendor/lib/modules/sprd_wlan_combo.ko
-    insmod /vendor/lib/modules/gnss_common_ctl_all.ko
+    insmod /vendor/lib/modules/unisoc_gnss_common_ctl_all.ko
     insmod /vendor/lib/modules/sprdbt_tty.ko
     insmod /vendor/lib/modules/sprd_fm.ko
-    insmod /vendor/lib/modules/gnss_dbg.ko
-    insmod /vendor/lib/modules/gnss_pmnotify_ctl.ko
+    insmod /vendor/lib/modules/unisoc_gnss_dbg.ko
+    insmod /vendor/lib/modules/unisoc_gnss_pmnotify_ctl.ko
