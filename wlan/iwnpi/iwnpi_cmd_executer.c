@@ -396,7 +396,8 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 	int err;
 	char command[WIFI_EUT_COMMAND_MAX_LEN + 1] = { 0x00 };
 
-	ALOGD("ADL entry %s(), line = %d, argc = %d", __func__, __LINE__, argc);
+	ALOGD("ADL entry %s(), line = %d, argc = %d, pid(%d-%d)", __func__, __LINE__, argc,
+	      getpid(), getppid());
 #if 0
 	/* debug, print all paramters */
 	{
@@ -440,6 +441,7 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 		} else {
 			ALOGD("ADL %s(), called system(%s), child pro exit err = %d, %s", __func__,
 			      command, WEXITSTATUS(err), strerror(WEXITSTATUS(err)));
+			return -1;
 		}
 
 	}
