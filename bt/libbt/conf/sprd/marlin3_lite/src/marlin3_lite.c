@@ -32,6 +32,7 @@
 
 // pskey file structure default value
 static pskey_config_t marlin3_lite_pskey;
+static bool mStateClosing = false;
 
 static const conf_entry_t marlin3_lite_pksey_table[] = {
     CONF_ITEM_TABLE(device_class, 0, marlin3_lite_pskey, 1),
@@ -126,13 +127,14 @@ static void hw_core_cback(void *p_mem)
     {
         /* Must free the RX event buffer */
         bt_vendor_cbacks->dealloc(p_evt_buf);
-        if (status) {
+        if (status && !mStateClosing) {
             if(1 == marlin3_lite_pskey.super_ssp_enable) {
                 sprd_vnd_ssp_init();
             } else {
                 bt_vendor_cbacks->fwcfg_cb(BT_VND_OP_RESULT_SUCCESS);
             }
         } else if (status == 0){
+            mStateClosing = false;
             sprd_vnd_ssp_deinit();
             bt_vendor_cbacks->epilog_cb(BT_VND_OP_RESULT_SUCCESS);
         }
@@ -145,6 +147,9 @@ void hw_core_enable(unsigned char enable)
 {
     HC_BT_HDR *p_buf = NULL;
     uint8_t *p;
+    if (!enable) {
+        mStateClosing = true;
+    }
 
     ALOGI("%s", __func__);
 
@@ -488,6 +493,7 @@ static int marlin3_lite_init(void) {
     char ssp_property[128] = {0};
 
     ALOGI("%s", __func__);
+    mStateClosing = false;
     memset(&marlin3_lite_pskey, 0, sizeof(marlin3_lite_pskey));
     memset(&marlin3_lite_rf_config, 0, sizeof(marlin3_lite_rf_config));
     get_file_name(filename_rf, filename_pskey);
