@@ -22,6 +22,7 @@ cc_library_static {
         "bluetooth_hci.cc",
         "bluetooth_address.cc",
         "vendor_interface.cc",
+        "bluetooth_chr.c",
     ],
     shared_libs: [
         "android.hardware.bluetooth@1.0",

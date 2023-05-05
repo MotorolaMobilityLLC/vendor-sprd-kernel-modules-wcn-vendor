@@ -28,6 +28,10 @@ using android::hardware::bluetooth::V1_1::implementation::BluetoothHci;
 using android::sp;
 using android::status_t;
 
+//remark BT CHR event
+uint8_t bt_chr_event_bitmap_30001;
+int chr_skt_fd;
+
 int main() {
   ::android::hardware::configureRpcThreadpool(1 /*threads*/, true /*willJoin*/);
 

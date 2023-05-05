@@ -29,6 +29,7 @@
 #include "h4_protocol.h"
 #include "mct_protocol.h"
 #include "bt_sprd_snoop.h"
+#include "bluetooth_chr.h"
 
 static const char* VENDOR_LIBRARY_NAME = "libbt-vendor.so";
 static const char* VENDOR_LIBRARY_SYMBOL_NAME =
@@ -228,6 +229,9 @@ bool VendorInterface::Open(InitializeCompleteCallback initialize_complete_cb,
 
   ALOGD("%s vendor library loaded", __func__);
 
+  //init bluetooth_chr module
+  bluetooth_chr_init();
+
   // Power on the controller
 
   int power_state = BT_VND_PWR_ON;
@@ -292,6 +296,10 @@ void VendorInterface::Close() {
     bt_vendor_lpm_mode_t mode = BT_VND_LPM_DISABLE;
     lib_interface_->op(BT_VND_OP_LPM_SET_MODE, &mode);
   }
+
+  //cleanup bluetooth_chr module
+  bluetooth_chr_cleanup();
+
   // sprd: run epilog to send oxfca1 disable cmd
   if ((lib_interface_ != nullptr) && (hci_ != nullptr)) {
     lib_interface_->op(BT_VND_OP_EPILOG, nullptr);
@@ -405,6 +413,14 @@ void VendorInterface::HandleIncomingEvent(const hidl_vec<uint8_t>& hci_packet) {
     if(bt_hdr->data[0] == 0xff) {
       lib_interface_->op(BT_VND_OP_EVENT_CALLBACK, bt_hdr);
     }
+	
+  //chr event
+  //data[0]==0xe: only to test
+  if(bt_hdr->data[0] == 0xFF && bt_hdr->data[2] == 0xF) {
+    recv_btchrmsg(bt_hdr->data);
+    //lib_interface_->op(BT_SEND_BTCHRMSG, bt_hdr->data);
+  }
+
     buffer_free_cb(bt_hdr);
     event_cb_(hci_packet);
   }
