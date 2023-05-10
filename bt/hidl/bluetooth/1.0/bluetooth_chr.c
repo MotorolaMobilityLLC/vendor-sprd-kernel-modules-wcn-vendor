@@ -165,8 +165,8 @@ int select_num_from_string(char *num_in_str)
     int number = 0;
 
     for(int i=0;num_in_str[i]!='\0';i++)
-        if((num_in_str[i]<='9') && (num_in_str[i]>='0'))/*判断是数字字符*/
-            number=number*10+(num_in_str[i])-'0';/*数字字符转换为数字*/
+        if((num_in_str[i]<='9') && (num_in_str[i]>='0'))/*is numeric character or not*/
+            number=number*10+(num_in_str[i])-'0';/*numeric character set to number*/
     return number;
 }
 

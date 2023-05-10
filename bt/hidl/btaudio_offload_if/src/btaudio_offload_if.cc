@@ -129,7 +129,7 @@ char* audio_get_codec_config(uint8_t *multicast_status, uint8_t *num_dev, enc_co
   {
     if( multicast_status != nullptr && num_dev != nullptr && codec_type != nullptr)
     {
-      LOG(INFO) << __func__ << "aviliang GetSessionInstance get session_ptr != NULL";
+      LOG(INFO) << __func__ << "GetSessionInstance get session_ptr != NULL";
       AudioConfiguration codec_info = session_ptr->GetAudioConfig();
 
       CodecConfiguration sbc_codec_cfg = codec_info.get<AudioConfiguration::a2dpConfig>();
