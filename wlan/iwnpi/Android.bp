@@ -84,7 +84,6 @@ cc_library_shared {
 
     srcs: [
         "iwnpi_cmd_executer.c",
-        "util.c",
         "cmd.c",
     ],
 

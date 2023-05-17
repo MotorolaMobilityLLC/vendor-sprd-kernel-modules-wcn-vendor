@@ -1,4 +1,12 @@
+/*
+* SPDX-FileCopyrightText: 2021-2023 Unisoc (Shanghai) Technologies Co. Ltd
+* SPDX-License-Identifier: GPL-2.0-only
+*/
+
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include <netlink/genl/genl.h>
 #include <netlink/genl/family.h>
 #include <netlink/genl/ctrl.h>
@@ -15,11 +23,62 @@
 #endif
 #define LOG_TAG "IWNPI_CMD"
 
+#define REG_MAC 0
+#define REG_PHY0 1
+#define REG_PHY1 2
+#define REG_RF 3
+
 char ret_result_buf[WLNPI_RES_BUF_LEN + 1] = { 0x00 };
 
 /* This is used to caculate the cmd section size */
 SECTION(get);
 SECTION(set);
+
+void mac_addr_n2a(char *mac_addr, unsigned char *arg)
+{
+	int i, l;
+
+	l = 0;
+	for (i = 0; i < ETH_ALEN; i++) {
+		if (i == 0) {
+			snprintf(mac_addr + l, 3, "%02x", arg[i]);
+			l += 2;
+		} else {
+			snprintf(mac_addr + l, 4, ":%02x", arg[i]);
+			l += 3;
+		}
+	}
+}
+
+int mac_addr_a2n(unsigned char *mac_addr, char *arg)
+{
+	int i;
+
+	for (i = 0; i < ETH_ALEN; i++) {
+		int temp;
+
+		char *cp = strchr(arg, ':');
+		if (cp) {
+			*cp = 0;
+			cp++;
+		}
+
+		if (sscanf(arg, "%x", &temp) != 1)
+			return -1;
+		if (temp < 0 || temp > 255)
+			return -1;
+
+		mac_addr[i] = temp;
+
+		if (!cp)
+			break;
+		arg = cp;
+	}
+	if (i < ETH_ALEN - 1)
+		return -1;
+
+	return 0;
+}
 
 /* ----------------SET CMD WITHOUT ARG -------------------- */
 static int print_reply_status(struct nl_msg *msg, void *arg)
@@ -31,12 +90,13 @@ static int print_reply_status(struct nl_msg *msg, void *arg)
 		  genlmsg_attrlen(gnlh, 0), NULL);
 
 	if (tb_msg[NLNPI_ATTR_REPLY_STATUS]) {
-		if (nla_len(tb_msg[NLNPI_ATTR_REPLY_STATUS]) == 4)
+		if (nla_len(tb_msg[NLNPI_ATTR_REPLY_STATUS]) == 4) {
 			printf("ret: status %d :end\n",
 			       *(int *)nla_data(tb_msg[NLNPI_ATTR_REPLY_STATUS]));
-		else
+		} else {
 			printf("ret: Invild len %d :end\n",
 			       nla_len(tb_msg[NLNPI_ATTR_REPLY_STATUS]));
+		}
 	} else {
 		printf("ret: status Failed! :end\n");
 	}
@@ -52,17 +112,11 @@ static int npi_set_noarg_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 }
 
 TOPLEVEL(start, NULL, NLNPI_CMD_START, 0, npi_set_noarg_cmd, "Start npi thread in CP2.");
-
 TOPLEVEL(stop, NULL, NLNPI_CMD_STOP, 0, npi_set_noarg_cmd, "Stop npi thread in CP2.");
-
 TOPLEVEL(tx_start, NULL, NLNPI_CMD_TX_START, 0, npi_set_noarg_cmd, "Start tx.");
-
 TOPLEVEL(tx_stop, NULL, NLNPI_CMD_TX_STOP, 0, npi_set_noarg_cmd, "Stop tx.");
-
 TOPLEVEL(rx_start, NULL, NLNPI_CMD_RX_START, 0, npi_set_noarg_cmd, "Start rx.");
-
 TOPLEVEL(rx_stop, NULL, NLNPI_CMD_RX_STOP, 0, npi_set_noarg_cmd, "Stop rx.");
-
 TOPLEVEL(sin_wave, NULL, NLNPI_CMD_SIN_WAVE, 0, npi_set_noarg_cmd, "Sin wave.");
 
 /* ----------------SET CMD WITH ARG -------------------- */
@@ -88,40 +142,41 @@ TOPLEVEL(sin_wave, NULL, NLNPI_CMD_SIN_WAVE, 0, npi_set_noarg_cmd, "Sin wave.");
     return -ENOBUFS;                                                       \
   }
 
+NPI_SET_ARGINT_CMD(set_band, NLNPI_ATTR_SET_BAND)
+NPI_SET_ARGINT_CMD(set_pkt_length, NLNPI_ATTR_SET_PKTLEN)
 NPI_SET_ARGINT_CMD(set_rate, NLNPI_ATTR_SET_RATE)
 NPI_SET_ARGINT_CMD(set_channel, NLNPI_ATTR_SET_CHANNEL)
 NPI_SET_ARGINT_CMD(set_tx_power, NLNPI_ATTR_SET_TX_POWER)
-
 NPI_SET_ARGINT_CMD(set_rx_count, NLNPI_ATTR_SET_RX_COUNT)
 NPI_SET_ARGINT_CMD(set_tx_mode, NLNPI_ATTR_TX_MODE)
-
 NPI_SET_ARGINT_CMD(set_tx_count, NLNPI_ATTR_TX_COUNT)
-NPI_SET_ARGINT_CMD(set_band, NLNPI_ATTR_SET_BAND)
-NPI_SET_ARGINT_CMD(set_pkt_length, NLNPI_ATTR_SET_PKTLEN)
 
 TOPLEVEL(set_band, "<NUM>", NLNPI_CMD_SET_BAND, 0, npi_set_band_cmd, "Set band.");
-TOPLEVEL(set_pkt_length, "<NUM>", NLNPI_CMD_SET_PKTLEN, 0, npi_set_pkt_length_cmd, "Set band.");
+TOPLEVEL(set_pkt_length, "<NUM>", NLNPI_CMD_SET_PKTLEN, 0,
+	 npi_set_pkt_length_cmd, "Set packet lenth.");
 TOPLEVEL(set_rate, "<NUM>", NLNPI_CMD_SET_RATE, 0, npi_set_rate_cmd, "Set rate.");
-TOPLEVEL(set_channel, "<NUM>", NLNPI_CMD_SET_CHANNEL, 0, npi_set_channel_cmd, "Set channal num.");
-TOPLEVEL(set_tx_power, "<NUM>", NLNPI_CMD_SET_TX_POWER, 0, npi_set_tx_power_cmd, "Set tx power.");
-
+TOPLEVEL(set_channel, "<NUM>", NLNPI_CMD_SET_CHANNEL, 0,
+	 npi_set_channel_cmd, "Set channal num.");
+TOPLEVEL(set_tx_power, "<NUM>", NLNPI_CMD_SET_TX_POWER, 0,
+	 npi_set_tx_power_cmd, "Set tx power.");
 TOPLEVEL(set_rx_count, "<NUM>", NLNPI_CMD_CLEAR_RX_COUNT, 0,
 	 npi_set_rx_count_cmd, "Clear rx count.");
-TOPLEVEL(set_tx_mode, "<NUM>", NLNPI_CMD_SET_TX_MODE, 0, npi_set_tx_mode_cmd, "Set tx mode.");
+TOPLEVEL(set_tx_mode, "<NUM>", NLNPI_CMD_SET_TX_MODE, 0,
+	 npi_set_tx_mode_cmd, "Set tx mode.");
+TOPLEVEL(set_tx_count, "<NUM>", NLNPI_CMD_SET_TX_COUNT, 0,
+	 npi_set_tx_count_cmd, "Set tx count. (0:tx forever)");
 
-TOPLEVEL(set_tx_count, "<NUM>", NLNPI_CMD_SET_TX_COUNT, 0, npi_set_tx_count_cmd,
-	 "Set tx count. (0:tx forever)");
-
+/* set_mac, "<xx:xx:xx:xx:xx:xx> */
 static int npi_set_mac_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 			   struct nl_msg *msg, int argc, char **argv)
 {
-	unsigned char addr[6];
+	unsigned char addr[ETH_ALEN];
 
 	if (argc != 1 || !argv)
 		return 1;
 
 	if (mac_addr_a2n(addr, argv[0]) == 0) {
-		NLA_PUT(msg, NLNPI_ATTR_SET_MAC, 6, addr);
+		NLA_PUT(msg, NLNPI_ATTR_SET_MAC, ETH_ALEN, addr);
 	} else {
 		fprintf(stderr, "ret: invalid mac address :end\n");
 		return 2;
@@ -133,14 +188,10 @@ static int npi_set_mac_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 nla_put_failure:
 	return -ENOBUFS;
 }
-
 TOPLEVEL(set_mac, "<xx:xx:xx:xx:xx:xx>", NLNPI_CMD_SET_MAC, 0, npi_set_mac_cmd,
 	 "Set mac addr like 00:22:33:44:55:66.");
 
-#define REG_MAC 0
-#define REG_PHY0 1
-#define REG_PHY1 2
-#define REG_RF 3
+/* set_reg, "<mac/phy0/phy1/rf> <addr_offset> <value> */
 static int npi_set_reg_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 			   struct nl_msg *msg, int argc, char **argv)
 {
@@ -205,9 +256,9 @@ static int npi_set_reg_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 nla_put_failure:
 	return -ENOBUFS;
 }
-
-TOPLEVEL(set_reg, "<mac/phy0/phy1/rf> <addr_offset> <value>", NLNPI_CMD_SET_REG,
-	 0, npi_set_reg_cmd, "<addr_offset> and <value> should be hex type like(0x1234).");
+TOPLEVEL(set_reg, "<mac/phy0/phy1/rf> <addr_offset> <value>",
+	 NLNPI_CMD_SET_REG, 0, npi_set_reg_cmd,
+	 "<addr_offset> and <value> should be hex type like(0x1234).");
 
 /* data format is len(2 bytes) + name + value */
 static int npi_set_debug_cmd(struct nlnpi_state *state, struct nl_cb *cb,
@@ -242,7 +293,6 @@ static int npi_set_debug_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 nla_put_failure:
 	return -ENOBUFS;
 }
-
 TOPLEVEL(set_debug, "<value_name> <value>", NLNPI_CMD_SET_DEBUG, 0,
 	 npi_set_debug_cmd, "value should be like 0x12345678 hex type.");
 
@@ -288,6 +338,7 @@ TOPLEVEL(set_sblock, "<send_len> [count]", NLNPI_CMD_SET_SBLOCK, 0,
 	 npi_set_get_sblock_cmd, "count 0 or no count means send forever.");
 TOPLEVEL(get_sblock, "<send_len> [count]", NLNPI_CMD_GET_SBLOCK, 0,
 	 npi_set_get_sblock_cmd, "count 0 or no count means send forever.");
+
 /* ----------------GET CMD WITH INT ARG REPLY-------------------- */
 static int print_reply_rx_count_data(struct nl_msg *msg, void *arg)
 {
@@ -329,12 +380,14 @@ static int print_reply_int_data(struct nl_msg *msg, void *arg)
 		  genlmsg_attrlen(gnlh, 0), NULL);
 
 	if (tb_msg[NLNPI_ATTR_REPLY_DATA]) {
-		if (nla_len(tb_msg[NLNPI_ATTR_REPLY_DATA]) == 4)
+		if (nla_len(tb_msg[NLNPI_ATTR_REPLY_DATA]) == 4) {
 			snprintf(ret_result_buf, WLNPI_RES_BUF_LEN, "ret: %d :end\n",
 				 *(unsigned int *)nla_data(tb_msg[NLNPI_ATTR_REPLY_DATA]));
-		else
-			snprintf(ret_result_buf, WLNPI_RES_BUF_LEN, "ret: Invild len %d :end\n",
+		} else {
+			snprintf(ret_result_buf, WLNPI_RES_BUF_LEN,
+				 "ret: Invild len %d :end\n",
 				 *(unsigned int *)nla_data(tb_msg[NLNPI_ATTR_REPLY_DATA]));
+		}
 		printf("%s", ret_result_buf);
 		ALOGD("%s", ret_result_buf);
 	} else {
@@ -360,40 +413,41 @@ static int print_reply_int_data(struct nl_msg *msg, void *arg)
     return -ENOBUFS;                                                       \
   }
 
+NPI_GET_ARGINT_CMD(get_pkt_length, NLNPI_ATTR_GET_PKTLEN, print_reply_int_data, 4)
 NPI_GET_ARGINT_CMD(get_channel, NLNPI_ATTR_GET_CHANNEL, print_reply_int_data, 4)
-NPI_GET_ARGINT_CMD(get_rx_err, NLNPI_ATTR_GET_RX_COUNT, print_reply_int_data, 4)
-NPI_GET_ARGINT_CMD(get_rssi, NLNPI_ATTR_RSSI, print_reply_int_data, 4)
-
 NPI_GET_ARGINT_CMD(get_band, NLNPI_ATTR_GET_BAND, print_reply_int_data, 4)
 NPI_GET_ARGINT_CMD(get_payload, NLNPI_ATTR_GET_PAYLOAD, print_reply_int_data, 4)
 NPI_GET_ARGINT_CMD(get_bandwidth, NLNPI_ATTR_GET_BANDWIDTH, print_reply_int_data, 4)
-NPI_GET_ARGINT_CMD(get_pkt_length, NLNPI_ATTR_GET_PKTLEN, print_reply_int_data, 4)
-NPI_GET_ARGINT_CMD(get_tx_mode, NLNPI_ATTR_GET_TX_MODE, print_reply_int_data, 4)
-
 NPI_GET_ARGINT_CMD(get_rx_ok, NLNPI_ATTR_GET_RX_COUNT, print_reply_rx_count_data, 12)
-
+NPI_GET_ARGINT_CMD(get_tx_mode, NLNPI_ATTR_GET_TX_MODE, print_reply_int_data, 4)
+NPI_GET_ARGINT_CMD(get_rssi, NLNPI_ATTR_RSSI, print_reply_int_data, 4)
 NPI_GET_ARGINT_CMD(get_rate, NLNPI_ATTR_GET_RATE, print_reply_int_data, 4)
+/*
+NPI_GET_ARGINT_CMD(get_rx_err, NLNPI_ATTR_GET_RX_COUNT, print_reply_int_data, 4)
+*/
 
-TOPLEVEL(get_pkt_length, NULL, NLNPI_CMD_GET_PKTLEN, 0, npi_get_pkt_length_cmd,
-	 "Get packet length.");
-
-TOPLEVEL(get_channel, NULL, NLNPI_CMD_GET_CHANNEL, 0, npi_get_channel_cmd, "Get channal num.");
+TOPLEVEL(get_pkt_length, NULL, NLNPI_CMD_GET_PKTLEN, 0,
+	 npi_get_pkt_length_cmd, "Get packet length.");
+TOPLEVEL(get_channel, NULL, NLNPI_CMD_GET_CHANNEL, 0,
+	 npi_get_channel_cmd, "Get channal num.");
 TOPLEVEL(get_band, NULL, NLNPI_CMD_GET_BAND, 0, npi_get_band_cmd, "Get band.");
-
-TOPLEVEL(get_payload, NULL, NLNPI_CMD_GET_PAYLOAD, 0, npi_get_payload_cmd, "Get payload.");
-
-TOPLEVEL(get_bandwidth, NULL, NLNPI_CMD_GET_BANDWIDTH, 0, npi_get_bandwidth_cmd, "Get bandwidth.");
-
-TOPLEVEL(get_rx_ok, NULL, NLNPI_CMD_GET_RX_OK_COUNT, 0, npi_get_rx_ok_cmd, "Get rx right count.");
-
-TOPLEVEL(get_tx_mode, NULL, NLNPI_CMD_GET_TX_MODE, 0, npi_get_tx_mode_cmd, "Get tx mode.");
+TOPLEVEL(get_payload, NULL, NLNPI_CMD_GET_PAYLOAD, 0,
+	 npi_get_payload_cmd, "Get payload.");
+TOPLEVEL(get_bandwidth, NULL, NLNPI_CMD_GET_BANDWIDTH, 0,
+	 npi_get_bandwidth_cmd, "Get bandwidth.");
+TOPLEVEL(get_rx_ok, NULL, NLNPI_CMD_GET_RX_OK_COUNT, 0,
+	 npi_get_rx_ok_cmd, "Get rx right count.");
+TOPLEVEL(get_tx_mode, NULL, NLNPI_CMD_GET_TX_MODE, 0,
+	 npi_get_tx_mode_cmd, "Get tx mode.");
+TOPLEVEL(get_rssi, NULL, NLNPI_CMD_GET_RSSI, 0, npi_get_rssi_cmd, "Get rssi.");
+TOPLEVEL(get_rate, NULL, NLNPI_CMD_GET_RATE, 0,
+	 npi_get_rate_cmd, "Get tx rate.");
 /*
 TOPLEVEL(get_rx_err, NULL,
          NLNPI_CMD_GET_RX_ERR_COUNT, 0, npi_get_rx_err_cmd,
          "Get rx error count.");
 */
-TOPLEVEL(get_rssi, NULL, NLNPI_CMD_GET_RSSI, 0, npi_get_rssi_cmd, "Get rssi.");
-TOPLEVEL(get_rate, NULL, NLNPI_CMD_GET_RATE, 0, npi_get_rate_cmd, "Get tx rate.");
+
 
 /* ----------------GET CMD WITH INT USER DEFINED REPLY-------------------- */
 static int print_get_tx_power_result(struct nl_msg *msg, void *arg)
@@ -413,7 +467,8 @@ static int print_get_tx_power_result(struct nl_msg *msg, void *arg)
 			lev_b = (data & 0xffff0000) >> 16;
 			printf("ret: level_a:%d,level_b:%d :end\n", lev_a, lev_b);
 		} else {
-			printf("ret: Invild len %d :end\n", nla_len(tb_msg[NLNPI_ATTR_REPLY_DATA]));
+			printf("ret: Invild len %d :end\n",
+			       nla_len(tb_msg[NLNPI_ATTR_REPLY_DATA]));
 		}
 	} else {
 		printf("ret: Failed to get result! :end\n");
@@ -436,8 +491,8 @@ static int npi_get_tx_power_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 nla_put_failure:
 	return -ENOBUFS;
 }
-
-TOPLEVEL(get_tx_power, NULL, NLNPI_CMD_GET_TX_POWER, 0, npi_get_tx_power_cmd, "Get tx power.");
+TOPLEVEL(get_tx_power, NULL, NLNPI_CMD_GET_TX_POWER, 0,
+	 npi_get_tx_power_cmd, "Get tx power.");
 
 static int print_get_mac_result(struct nl_msg *msg, void *arg)
 {
@@ -453,7 +508,8 @@ static int print_get_mac_result(struct nl_msg *msg, void *arg)
 			mac_addr_n2a(addr, nla_data(tb_msg[NLNPI_ATTR_REPLY_DATA]));
 			printf("ret: mac: %s :end\n", addr);
 		} else {
-			printf("ret: Invild len %d :end\n", nla_len(tb_msg[NLNPI_ATTR_REPLY_DATA]));
+			printf("ret: Invild len %d :end\n",
+			       nla_len(tb_msg[NLNPI_ATTR_REPLY_DATA]));
 		}
 	} else {
 		printf("ret: Failed to get result! :end\n");
@@ -475,7 +531,6 @@ static int npi_get_mac_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 nla_put_failure:
 	return -ENOBUFS;
 }
-
 TOPLEVEL(get_mac, NULL, NLNPI_CMD_GET_MAC, 0, npi_get_mac_cmd, "Get mac addr.");
 
 static int print_get_reg_result(struct nl_msg *msg, void *arg)
@@ -581,10 +636,10 @@ static int npi_get_reg_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 nla_put_failure:
 	return -ENOBUFS;
 }
-
-TOPLEVEL(get_reg, "<mac/phy0/phy1/rf> <addr_offset> [count]", NLNPI_CMD_GET_REG,
-	 0, npi_get_reg_cmd,
-	 "<addr_offset>: should be hex type like(0x1234)\n[count]: if not set " "default is 1.");
+TOPLEVEL(get_reg, "<mac/phy0/phy1/rf> <addr_offset> [count]",
+	 NLNPI_CMD_GET_REG, 0, npi_get_reg_cmd,
+	 "<addr_offset>: should be hex type like(0x1234)\n \
+	 [count]: if not set default is 1.");
 
 static int print_get_debug_result(struct nl_msg *msg, void *arg)
 {
@@ -599,7 +654,8 @@ static int print_get_debug_result(struct nl_msg *msg, void *arg)
 			printf("ret: 0x%08x :end\n",
 			       *(unsigned int *)nla_data(tb_msg[NLNPI_ATTR_REPLY_DATA]));
 		else
-			printf("ret: Invild len %d :end\n", nla_len(tb_msg[NLNPI_ATTR_REPLY_DATA]));
+			printf("ret: Invild len %d :end\n",
+			       nla_len(tb_msg[NLNPI_ATTR_REPLY_DATA]));
 	} else {
 		printf("ret: Failed to get result! :end\n");
 	}
@@ -634,13 +690,13 @@ static int npi_get_debug_cmd(struct nlnpi_state *state, struct nl_cb *cb,
 nla_put_failure:
 	return -ENOBUFS;
 }
-
 TOPLEVEL(get_debug, "<value_name>", NLNPI_CMD_GET_DEBUG, 0, npi_get_debug_cmd, NULL);
 
 NPI_GET_ARGINT_CMD(lna_status, NLNPI_ATTR_GET_LNA_STATUS, print_reply_int_data, 4)
 
-TOPLEVEL(lna_on, NULL, NLNPI_CMD_LNA_ON, 0, npi_set_noarg_cmd, "lna no");
+TOPLEVEL(lna_on, NULL, NLNPI_CMD_LNA_ON, 0, npi_set_noarg_cmd, "lna on");
 TOPLEVEL(lna_off, NULL, NLNPI_CMD_LNA_OFF, 0, npi_set_noarg_cmd, "lna off");
-TOPLEVEL(lna_status, NULL, NLNPI_CMD_GET_LNA_STATUS, 0, npi_lna_status_cmd, "Get lna status.");
+TOPLEVEL(lna_status, NULL, NLNPI_CMD_GET_LNA_STATUS, 0,
+	 npi_lna_status_cmd, "Get lna status.");
 TOPLEVEL(speed_up, NULL, NLNPI_CMD_SPEED_UP, 0, npi_set_noarg_cmd, "speed up");
 TOPLEVEL(speed_down, NULL, NLNPI_CMD_SPEED_DOWN, 0, npi_set_noarg_cmd, "speed down");
