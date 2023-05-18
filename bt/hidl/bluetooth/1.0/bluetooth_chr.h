@@ -28,16 +28,33 @@
 extern "C" {
 #endif
 
+#ifndef SNOOP_DBG
+    #define SNOOP_DBG TRUE
+#endif
+
+#if (SNOOP_DBG == TRUE)
+    #define SNOOPD(param, ...) ALOGD("%s " param, __FUNCTION__, ## __VA_ARGS__)
+#else
+    #define SNOOPD(param, ...) {}
+#endif
+
+#ifdef SNOOPD_V
+    #define SNOOPV(param, ...) ALOGD("%s " param, __FUNCTION__, ## __VA_ARGS__)
+#else
+    #define SNOOPV(param, ...) {}
+#endif
+
+#define SNOOPE(param, ...) ALOGE("%s " param, __FUNCTION__, ## __VA_ARGS__)
 
 /********test framework struct*********/
 //Where the event_content points to bt_chr_hardware_error_struct
-typedef struct bt_chr_hardware_error_struct
+typedef struct
 {
     uint32_t hardware_err_code;
 }bt_chr_hardware_error_struct;
 
 
-typedef struct bt_chr_ind_msg_struct
+typedef struct
 {
     uint32_t ref_count;
     uint32_t event_id; // 23002

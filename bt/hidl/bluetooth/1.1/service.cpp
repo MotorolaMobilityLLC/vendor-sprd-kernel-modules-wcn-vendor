@@ -30,7 +30,8 @@ using android::status_t;
 
 //remark BT CHR event
 uint8_t bt_chr_event_bitmap_30001;
-int chr_skt_fd;
+int chr_skt_fd = -1;
+char **read_msg = NULL;
 
 int main() {
   ::android::hardware::configureRpcThreadpool(1 /*threads*/, true /*willJoin*/);
