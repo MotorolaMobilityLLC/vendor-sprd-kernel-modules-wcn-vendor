@@ -1,30 +1,27 @@
 /*
- * nlnpi userspace tool
- *
- * Wenjie.Zhang <Wenjie.Zhang@spreadtrum.com>
- */
+* SPDX-FileCopyrightText: 2021-2023 Unisoc (Shanghai) Technologies Co. Ltd
+* SPDX-License-Identifier: GPL-2.0-only
+*/
 
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <net/if.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdbool.h>
-/* Callback Handler */
-#include "nlnpi.h"
-#include "iwnpi.h"
-
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <netlink/genl/genl.h>
 #include <netlink/genl/family.h>
 #include <netlink/genl/ctrl.h>
 #include <netlink/msg.h>
 #include <netlink/attr.h>
-
 #include <android/log.h>
 #include <log/log.h>
+
+#include "nlnpi.h"
+#include "iwnpi.h"
 
 static const char *argv0 = "iwnpi";
 int iwnpi_debug = 0;
@@ -38,67 +35,41 @@ extern struct cmd __stop___cmd;
 #undef LOG_TAG
 #endif
 
-#define LOG_TAG "IWNPI_ENG"
+#define LOG_TAG  ("IWNPI_ENG")
 
-#define CMD_LNA_STATUS "lna_status"
-#define CMD_SET_ENG_MODE "set_eng_mode"
-#define CMD_RX_GET_OK "get_rx_ok"
-#define CMD_GET_REG "get_reg"
-#define CMD_GET_EFUSE	"get_efuse"
-#define CMD_GET_RECONNECT "get_reconnect"
-#define CMD_GET_RSSI	"get_rssi"
-#define INSMOD_SPRWL_KO     "insmod"
-#define RMMOD_SPRWL_KO     "rmmod"
-#define IFCONFIG_WLAN0_UP    "ifconfig wlan0 up"
-#define IFCONFIG_WLAN0_DOWN  "ifconfig wlan0 down"
-#define CMD_GET_BEAMF_STATUS "get_beamf_status"
-#define CMD_GET_RXSTBC_STATUS "get_rxstbc_status"
+#define OK_STR      ("OK")
+#define FAIL_STR    ("FAIL")
 
-#define CMD_RESULT_BUFFER_LEN (128)
+#define INSMOD_SPRWL_KO        ("insmod")
+#define RMMOD_SPRWL_KO         ("rmmod")
+#define IFCONFIG_WLAN0_UP      ("ifconfig wlan0 up")
+#define IFCONFIG_WLAN0_DOWN    ("ifconfig wlan0 down")
+
+#define CMD_LNA_STATUS         ("lna_status")
+#define CMD_SET_ENG_MODE       ("set_eng_mode")
+#define CMD_RX_GET_OK          ("get_rx_ok")
+#define CMD_GET_REG            ("get_reg")
+#define CMD_GET_EFUSE          ("get_efuse")
+#define CMD_GET_RECONNECT      ("get_reconnect")
+#define CMD_GET_RSSI           ("get_rssi")
+#define CMD_GET_BEAMF_STATUS   ("get_beamf_status")
+#define CMD_GET_RXSTBC_STATUS  ("get_rxstbc_status")
+
+#define IWNPI_EXEC_TMP_FILE            ("/mnt/vendor/iwnpi_exec_data.log")
+#define IWNPI_EXEC_BEAMF_STATUS_FILE   ("/mnt/vendor/iwnpi_exec_beamf_status_data.log")
+#define IWNPI_EXEC_RXSTBC_STATUS_FILE  ("/mnt/vendor/iwnpi_exec_rxstbc_status_data.log")
+#define STR_RET_REG_VALUE              ("ret: reg value:")
+#define STR_RET_STATUS_VALUE           ("ret: status:")
+#define STR_RET_END                    (":end")
+#define STR_RET_RET                    ("ret: ")
+
+#define TMP_BUF_SIZE              (128)
+#define CMD_RESULT_BUFFER_LEN     (128)
+#define WIFI_EUT_COMMAND_MAX_LEN  (128)
 
 #define for_each_cmd(_cmd)                          \
   for (_cmd = &__start___cmd; _cmd < &__stop___cmd; \
        _cmd = (const struct cmd *)((char *)_cmd + cmd_size))
-
-#define WIFI_EUT_COMMAND_MAX_LEN (128)
-#define TMP_BUF_SIZE (128)
-
-#define IWNPI_EXEC_TMP_FILE           ("/mnt/vendor/iwnpi_exec_data.log")
-#define IWNPI_EXEC_BEAMF_STATUS_FILE  ("/mnt/vendor/iwnpi_exec_beamf_status_data.log")
-#define IWNPI_EXEC_RXSTBC_STATUS_FILE ("/mnt/vendor/iwnpi_exec_rxstbc_status_data.log")
-#define STR_RET_REG_VALUE ("ret: reg value:")
-#define STR_RET_STATUS_VALUE ("ret: status:")
-#define STR_RET_END (":end")
-#define STR_RET_RET ("ret: ")
-
-/********************************************************************
-*   name   strcat_safe
-*   ---------------------------
-*   descrition: wrap strcat func to solve hacker attacks (bug2153526)
-*   ----------------------------
-*   para        IN/OUT      type                note
-*   dest        IN          char *              dest string
-*   src         IN          const char *src     src string
-*   dest_size   IN          int                 dest space size
-*   ----------------------------------------------------
-*   return
-*   none
-*   ------------------
-*   other:
-*
-********************************************************************/
-void strcat_safe(char *dest, const char *src, int dest_size)
-{
-	int dest_len = strlen(dest);
-	int src_len = strlen(src);
-
-	if (dest_len + src_len + 1 > dest_size) {
-		ALOGD("ADL %s(), strcat err: src len is too long!\n", __func__);
-		return;
-	}
-
-	strcat(dest, src);
-}
 
 static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 {
@@ -181,13 +152,50 @@ static void usage(int argc, char **argv)
 	}
 }
 
-static void usage_cmd(const struct cmd *cmd)
+/********************************************************************
+*   name   strcat_safe
+*   ---------------------------
+*   descrition: wrap strcat func to solve hacker attacks (bug2153526)
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   dest        IN          char *              dest string
+*   src         IN          const char *src     src string
+*   dest_size   IN          int                 dest space size
+*   ----------------------------------------------------
+*   return
+*   none
+*   ------------------
+*   other:
+*
+********************************************************************/
+static void strcat_safe(char *dest, const char *src, int dest_size)
 {
-	printf("Usage:\t%s [options] ", argv0);
-	__usage_cmd(cmd, "", true);
-	usage_options();
+	int dest_len = strlen(dest);
+	int src_len = strlen(src);
+
+	if (dest_len + src_len + 1 > dest_size) {
+		ALOGD("ADL %s(), strcat err: src len is too long!\n", __func__);
+		return;
+	}
+
+	strncat(dest, src, src_len);
 }
 
+/********************************************************************
+*   name   handle_reply_int_data
+*   ---------------------------
+*   descrition: handle reply int type data of CMD
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   result_buf  IN          char *              result buffer
+*   ----------------------------------------------------
+*   return
+*   success: the number of parameters to format
+*   fail: 0 or -1
+*   ------------------
+*   other:
+*
+********************************************************************/
 static int handle_reply_int_data(char *result_buf)
 {
 	int ret = -1;
@@ -211,7 +219,8 @@ static int handle_reply_int_data(char *result_buf)
 		ALOGD("ADL %s(), buf = %s, str1 = %s, str2 = %s", __func__, buf, str1, str2);
 
 		if ((NULL != str1) && (NULL != str2)) {
-			ret_cnt = sscanf(buf, "ret: %d: end", &ret);	/* must be match MARCO STR_RET_RET STR_RET_END */
+			/* must be match MARCO STR_RET_RET STR_RET_END */
+			ret_cnt = sscanf(buf, "ret: %d: end", &ret);
 			ALOGD("ADL %s(), ret_cnt = %d", __func__, ret_cnt);
 			if (ret_cnt > 0) {
 				ALOGD("ADL %s(), ret = %d, break", __func__, ret);
@@ -230,15 +239,29 @@ static int handle_reply_int_data(char *result_buf)
 	return ret;
 }
 
+/********************************************************************
+*   name   handle_reply_beamf_status_data
+*   ---------------------------
+*   descrition: handle reply data of get_beamf_status CMD
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   result_buf  IN          char *              result buffer
+*   ----------------------------------------------------
+*   return
+*   success: 0
+*   fail: -1
+*   ------------------
+*   other:
+*
+********************************************************************/
 static int handle_reply_beamf_status_data(char *result_buf)
 {
 	FILE *fp = NULL;
 	char *str1 = NULL;
 	char *str2 = NULL;
-	int ret = -100;
+	int ret = -1;
 	unsigned long len;
 	char buf[TMP_BUF_SIZE] = { 0 };
-	char tmp[128] = { 0 };
 
 	ALOGD("ADL entry %s()", __func__);
 	if (NULL == (fp = fopen(IWNPI_EXEC_BEAMF_STATUS_FILE, "r+"))) {
@@ -265,15 +288,29 @@ static int handle_reply_beamf_status_data(char *result_buf)
 	return ret;
 }
 
+/********************************************************************
+*   name   handle_reply_rxstbc_status_data
+*   ---------------------------
+*   descrition: handle reply data of get_rxstbc_status CMD
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   result_buf  IN          char *              result buffer
+*   ----------------------------------------------------
+*   return
+*   success: 0
+*   fail: -1
+*   ------------------
+*   other:
+*
+********************************************************************/
 static int handle_reply_rxstbc_status_data(char *result_buf)
 {
 	FILE *fp = NULL;
 	char *str1 = NULL;
 	char *str2 = NULL;
-	int ret = -100;
+	int ret = -1;
 	unsigned long len;
 	char buf[TMP_BUF_SIZE] = { 0 };
-	char tmp[128] = { 0 };
 
 	ALOGD("ADL entry %s()", __func__);
 	if (NULL == (fp = fopen(IWNPI_EXEC_RXSTBC_STATUS_FILE, "r+"))) {
@@ -306,12 +343,11 @@ static int handle_reply_rxstbc_status_data(char *result_buf)
 *   descrition: handle reply data of get_rx_ok CMD
 *   ----------------------------
 *   para        IN/OUT      type                note
-*   msg         IN          struct nl_msg *     msg
-*   arg         IN          void *              argument
+*   result_buf  IN          char *              result buffer
 *   ----------------------------------------------------
 *   return
-*   0:exec successful
-*   other:fail
+*   success: 0
+*   fail: -1
 *   ------------------
 *   other:
 *
@@ -321,10 +357,9 @@ static int handle_reply_rx_ok_data(char *result_buf)
 	FILE *fp = NULL;
 	char *str1 = NULL;
 	char *str2 = NULL;
-	int ret = -100;
+	int ret = -1;
 	unsigned long len;
 	char buf[TMP_BUF_SIZE] = { 0 };
-	char tmp[128] = { 0 };
 
 	ALOGD("ADL entry %s()", __func__);
 	if (NULL == (fp = fopen(IWNPI_EXEC_TMP_FILE, "r+"))) {
@@ -357,12 +392,11 @@ static int handle_reply_rx_ok_data(char *result_buf)
 *   descrition: handle reply data of get_reg command
 *   ----------------------------
 *   para        IN/OUT      type                note
-*   msg         IN          struct nl_msg *     msg
-*   arg         IN          void *              argument
+*   result_buf  IN          char *              result buffer
 *   ----------------------------------------------------
 *   return
-*   0:exec successful
-*   other:fail
+*   success: 0
+*   fail: -1
 *   ------------------
 *   other:
 *
@@ -408,9 +442,8 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 		}
 	}
 #endif
-	if (argc < 1) {
+	if (argc < 1)
 		return 1;
-	}
 
 	{
 		unsigned int i = 0;
@@ -419,15 +452,17 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 
 		while (NULL != argv[i]) {
 			strcat_safe(cmd_str, argv[i], WIFI_EUT_COMMAND_MAX_LEN);
-			if(argv[++i])
-				strcat_safe(cmd_str, " ", WIFI_EUT_COMMAND_MAX_LEN); /* add a space */
+			if (argv[++i]) {
+				/* add a space */
+				strcat_safe(cmd_str, " ", WIFI_EUT_COMMAND_MAX_LEN);
+			}
 		}
 
-		if (strstr(cmd_str, INSMOD_SPRWL_KO) > 0) {
+		if (NULL != strstr(cmd_str, INSMOD_SPRWL_KO)) {
 			module_cmd +=
 			    snprintf(module_cmd, CMD_RESULT_BUFFER_LEN, "%s", IFCONFIG_WLAN0_UP);
 			*module_cmd = '\0';
-		} else if (strstr(cmd_str, RMMOD_SPRWL_KO) > 0) {
+		} else if (NULL != strstr(cmd_str, RMMOD_SPRWL_KO)) {
 			module_cmd +=
 			    snprintf(module_cmd, CMD_RESULT_BUFFER_LEN, "%s", IFCONFIG_WLAN0_DOWN);
 			*module_cmd = '\0';
@@ -446,45 +481,36 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 
 	}
 
-	/* for lna_status cmd */
 	ALOGD("ADL %s(), command = %s", __func__, command);
-	if (strstr(command, IFCONFIG_WLAN0_UP) > 0) {
-		snprintf(result_buf, CMD_RESULT_BUFFER_LEN, "result: %d", err);
-	} else if (strstr(command, IFCONFIG_WLAN0_DOWN) > 0) {
-		snprintf(result_buf, CMD_RESULT_BUFFER_LEN, "result: %d", err);
-	} else if (strstr(command, CMD_LNA_STATUS) > 0) {
+	if ((NULL != strstr(command, IFCONFIG_WLAN0_UP))
+	    || (NULL != strstr(command, IFCONFIG_WLAN0_DOWN))) {
+		if (result_buf)
+			snprintf(result_buf, CMD_RESULT_BUFFER_LEN, "result: %d", err);
+	} else if ((NULL != strstr(command, CMD_LNA_STATUS))
+		   || (NULL != strstr(command, CMD_SET_ENG_MODE))) {
 		if (result_buf) {
 			ALOGD("ADL %s(), call handle_reply_int_data()", __func__);
 			handle_reply_int_data(result_buf);
 		}
-	} else if (strstr(command, CMD_SET_ENG_MODE) > 0) {
-		if (result_buf) {
-			ALOGD("ADL %s(), call handle_reply_int_data()", __func__);
-			handle_reply_int_data(result_buf);
-		}
-	} else if (strstr(command, CMD_GET_BEAMF_STATUS) > 0) {
+	} else if (NULL != strstr(command, CMD_GET_BEAMF_STATUS)) {
 		if (result_buf) {
 			ALOGD("ADL %s(), call CMD_GET_BEAMF_STATUS", __func__);
 			handle_reply_beamf_status_data(result_buf);
 		}
-	} else if (strstr(command, CMD_GET_RXSTBC_STATUS) > 0) {
+	} else if (NULL != strstr(command, CMD_GET_RXSTBC_STATUS)) {
 		if (result_buf) {
 			ALOGD("ADL %s(), call CMD_GET_RXSTBC_STATUS", __func__);
 			handle_reply_rxstbc_status_data(result_buf);
 		}
-	} else if (strstr(command, CMD_RX_GET_OK) > 0) {
+	} else if (NULL != strstr(command, CMD_RX_GET_OK)) {
 		if (result_buf) {
 			ALOGD("ADL %s(), call handle_reply_rx_ok_data()", __func__);
 			handle_reply_rx_ok_data(result_buf);
 		}
-	} else if ((strstr(command, CMD_GET_REG) > 0)
-		   || (strstr(command, CMD_GET_EFUSE) > 0)) {
-		if (result_buf) {
-			ALOGD("ADL %s(), call handle_reply_get_wifi_data()", __func__);
-			handle_reply_get_wifi_data(result_buf);
-		}
-	} else if ((strstr(command, CMD_GET_RECONNECT) > 0)
-		   || (strstr(command, CMD_GET_RSSI) > 0)) {
+	} else if ((NULL != strstr(command, CMD_GET_REG))
+		   || (NULL != strstr(command, CMD_GET_EFUSE))
+		   || (NULL != strstr(command, CMD_GET_RECONNECT))
+		   || (NULL != strstr(command, CMD_GET_RSSI))) {
 		if (result_buf) {
 			ALOGD("ADL %s(), call handle_reply_get_wifi_data()", __func__);
 			handle_reply_get_wifi_data(result_buf);
@@ -512,14 +538,17 @@ static int nlnpi_init(struct nlnpi_state *state)
 		err = -ENOLINK;
 		goto out_handle_destroy;
 	}
+
 	/* Android does not support genl_strl_resolve */
 	/* state->nlnpi_id = genl_ctrl_resolve(state->nl_sock, "nlnpi"); */
 	state->nlnpi_id = NL_GENERAL_NPI_ID;
+	/*
 	if (state->nlnpi_id < 0) {
 		fprintf(stderr, "nlnpi not found.\n");
 		err = -ENOENT;
 		goto out_handle_destroy;
 	}
+	*/
 
 	return 0;
 
@@ -533,48 +562,58 @@ static void nlnpi_cleanup(struct nlnpi_state *state)
 	nl_socket_free(state->nl_sock);
 }
 
-/**
-* static API
-*/
-#define OK_STR "OK"
-#define FAIL_STR "FAIL"
-
 static int send_back_cmd_result(int client_fd, char *str, int isOK)
 {
 	char buffer[255];
+	int ret = -1;
 
 	if (client_fd < 0) {
 		fprintf(stderr, "write %s to invalid fd \n", str);
-
-		return -1;
+		return ret;
 	}
 
 	memset(buffer, 0, sizeof(buffer));
 
 	if (!str) {
-		snprintf(buffer, 255, "%s", (isOK ? OK_STR : FAIL_STR));
+		snprintf(buffer, sizeof(buffer), "%s", (isOK ? OK_STR : FAIL_STR));
 	} else {
-		snprintf(buffer, 255, "%s %s", (isOK ? OK_STR : FAIL_STR), str);
+		snprintf(buffer, sizeof(buffer), "%s %s", (isOK ? OK_STR : FAIL_STR), str);
 	}
 
-	int ret = write(client_fd, buffer, strlen(buffer) + 1);
+	ret = write(client_fd, buffer, strlen(buffer) + 1);
 	if (ret < 0) {
 		fprintf(stderr, "write %s to client_fd:%d fail (error:%s)", buffer,
 			client_fd, strerror(errno));
-		return -1;
+		return ret;
 	}
 
 	return 0;
 }
 
-/**
-* cmd: wlan0 cmd arg1 arg2 ...
-*/
+/********************************************************************
+*   name   iwnpi_runcommand
+*   ---------------------------
+*   descrition: iwnpi command entry function, wlan0 cmd arg1 arg2 ...
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   client_fd   IN          int                 client file descriptor
+*   argc        IN          int                 argument count
+*   argv        IN          char **             argument vector
+*   ----------------------------------------------------
+*   return
+*   success: 0
+*   fail: -1
+*   ------------------
+*   other:
+*
+********************************************************************/
 int iwnpi_runcommand(int client_fd, int argc, char **argv)
 {
 	struct nlnpi_state nlstate;
 	int err;
 	const struct cmd *cmd = NULL;
+	char result_buf[CMD_RESULT_BUFFER_LEN];
+	char buf[CMD_RESULT_BUFFER_LEN];
 
 	/* calculate command size including padding */
 	cmd_size = abs((long)&__section_set - (long)&__section_get);
@@ -595,8 +634,8 @@ int iwnpi_runcommand(int client_fd, int argc, char **argv)
 	if (err)
 		return 1;
 
-	char result_buf[CMD_RESULT_BUFFER_LEN];
 	memset(result_buf, 0, sizeof(result_buf));
+	memset(buf, 0, sizeof(buf));
 	if (strncmp(*argv, "wlan", 4) == 0 && argc > 1) {
 		err = __handle_cmd(&nlstate, argc, argv, &cmd, result_buf);
 	} else {
@@ -607,18 +646,13 @@ int iwnpi_runcommand(int client_fd, int argc, char **argv)
 	if (err == 1) {
 		send_back_cmd_result(client_fd, "invalid cmd or cmd format", 0);
 	} else if (err < 0) {
-		char buf[128];
-		memset(buf, 0, sizeof(buf));
-		snprintf(buf, 128, "command failed return value: %d", err);
-
+		snprintf(buf, sizeof(buf), "command failed return value: %d", err);
 		send_back_cmd_result(client_fd, buf, 0);
 	} else {
-		char buf[128];
-		memset(buf, 0, sizeof(buf));
 		if (strlen(result_buf))
-			snprintf(buf, 128, "%s", result_buf);
+			snprintf(buf, sizeof(buf), "%s", result_buf);
 		else
-			snprintf(buf, 128, "return value: %d", err);
+			snprintf(buf, sizeof(buf), "return value: %d", err);
 
 		send_back_cmd_result(client_fd, buf, 1);
 	}

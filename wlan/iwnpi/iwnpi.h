@@ -18,9 +18,9 @@
 
 #include "nlnpi.h"
 
-#define NL_GENERAL_NPI_ID 1022
-#define ETH_ALEN 6
-#define WLNPI_RES_BUF_LEN 128
+#define ETH_ALEN            (6)
+#define WLNPI_RES_BUF_LEN   (128)
+#define NL_GENERAL_NPI_ID   (1022)
 
 #define IWNPI_EXEC_TMP_FILE ("/mnt/vendor/iwnpi_exec_data.log")
 

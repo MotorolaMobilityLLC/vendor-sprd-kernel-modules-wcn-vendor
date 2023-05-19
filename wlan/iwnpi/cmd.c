@@ -23,10 +23,10 @@
 #endif
 #define LOG_TAG "IWNPI_CMD"
 
-#define REG_MAC 0
-#define REG_PHY0 1
-#define REG_PHY1 2
-#define REG_RF 3
+#define REG_MAC   0
+#define REG_PHY0  1
+#define REG_PHY1  2
+#define REG_RF    3
 
 char ret_result_buf[WLNPI_RES_BUF_LEN + 1] = { 0x00 };
 
