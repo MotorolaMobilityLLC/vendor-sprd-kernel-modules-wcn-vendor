@@ -2996,6 +2996,25 @@ int wlnpi_cmd_set_dpd_enable(int argc, char **argv, unsigned char *s_buf, int *s
 	return 0;
 }
 
+/*-----CMD ID:99-----------*/
+int wlnpi_show_get_txs_temperature(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
+{
+	short txs_temp = 0;
+	ENG_LOG("ADL entry %s(), r_len = %d", __func__, r_len);
+
+	if(2 != r_len)
+	{
+		printf("get_txs_temperature err\n");
+		ENG_LOG("ADL leaving %s(), r_len is ERROR, return -1", __func__);
+		return -1;
+	}
+	txs_temp = *((short *)r_buf);
+
+	printf("ret: temperature: %d :end\n", txs_temp);
+	ENG_LOG("ADL leaving %s(), txs_temperature = %d, return 0", __func__, txs_temp);
+	return 0;
+}
+
 int wlnpi_cmd_set_cbank_reg(int argc, char **argv, unsigned char *s_buf, int *s_len)
 {
 	char *err;
@@ -4516,25 +4535,32 @@ int wlnpi_cmd_set_cca_param(int argc, char **argv, unsigned char *s_buf,
 
 	ENG_LOG("ADL entry %s(), argc = %d\n", __func__, argc);
 
-	/* flag: 0, turn off; flag: 1, absolute; flag: 2, relative */
+	/* flag: 0, turn off; flag: 1, absolute; flag: 2, relative; flag: 3, adaptive */
 	flag = strtol(argv[0], &err, 10);
-	if (err == argv[0] || (0 != flag && 1 != flag && 2 != flag))
-	{
+	if (err == argv[0] || flag < 0 || flag > 3) {
 		ENG_LOG("ADL %s(), input flag ERROR, return -1\n", __func__);
-		printf("invalid input flag, only 0, 1 or 2\n");
+		printf("invalid input flag, only 0, 1, 2 or 3\n");
 		return -1;
 	}
 	ENG_LOG("ADL %s(), flag: %d\n", __func__, flag);
 
 	*p++ = flag;
 
-	/* value: -127 ~ +127 */
 	value = strtol(argv[1], &err, 10);
-	if (err == argv[1] || -127 > value || 127 < value)
-	{
-		ENG_LOG("ADL %s(), input value ERROR, return -1\n", __func__);
-		printf("invalid input value, only -127 ~ +127\n");
-		return -1;
+	/* adaptive EN flag, 1:enable wifi CE adaptive, 0:disable wifi CE adaptive*/
+	if (flag == 3) {
+		if (err == argv[1] || (0 != value && 1 != value)) {
+			ENG_LOG("ADL %s(), input adap EN flag ERROR, return -1\n", __func__);
+			printf("invalid input adap EN flag, only 0 or 1\n");
+			return -1;
+		}
+	} else {
+		/* cca value: -127 ~ +127 */
+		if (err == argv[1] || -127 > value || 127 < value) {
+			ENG_LOG("ADL %s(), input cca value ERROR, return -1\n", __func__);
+			printf("invalid input cca value, only -127 ~ +127\n");
+			return -1;
+		}
 	}
 	ENG_LOG("ADL %s(), value: %d\n", __func__, value);
 
@@ -5245,7 +5271,7 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .name = "get_txs_temp",
 	 .help = "get_txs_temp",
 	 .parse = wlnpi_cmd_no_argv,
-	 .show = wlnpi_show_only_status,
+	 .show = wlnpi_show_get_txs_temperature,
 	 },
 	{
 	/*-----CMD ID:100-----------*/
@@ -5594,7 +5620,7 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .show = wlnpi_cmd_get_sta_wfa_para,
 	 },
 	{
-	 /*----CMD ID:159------------*/
+	 /*----CMD ID:198------------*/
 	 .id   = WLNPI_CMD_SET_CCA_PARAM,
 	 .name  = "set_cca_param",
 	 .help  = "set_cca_param flag value",

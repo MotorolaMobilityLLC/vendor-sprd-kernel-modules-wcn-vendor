@@ -3257,7 +3257,7 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .show = wlnpi_cmd_get_sta_wfa_para,
 	 },
 	{
-	 /*----CMD ID:64------------*/
+	 /*----CMD ID:198------------*/
 	 .id   = WLNPI_CMD_SET_CCA_PARAM,
 	 .name  = "set_cca_param",
 	 .help  = "set_cca_param flag value",

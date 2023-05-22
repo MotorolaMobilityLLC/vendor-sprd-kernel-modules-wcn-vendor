@@ -120,7 +120,7 @@ int eng_controller_bqb_start(controller2uplayer_t func, bt_bqb_mode_t mode) {
     controller2uplayer = func;
     ALOGD("bt_on");
     bt_fd = bt_on(mode);
-    ALOGD("bt_fd = %d", bt_fd);
+    //ALOGD("bt_fd = %d", bt_fd);
 
     ret = pthread_create(&ntid_bqb, NULL, (void *)eng_receive_data_thread, NULL);   /*create thread*/
     if (ret== -1) {
@@ -277,10 +277,10 @@ static void bqb_service_enable(int pc_fd, bt_bqb_mode_t mode) {
   ret = eng_controller_bqb_start(eng_controller2tester, mode);
 }
 
-static void bqb_service_disable(int pc_fd) {
+static void bqb_service_disable(int pc_fd, int write_fd) {
   struct termios ser_settings;
   int ret = 0;
-  ALOGD("bqb bqb_service_disable");
+  ALOGD("bqb bqb_service_disable, write_fd: %d", write_fd);
   tcgetattr(pc_fd, &ser_settings);
   cfmakeraw(&ser_settings);
   ser_settings.c_lflag |= (ECHO | ECHONL);
@@ -306,7 +306,7 @@ int check_received_str(int fd, char* engbuf, int len) {
       } else if (strstr(engbuf, DISABLE_BQB_TEST)) {
           is_bqb_cmd = 1;
         if (current_bqb_state != BQB_CLOSED) {
-          bqb_service_disable(at_fd);
+          bqb_service_disable(at_fd, fd);
           write(fd, NOTIFY_BQB_DISABLE, strlen(NOTIFY_BQB_DISABLE));
         } else {
           write(fd, NOTIFY_BQB_DISABLE, strlen(NOTIFY_BQB_DISABLE));
@@ -363,7 +363,7 @@ static void* eng_read_socket_thread(void* par) {
 
       memset(engbuf, 0, ENG_BUFFER_SIZE);
       len = read(fd, engbuf, ENG_BUFFER_SIZE);
-      ALOGD("bqb control: %s: len: %d", engbuf, len);
+      ALOGD("bqb control: %s: len: %d, fd: %d", engbuf, len, fd);
       check_received_str(fd, engbuf, len);
       close(fd);
       //continue;

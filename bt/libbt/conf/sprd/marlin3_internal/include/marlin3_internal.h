@@ -32,7 +32,6 @@
 #define FW_DATE_M_BYTE 9
 #define FW_DATE_D_BYTE 8
 #define FW_DEFAULT_PROP "FFFF.FFFF.FF.FF"
-#define FW_PROP_NAME "rw.vendor.bluetooth.fw.ver"
 
 /*  start bt with dual/classic/ble mode */
 enum { DUAL_MODE = 0, CLASSIC_MODE, LE_MODE };

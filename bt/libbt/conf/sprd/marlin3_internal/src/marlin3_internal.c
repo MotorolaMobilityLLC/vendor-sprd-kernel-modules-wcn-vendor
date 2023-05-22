@@ -306,7 +306,6 @@ static void marlin3_internal_pskey_cback(void *p_mem)
     ALOGI("Bluetooth Firmware Node: %04X Date: %04x-%02x-%02x", node, year, month,
           day);
     snprintf(buf, sizeof(buf), "%04x.%04x.%02x.%02x", node, year, month, day);
-    property_set(FW_PROP_NAME, buf);
 
     if (bt_vendor_cbacks) {
         /* Must free the RX event buffer */

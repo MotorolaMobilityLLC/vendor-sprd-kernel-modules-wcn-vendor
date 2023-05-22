@@ -293,8 +293,11 @@ void VendorInterface::Close() {
     lib_interface_->op(BT_VND_OP_LPM_SET_MODE, &mode);
   }
   // sprd: run epilog to send oxfca1 disable cmd
-  if (lib_interface_ != nullptr) {
+  if ((lib_interface_ != nullptr) && (hci_ != nullptr)) {
     lib_interface_->op(BT_VND_OP_EPILOG, nullptr);
+  } else {
+    ALOGE("vendor fd open failed!");
+    sem_post(&epilog_sem);
   }
   gettimeofday(&time_now, NULL);
   act_timeout.tv_sec = time_now.tv_sec + 2;
