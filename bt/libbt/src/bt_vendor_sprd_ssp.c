@@ -139,7 +139,11 @@ void sprd_vnd_hci_ssp_cback(void *pmem)
         sprd_vnd_set_own_pp256_key();
     }
     else if (vsc_opcode == HCI_SET_OWN_PP256_KEY) {
-        bt_vendor_cbacks->fwcfg_cb(BT_VND_OP_RESULT_SUCCESS);
+        if(BT_VND_N79_FLAG_NOTIFY == TRUE) {
+            sprd_n79_flag_node_check();
+        } else {
+            bt_vendor_cbacks->fwcfg_cb(BT_VND_OP_RESULT_SUCCESS);
+        }
     }
 
     else if (vsc_opcode == HCI_SET_P192_DHKEY) {

@@ -59,6 +59,7 @@
 #define READ_BUFFER_MAX 1024
 
 #define VENDOR_HCI_SOCKET "bt_vendor_sprd_hci"
+#define VENDOR_N79_FLAG_NODE "/sys/class/misc/wcn/devices/n79_mode"
 
 /*****************************************************************************
 ** Constants and types
@@ -235,6 +236,50 @@ static inline int accept_server_socket(int sfd) {
          return -1;
     }
     return fd;
+}
+
+void sprd_n79_flag_node_check_cback(void *pmem) {
+    BTD("n79 flag node check success");
+    HC_BT_HDR    *p_evt_buf = (HC_BT_HDR *)pmem;
+    /* Free the RX event buffer */
+    bt_vendor_cbacks->fwcfg_cb(BT_VND_OP_RESULT_SUCCESS);
+    bt_vendor_cbacks->dealloc(p_evt_buf);
+}
+
+void sprd_n79_flag_node_check(void) {
+    /*Check VENDOR_N79_FLAG_NODE when Bluetooth on*/
+    FILE *fp = fopen(VENDOR_N79_FLAG_NODE, "r");
+    if (fp) {
+        int status = fgetc(fp);
+        if (status == '1') {
+            BTD("n79 flag node check is 1");
+            uint8_t msg_req[1] = {0x01};
+            uint16_t opcode = HCI_N79_FLAG_NOTIFY;
+            sprd_vnd_send_hci_vsc(opcode, (uint8_t *)msg_req, 1, sprd_n79_flag_node_check_cback);
+            fclose(fp);
+        } else {
+            BTD("n79 flag node check is 0");
+            fclose(fp);
+            bt_vendor_cbacks->fwcfg_cb(BT_VND_OP_RESULT_SUCCESS);
+        }
+    } else {
+        BTD("failed to open file: %s",VENDOR_N79_FLAG_NODE);
+        bt_vendor_cbacks->fwcfg_cb(BT_VND_OP_RESULT_SUCCESS);
+    }
+}
+
+void ssprd_vse_n79_flag_notify_cback(void *pmem) {
+    BTD("n79 flag notify success");
+    HC_BT_HDR    *p_evt_buf = (HC_BT_HDR *)pmem;
+    /* Free the RX event buffer */
+    bt_vendor_cbacks->dealloc(p_evt_buf);
+}
+
+void sprd_vse_n79_flag_notify (void) {
+    BTD("sprd_vse_n79_flag_notify");
+    uint8_t msg_req[1] = {0x01};
+    uint16_t opcode = HCI_N79_FLAG_NOTIFY;
+    sprd_vnd_send_hci_vsc(opcode, (uint8_t *)msg_req, 1, ssprd_vse_n79_flag_notify_cback);
 }
 
 static void hci_server_thread(void* param){

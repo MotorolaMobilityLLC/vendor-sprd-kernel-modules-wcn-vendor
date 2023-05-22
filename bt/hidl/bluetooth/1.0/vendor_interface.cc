@@ -438,6 +438,15 @@ void VendorInterface::HandleIncomingEvent(const hidl_vec<uint8_t>& hci_packet) {
       ALOGE("wcn firmware is reset!");
       wcn_reset_occurred = true;
     }
+
+    if ((bt_hdr->data[0] == 0xff)
+        && (bt_hdr->data[1] == 0x02)
+        && (bt_hdr->data[2] == 0x79)
+        && (bt_hdr->data[3] == 0x01)) {
+      ALOGD("N79 flag notifier vse received");
+      lib_interface_->op(BT_VND_OP_N79_FLAG_STATE, bt_hdr);
+    }
+
     buffer_free_cb(bt_hdr);
     event_cb_(hci_packet);
   }

@@ -213,6 +213,17 @@ typedef enum {
    */
   BT_VND_OP_EVENT_CALLBACK,
 
+  /*  [operation]
+   *      N79 flags is 1 received .
+   *  [input param]
+   *      hci event packet.
+   *  [return]
+   *      0 - default, don't care.
+   *  [callback]
+   *      None.
+   */
+  BT_VND_OP_N79_FLAG_STATE,
+
 } bt_vendor_opcode_t;
 
 /** Power on/off control states */
