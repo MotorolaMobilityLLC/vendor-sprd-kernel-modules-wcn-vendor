@@ -76,7 +76,7 @@ static int nl_reply_handler(struct nl_msg *msg, void *arg)
 	return NL_SKIP;
 }
 
-static int nl_send_recv_msg(wlnpi_t * wlnpi, unsigned char *s_buf, unsigned short s_len,
+static int nl_send_recv_msg(wlnpi_t *wlnpi, unsigned char *s_buf, unsigned short s_len,
 			    unsigned char *r_buf, unsigned int *r_len)
 {
 	struct nl_cb *cb;
@@ -152,13 +152,13 @@ static int wlnpi_handle_special_cmd(struct wlnpi_cmd_t *cmd)
 	return 0;
 }
 
-static int get_drv_info(wlnpi_t * wlnpi, struct wlnpi_cmd_t *cmd)
+static int get_drv_info(wlnpi_t *wlnpi, struct wlnpi_cmd_t *cmd)
 {
 	int ret;
 	unsigned char s_buf[4] = { 0 };
 	unsigned short s_len = 4;
 	unsigned char r_buf[32] = { 0 };
-	unsigned short r_len = 32;
+	unsigned int r_len = 32;
 
 	memset(s_buf, 0xFF, 4);
 	wlnpi->nl_cmd_id = WLAN_NL_CMD_GET_INFO;
@@ -178,7 +178,7 @@ static int get_drv_info(wlnpi_t * wlnpi, struct wlnpi_cmd_t *cmd)
 	return 0;
 }
 
-static int wlan_nl_init(wlnpi_t * wlnpi)
+static int wlan_nl_init(wlnpi_t *wlnpi)
 {
 	int ret;
 
@@ -203,7 +203,7 @@ out_handle_destroy:
 	return ret;
 }
 
-static void wlan_nl_deinit(wlnpi_t * wlnpi)
+static void wlan_nl_deinit(wlnpi_t *wlnpi)
 {
 	nl_socket_free(wlnpi->sock);
 }
@@ -214,7 +214,7 @@ int main(int argc, char **argv)
 {
 	int ret = 0;
 	unsigned short s_len = 0;
-	unsigned short r_len = 1024;
+	unsigned int r_len = 1024;
 	unsigned char s_buf[1024] = { 0 };
 	unsigned char r_buf[1024] = { 0 };
 	struct wlnpi_cmd_t *cmd = NULL;
@@ -285,8 +285,8 @@ int main(int argc, char **argv)
 	ret = nl_send_recv_msg(wlnpi, s_buf, s_len, r_buf, &r_len);
 	msg = r_buf;
 
-	if ((MARLIN_TO_HOST_REPLY != msg->type) || (cmd->id != msg->subtype)
-	    || (r_len < sizeof(WLNPI_CMD_HDR_T) + sizeof(int))) {
+	if ((MARLIN_TO_HOST_REPLY != msg->type) || (cmd->id != msg->subtype) ||
+            (r_len < sizeof(WLNPI_CMD_HDR_T) + sizeof(int))) {
 		printf("communication error\n");
 		printf("msg->type = %d, cmd->id = %d, subtype = %d, r_len = %d\n", msg->type,
 		       cmd->id, msg->subtype, r_len);

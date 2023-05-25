@@ -1319,6 +1319,10 @@ int wlnpi_show_get_connected_ap_info(struct wlnpi_cmd_t *cmd, unsigned char *r_b
 	ENG_LOG("ADL entry %s(), r_len = %d", __func__, r_len);
 
 	//iwnpi_hex_dump((unsigned char *)"r_buf:\n", strlen("r_buf:\n"), (unsigned char *)r_buf, r_len);
+	if (r_len > sizeof(assoc_resp)) {
+		ENG_LOG("ADL levaling %s(), r_len %d is large!!!", __func__, sizeof(assoc_resp));
+		return -1;
+	}
 
 	if (NULL != r_buf) {
 		memcpy(&resp_ies, r_buf, r_len);
@@ -1964,7 +1968,7 @@ static char *wlnpi_bss_get_ie(const char *bss, char ieid)
 	const char *end, *pos;
 
 	/* get length of ies */
-	ie_len = bss[0] + bss[1];
+	ie_len = iwnpi_get_le16(bss);
 	ENG_LOG("%s(), ie_len = %d\n", __func__, ie_len);
 
 	/* ies format: length(2) + IE1 + IE2 + IE3 + ... */
@@ -2007,7 +2011,7 @@ static char *iwnpi_bss_get_vendor_ie(const char *bss, int vendor_type)
 	const char *end, *pos;
 
 	/* get length of ies */
-	ie_len = bss[0] + bss[1];
+	ie_len = iwnpi_get_le16(bss);
 
 	pos = (const char *)(bss + 2);
 	end = pos + ie_len;
@@ -2055,11 +2059,22 @@ int wlnpi_show_only_int_ret(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r
 	return 0;
 }
 
+/*******************************
+*	s_buf info:
+*	typedef struct wfa_cert_roam
+*	{
+*	    uint8 channel;
+*	    uint8 bssid[MAC_ADDR_LEN];
+*	    uint8 ssid[MAX_SSID_LEN];
+*	} WFA_CERT_ROAM_T;
+********************************/
+
 int wlnpi_cmd_roam(int argc, char **argv, unsigned char *s_buf, int *s_len)
 {
 	char *err;
 	int index = 0;
 	unsigned char *tmp = s_buf;
+	int length;
 
 	if (3 != argc)
 		return -1;
@@ -2074,7 +2089,14 @@ int wlnpi_cmd_roam(int argc, char **argv, unsigned char *s_buf, int *s_len)
 	*s_len += 6;
 	tmp = tmp + 6;
 
-	int length = strlen(argv[2]) + 1;
+	/*CP2 user strcmp check ssid，should copy '\0'*/
+	length = strlen(argv[2]) + 1;
+	/*must less (s_lenMax-1-6)*/
+	if (length > (1024-7)) {
+		printf("%s() err length=%d\n", __func__,length);
+		return -1;
+	}
+
 	strncpy(tmp, argv[2], length);
 	*s_len += length;
 
