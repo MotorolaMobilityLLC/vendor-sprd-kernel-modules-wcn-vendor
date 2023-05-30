@@ -26,7 +26,7 @@
 static const char *argv0 = "iwnpi";
 int iwnpi_debug = 0;
 
-static int cmd_size;
+static long cmd_size;
 
 extern struct cmd __start___cmd;
 extern struct cmd __stop___cmd;
@@ -616,7 +616,7 @@ int iwnpi_runcommand(int client_fd, int argc, char **argv)
 	char buf[CMD_RESULT_BUFFER_LEN];
 
 	/* calculate command size including padding */
-	cmd_size = abs((long)&__section_set - (long)&__section_get);
+	cmd_size = labs((long)&__section_set - (long)&__section_get);
 
 	if (argc > 0 && strcmp(*argv, "--debug") == 0) {
 		iwnpi_debug = 1;
