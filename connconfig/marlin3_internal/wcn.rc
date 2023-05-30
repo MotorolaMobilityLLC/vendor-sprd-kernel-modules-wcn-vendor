@@ -95,51 +95,18 @@ service wifisar6 /vendor/bin/wifisar6.sh
     oneshot
     disabled
 
+
 on property:persist.sys.longcheer.wifisar=0
     start wifisar0
 
-on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=1
+on property:persist.sys.longcheer.wifisar=1
     start wifisar1
 
 on property:persist.sys.longcheer.wifisar=2
     start wifisar2
 
-on property:persist.sys.longcheer.wifisar=3 && property:ro.boot.sku=5
+on property:persist.sys.longcheer.wifisar=3
     start wifisar3
 
-on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=1
-    start wifisar7
-
-on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=2
-    start wifisar1
-
-on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=2
-    start wifisar7
-
-on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=3
-    start wifisar1
-
-on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=3
-    start wifisar7
-
-on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=4
-    start wifisar1
-
-on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=4
-    start wifisar7
-
-on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=5
-    start wifisar7
-
-on property:persist.sys.longcheer.wifisar=3 && property:ro.boot.sku=6
+on property:persist.sys.longcheer.wifisar=6
     start wifisar6
-
-on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=5
-    start wifisar0
-
-on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=6
-    start wifisar0
-
-on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=6
-    start wifisar0
-
