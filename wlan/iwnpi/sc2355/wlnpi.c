@@ -158,7 +158,7 @@ static int get_drv_info(wlnpi_t *wlnpi, struct wlnpi_cmd_t *cmd)
 	unsigned char s_buf[4] = { 0 };
 	unsigned short s_len = 4;
 	unsigned char r_buf[32] = { 0 };
-	unsigned int r_len = 0;
+	unsigned int r_len = 32;
 
 	memset(s_buf, 0xFF, 4);
 	wlnpi->nl_cmd_id = WLAN_NL_CMD_GET_INFO;
