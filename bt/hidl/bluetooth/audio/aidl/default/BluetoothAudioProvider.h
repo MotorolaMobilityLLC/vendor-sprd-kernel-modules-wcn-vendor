@@ -54,7 +54,7 @@ class BluetoothAudioProvider : public BnBluetoothAudioProvider {
 
  protected:
   virtual ndk::ScopedAStatus onSessionReady(DataMQDesc* _aidl_return) = 0;
-  static void binderDiedCallbackAidl(void* cookie_ptr);
+  //static void binderDiedCallbackAidl(void* cookie_ptr);
 
   ::ndk::ScopedAIBinder_DeathRecipient death_recipient_;
 
@@ -62,7 +62,7 @@ class BluetoothAudioProvider : public BnBluetoothAudioProvider {
   std::unique_ptr<AudioConfiguration> audio_config_ = nullptr;
   SessionType session_type_;
   std::vector<LatencyMode> latency_modes_;
-  bool is_binder_died = false;
+  //bool is_binder_died = false;
 };
 
 }  // namespace audio
