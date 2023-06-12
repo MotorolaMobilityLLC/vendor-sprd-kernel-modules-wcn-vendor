@@ -1,3 +1,7 @@
+on post-fs-data
+    #Add bluetooth mac address dir
+    mkdir /data/vendor/bluetooth 0770 bluetooth bluetooth
+
 on property:vendor.all.modules.ready=1
     chown system system /proc/mdbg
     chown system root /proc/mdbg/assert
@@ -24,8 +28,6 @@ on property:sys.boot_completed=1
     chown bluetooth net_bt_admin /sys/class/rfkill/rfkill1/state
     chmod 660 /sys/class/rfkill/rfkill1/type
     chown bluetooth net_bt_admin /sys/class/rfkill/rfkill1/type
-
-    mkdir /data/vendor/bluetooth 0770 bluetooth bluetooth
 
     chmod 660 /sys/devices/platform/wcn_bt/dumpmem
     chown bluetooth net_bt_admin /sys/devices/platform/wcn_bt/dumpmem
