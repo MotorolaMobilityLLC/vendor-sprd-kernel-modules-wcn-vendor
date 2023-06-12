@@ -551,6 +551,13 @@ Return<void> TunerSession::setParameters(const hidl_vec<VendorKeyValue>& paramet
             int j = 0;
 
             int length = strlen(parameters[i].value.c_str());
+            if (length >= 30) {
+                ALOGD("tune parameters length is = %d,should < 30!",length);
+                ret_set = -1;
+                hidl_vec<VendorKeyValue> vec = {{"settuneparm",std::to_string(ret_set)}};
+                _hidl_cb(vec);
+                return Void();
+            }
             memcpy(tuneparm,parameters[i].value.c_str(),length);
             ALOGD("seting tuneparm key and value");
 
@@ -608,6 +615,13 @@ Return<void> TunerSession::setParameters(const hidl_vec<VendorKeyValue>& paramet
             int j = 0;
 
             int length = strlen(parameters[i].value.c_str());
+             if (length >= 30) {
+                ALOGD("audio parameters length is = %d,should < 30!",length);
+                ret_set = -1;
+                hidl_vec<VendorKeyValue> vec = {{"settuneparm",std::to_string(ret_set)}};
+                _hidl_cb(vec);
+                return Void();
+            }
             memcpy(audioparm,parameters[i].value.c_str(),length);
             ALOGD("seting audioparm key and value");
 
@@ -663,6 +677,13 @@ Return<void> TunerSession::setParameters(const hidl_vec<VendorKeyValue>& paramet
             int j = 0;
 
             int length = strlen(parameters[i].value.c_str());
+            if (length >= 40) {
+                ALOGD("setreg parameters length is = %d too long,should < 40!",length);
+                ret_set = -1;
+                hidl_vec<VendorKeyValue> vec = {{"settuneparm",std::to_string(ret_set)}};
+                _hidl_cb(vec);
+                return Void();
+            }
             memcpy(regparm,parameters[i].value.c_str(),length);
             ALOGD("seting regparm key and value");
 
@@ -709,7 +730,7 @@ Return<void> TunerSession::getParameters(const hidl_vec<hidl_string>&  keys,
                                          getParameters_cb _hidl_cb) {
     ALOGD("%s keys length = %d", __func__,keys.size());
     char * reg = "getregparm";
-    char mark[1] = {'.'};
+    char mark[2] = {'.'};
     for(size_t i = 0; i < keys.size(); ++i) {
         int length = strlen(keys[i].c_str());
         if(keys[i] == "rssi") {
@@ -791,7 +812,7 @@ Return<void> TunerSession::getParameters(const hidl_vec<hidl_string>&  keys,
             hidl_vec<VendorKeyValue> vec = {{"getaudioparm",output}};
             _hidl_cb(vec);
             return Void();
-       }else if((length >= 10) && memcmp(reg,keys[i].c_str(),10) == 0){
+       }else if((length >= 10 && length <= 30) && memcmp(reg,keys[i].c_str(),10) == 0){
             char regparm[30];
             char temp_regparm[20];
             char temp_err[4],temp_addr[15];
