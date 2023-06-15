@@ -78,8 +78,8 @@ bool BluetoothAddress::generate_local_address(uint8_t* local_addr, char* file_na
   bdaddr[4] = (uint8_t)((mac_rd >> 8) & 0xFF);
   bdaddr[5] = (uint8_t)((mac_rd >> 16) & 0xFF);
 
-  ALOGI("%s: [%02X:%02X:%02X:%02X:%02X:%02X]",__func__, bdaddr[0], bdaddr[1],
-    bdaddr[2], bdaddr[3], bdaddr[4], bdaddr[5]);
+  ALOGD("%s: [%02X:%02X:%02X:XX:XX:XX]", __func__,
+                  bdaddr[0], bdaddr[1], bdaddr[2]);
 
   memcpy(local_addr, bdaddr, sizeof(bdaddr));
 
