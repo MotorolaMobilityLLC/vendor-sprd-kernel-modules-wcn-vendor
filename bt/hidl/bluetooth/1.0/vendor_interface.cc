@@ -35,7 +35,6 @@ static const char* VENDOR_LIBRARY_SYMBOL_NAME =
     "BLUETOOTH_VENDOR_LIB_INTERFACE";
 
 static const int INVALID_FD = -1;
-static bool wcn_reset_occurred = false;
 
 namespace {
 
@@ -294,11 +293,10 @@ void VendorInterface::Close() {
     lib_interface_->op(BT_VND_OP_LPM_SET_MODE, &mode);
   }
   // sprd: run epilog to send oxfca1 disable cmd
-  if ((lib_interface_ != nullptr) && (hci_ != nullptr)
-      && (!wcn_reset_occurred)) {
+  if ((lib_interface_ != nullptr) && (hci_ != nullptr)) {
     lib_interface_->op(BT_VND_OP_EPILOG, nullptr);
   } else {
-    ALOGE("there might be a problem with the firmware!");
+    ALOGE("vendor fd open failed!");
     sem_post(&epilog_sem);
   }
   gettimeofday(&time_now, NULL);
@@ -307,8 +305,6 @@ void VendorInterface::Close() {
   if (sem_timedwait(&epilog_sem, &act_timeout) <0) {
     ALOGE("wait for firmware turn off faild");
   }
-
-  wcn_reset_occurred = false;
   sem_destroy(&epilog_sem);
   //bt_snoop_thread_stop();
   fd_watcher_.StopWatchingFileDescriptors();
@@ -406,15 +402,8 @@ void VendorInterface::HandleIncomingEvent(const hidl_vec<uint8_t>& hci_packet) {
     saved_cb(bt_hdr);
   } else {
     HC_BT_HDR* bt_hdr = WrapPacketAndCopy(HCI_PACKET_TYPE_EVENT, hci_packet);
-    if (bt_hdr->data[0] == 0xff) {
+    if(bt_hdr->data[0] == 0xff) {
       lib_interface_->op(BT_VND_OP_EVENT_CALLBACK, bt_hdr);
-    }
-    if ((bt_hdr->data[0] == 0xff)
-        && (bt_hdr->data[1] == 0x02)
-        && (bt_hdr->data[2] == 0x57)
-        && (bt_hdr->data[3] == 0xa5)) {
-      ALOGE("wcn firmware is reset!");
-      wcn_reset_occurred = true;
     }
     buffer_free_cb(bt_hdr);
     event_cb_(hci_packet);
