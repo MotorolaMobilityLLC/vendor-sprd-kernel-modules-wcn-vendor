@@ -388,7 +388,7 @@ static int pox_system(char *cmd_line)
  *
  * return value:
  *     0: success
- *   !=1: error
+ *    -1: error
  */
 static int load_driver(void)
 {
@@ -536,7 +536,7 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 			return -1;
 
 		eut->ext_data = val;
-		sprintf(npi_cmd_buf, eut->npi_cmd, val == 1 ? "rx_start" : "rx_stop");
+		sprintf(npi_cmd_buf, eut->npi_cmd, val ? "rx_start" : "rx_stop");
 		break;
 
 	case WIFI_EUT_CMD_SET_CHANNEL:
@@ -562,7 +562,7 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 			return -1;
 
 		eut->ext_data = val;
-		sprintf(npi_cmd_buf, eut->npi_cmd, (val == 1) ? "lna_on" : "lna_off");
+		sprintf(npi_cmd_buf, eut->npi_cmd, val ? "lna_on" : "lna_off");
 		break;
 
 	case WIFI_EUT_CMD_SET_RATE:
@@ -935,6 +935,7 @@ int set_mac_addr(char *mac)
 		if (-1 == chmod(NV_MAC_ADDR_PATH, 0666))
 			ENG_LOG("%s chmod failed", __func__);
 	}
+
 	ret = write(fd, mac_addr, strlen(mac_addr));
 	fsync(fd);
 	close(fd);
@@ -963,6 +964,7 @@ int set_mac_addr_new(char *mac)
 		if (-1 == chmod(NV_MAC_ADDR_PATH, 0666))
 			ENG_LOG("%s chmod failed", __func__);
 	}
+
 	ret = write(fd, mac_addr, strlen(mac_addr));
 	fsync(fd);
 	close(fd);
@@ -1002,7 +1004,6 @@ int get_mac_addr(char *mac_addr)
 int get_mac_addr_new(char *mac_addr)
 {
 	int fd;
-	int ret;
 	char buf[32];
 
 	fd = open(NV_MAC_ADDR_PATH, O_RDONLY);
@@ -1070,15 +1071,11 @@ static int permission_check(struct wifi_eut_t *eut)
 		break;
 
 	case WIFI_EUT_CMD_GET_ANTINFO:
-		if (load_driver() < 0)
-			ret = -1;
-		else
+		if (load_driver() == 0)
 			ret = 0;
-
 		break;
 
 	default:
-		ret = -1;
 		break;
 	}
 
@@ -1104,9 +1101,8 @@ static struct wifi_eut_t *at2eut(char *cmd)
 
 	for (index = 0; wifi_eut[index].at_pattern != NULL; index++) {
 		/* compare keywords: "EUT?"/"EUT," etc */
-		if (!strncmp(wifi_eut[index].at_pattern, cmd, chr - cmd + 1)) {
+		if (!strncmp(wifi_eut[index].at_pattern, cmd, chr - cmd + 1))
 			return &wifi_eut[index];
-		}
 	}
 
 	return NULL;
@@ -1205,9 +1201,9 @@ int set_tx(struct wifi_eut_t *eut, char *at_cmd)
 		case 2:
 		case 3:
 			/* mode == 0; continue mode */
-			if (mode == 0)
+			if (mode == 0) {
 				pkt_count = 0;
-			else {
+			} else {
 				if (ret != 3)
 					return -1;
 			}
@@ -1368,8 +1364,7 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 
 	ENG_LOG("wifi_eut: eut_cmd_id = %d", eut->eut_cmd_id);
 
-	ret = permission_check(eut);
-	if (ret < 0) {
+	if (permission_check(eut) < 0) {
 		ENG_LOG("wifi_eut: permission denied(line:%d)\n", __LINE__);
 		ENG_LOG("wifi_eut: WIFI EUT mode = %d, eut cmd id = %d\n",
 			GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);
@@ -1444,12 +1439,10 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 		break;
 
 	default:
-		ret = at2npi(eut, at_cmd, npi_cmd);
-		if (ret < 0)
+		if (at2npi(eut, at_cmd, npi_cmd) < 0)
 			goto err;
 
-		ret = run_npi_command(npi_cmd, npi_output, sizeof(npi_output));
-		if (ret < 0)
+		if (run_npi_command(npi_cmd, npi_output, sizeof(npi_output)) < 0)
 			goto err;
 
 		pout = npi_output;
@@ -1461,8 +1454,7 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 
 		pout += ret;
 
-		ret = check_npi_status(buff);
-		if (ret < 0) {
+		if (check_npi_status(buff) < 0) {
 			ENG_LOG("wifi_eut: npi status = %d (line:%d)", ret, __LINE__);
 			goto err;
 		}
@@ -1507,7 +1499,6 @@ err:
 
 int wifi_mac_get_addr(char *diag_cmd, char *at_rsp)
 {
-	int ret;
 	char *at_cmd;
 	int len;
 	struct wifi_eut_t *eut;
@@ -1537,8 +1528,7 @@ int wifi_mac_get_addr(char *diag_cmd, char *at_rsp)
 
 	ENG_LOG("wifi_eut: eut_cmd_id = %d", eut->eut_cmd_id);
 
-	ret = permission_check(eut);
-	if (ret < 0) {
+	if (permission_check(eut) < 0) {
 		ENG_LOG("wifi_eut: permission denied(line:%d)\n", __LINE__);
 		ENG_LOG("wifi_eut: WIFI EUT mode = %d, eut cmd id = %d\n",
 			GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);
@@ -1565,7 +1555,6 @@ err:
 
 int wifi_mac_set_addr(char *diag_cmd, char *at_rsp)
 {
-	int ret;
 	char *at_cmd;
 	int len;
 	struct wifi_eut_t *eut;
@@ -1595,8 +1584,7 @@ int wifi_mac_set_addr(char *diag_cmd, char *at_rsp)
 
 	ENG_LOG("wifi_eut: eut_cmd_id = %d", eut->eut_cmd_id);
 
-	ret = permission_check(eut);
-	if (ret < 0) {
+	if (permission_check(eut) < 0) {
 		ENG_LOG("wifi_eut: permission denied(line:%d)\n", __LINE__);
 		ENG_LOG("wifi_eut: WIFI EUT mode = %d, eut cmd id = %d\n",
 			GET_EXT_DATA(WIFI_EUT_MODE), eut->eut_cmd_id);

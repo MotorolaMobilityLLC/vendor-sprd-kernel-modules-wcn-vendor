@@ -978,9 +978,8 @@ static struct eut_cmd_t *at2eut(char *cmd)
 
 	for (index = 0; eut_cmd[index].at_cmd != NULL; index++) {
 		/* compare keywords: "EUT?"/"EUT," etc */
-		if (!strncmp(eut_cmd[index].at_cmd, cmd, chr - cmd + 1)) {
+		if (!strncmp(eut_cmd[index].at_cmd, cmd, chr - cmd + 1))
 			return &eut_cmd[index];
-		}
 	}
 
 	return NULL;
@@ -1053,8 +1052,7 @@ int process_special_eut_command(int eut_cmd_id, char *at_cmd, char *at_rsp)
 				if (cmd_id < 0)
 					goto err;
 
-				ret = run_npi_command(cmd_id, argv, NULL);
-				if (ret < 0)
+				if (run_npi_command(cmd_id, argv, NULL) < 0)
 					goto err;
 			}
 			/* iwnpi wlan0 sin_wave */
@@ -1062,8 +1060,7 @@ int process_special_eut_command(int eut_cmd_id, char *at_cmd, char *at_rsp)
 			if (cmd_id < 0)
 				goto err;
 
-			ret = run_npi_command(cmd_id, argv, NULL);
-			if (ret < 0)
+			if (run_npi_command(cmd_id, argv, NULL) < 0)
 				goto err;
 
 			strcpy(at_rsp, AT_CMD_RESP_OK);
@@ -1104,9 +1101,9 @@ int process_special_eut_command(int eut_cmd_id, char *at_cmd, char *at_rsp)
 			case 2:
 			case 3:
 				/* mode == 0; continue mode */
-				if (mode == 0)
+				if (mode == 0) {
 					pkt_count = 0;
-				else {
+				} else {
 					if (ret != 3)
 						goto err;
 				}
@@ -1305,12 +1302,10 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 		return 0;
 	}
 
-	ret = run_npi_command(eut_cmd_id, argv, at_rsp);
-	if (ret < 0)
+	if (run_npi_command(eut_cmd_id, argv, at_rsp) < 0)
 		goto err;
 
-	ret = process_after_npi_command(eut_cmd_id);
-	if (ret < 0)
+	if (process_after_npi_command(eut_cmd_id) < 0)
 		goto err;
 
 	ENG_LOG("wifi_eut: resp = %s\n", at_rsp);
