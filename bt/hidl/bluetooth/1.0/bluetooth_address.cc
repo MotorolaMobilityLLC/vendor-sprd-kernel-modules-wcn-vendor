@@ -191,7 +191,7 @@ bool BluetoothAddress::get_local_address(uint8_t* local_addr) {
     const uint8_t zero_bdaddr[kBytes] = {0, 0, 0, 0, 0, 0};
     if ((string_to_bytes(address, local_addr)) &&
         (memcmp(local_addr, zero_bdaddr, kBytes) != 0)) {
-      ALOGD("%s: Got Factory BDA %s", __func__, address);
+      ALOGD("%s: Got Factory BDA", __func__);
       return true;
     } else {
       ALOGE("%s: Got Invalid BDA '%s' from %s", __func__, address, property);
