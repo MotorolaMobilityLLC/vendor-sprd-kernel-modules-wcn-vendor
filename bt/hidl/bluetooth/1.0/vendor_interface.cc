@@ -231,7 +231,10 @@ bool VendorInterface::Open(InitializeCompleteCallback initialize_complete_cb,
   ALOGD("%s vendor library loaded", __func__);
 
   //init bluetooth_chr module
-  bluetooth_chr_init();
+  if (property_get_bool("ro.vendor.enable.chr", false)){
+    ALOGD("chr enable bluetooth_chr_init");
+    bluetooth_chr_init();
+  }
 
   // Power on the controller
 
@@ -299,7 +302,10 @@ void VendorInterface::Close() {
   }
 
   //cleanup bluetooth_chr module
-  bluetooth_chr_cleanup();
+  if (property_get_bool("ro.vendor.enable.chr", false)){
+    ALOGD("chr enable bluetooth_chr_cleanup");
+    bluetooth_chr_cleanup();
+  }
 
   // sprd: run epilog to send oxfca1 disable cmd
   if ((lib_interface_ != nullptr) && (hci_ != nullptr)
