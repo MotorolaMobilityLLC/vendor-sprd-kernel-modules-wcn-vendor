@@ -43,6 +43,8 @@ int main() {
     return 1;  // or handle error
   }
 
+  //increase binder priority
+  android::hardware::setMinSchedulerPolicy(bluetoothHci, SCHED_FIFO, 2);
   ::android::hardware::joinRpcThreadpool();
   return 1;  // joinRpcThreadpool should never return
 }
