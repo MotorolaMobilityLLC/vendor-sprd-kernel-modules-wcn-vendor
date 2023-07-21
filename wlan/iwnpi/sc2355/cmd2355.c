@@ -2584,6 +2584,34 @@ int wlnpi_cmd_start_pkt_log(int argc, char **argv, unsigned char *s_buf, int *s_
 	return 0;
 }
 
+int wlnpi_show_get_sup_ch(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
+{
+        unsigned char country_code[2];
+        unsigned char length = 0;
+	unsigned int  *chn_info;
+	unsigned char index = 0;
+
+        ENG_LOG("ADL entry %s(), r_len = %d", __func__, r_len);
+	if (r_len < 2) {
+		ENG_LOG("ADL leaving %s(), r_len = %d ERR\n", __func__, r_len);
+		return  -1;
+	}
+
+	country_code[0] = *r_buf;
+	country_code[1] = *(r_buf + 1);
+	printf("wlan country_code: %c%c\n", country_code[0], country_code[1]);
+
+	length = (r_len -2)/8;
+	chn_info = (unsigned int *)(r_buf + 2);
+	for(; index < length; index++) {
+		printf("support chn freq: %dKHz, bandwith: %dM\n", *chn_info, *(chn_info + 1));
+		chn_info = chn_info + 2;
+	}
+
+
+	return 0;
+}
+
 /*-----CMD ID:66-----------*/
 int wlnpi_cmd_get_pa_info(int argc, char **argv, unsigned char *s_buf, int *s_len)
 {
@@ -5133,7 +5161,7 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .name = "get_sup_ch",
 	 .help = "get_sup_ch",
 	 .parse = wlnpi_cmd_no_argv,
-	 .show = wlnpi_show_only_status,
+	 .show = wlnpi_show_get_sup_ch,
 	 },
 	{
 	/*-----CMD ID:66-----------*/
