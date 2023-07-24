@@ -3,17 +3,10 @@ CONNECTIVITY_OWN_FILES := \
     bt_configure_pskey.ini \
     bt_configure_rf_aa.ini \
     bt_configure_pskey_aa.ini \
-    bt_configure_rf.xpe.ini \
-    bt_configure_pskey.xpe.ini \
-    bt_configure_rf_aa.xpe.ini \
-    bt_configure_pskey_aa.xpe.ini \
-    fm_board_config.xpe.ini \
     fm_board_config.ini
 
 WIFI_INI_FILES := \
     wifi_board_config.ini\
-    wifi_board_config.xpe.ini\
-    wifi_board_config_aa.xpe.ini\
     wifi_board_config_aa.ini\
 
 BOARD_HAVE_SPRD_WCN_BRANCH ?= marlin3_20a
