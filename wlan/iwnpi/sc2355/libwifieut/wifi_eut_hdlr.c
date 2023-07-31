@@ -1039,10 +1039,14 @@ int get_cp2_info(char *buf, int buf_len)
 		return ret;
 	}
 
-	buf_len = read(fd, buf, buf_len);
-	if (buf_len <= 0) {
-		ENG_LOG("wifi_eut: read %s faild, ret = %d", AT_CMD_INTF, buf_len);
+	ret = read(fd, buf, buf_len);
+	if (ret <= 0) {
+		ENG_LOG("wifi_eut: read %s faild, ret = %d", AT_CMD_INTF, ret);
+		ret = -1;
 	} else {
+		if (ret >= buf_len)
+			ret = buf_len -1;
+		buf[ret] = '\0';
 		ret = 0;
 	}
 
