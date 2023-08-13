@@ -496,7 +496,7 @@ static struct wifi_eut_t *get_eut(int eut_cmd_id)
  *     0: success
  *    -1: failed to get iwnpi command
  */
-static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
+static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf, int npi_buf_len)
 {
 	int ret;
 	int val;
@@ -506,6 +506,8 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 
 	if (eut->npi_cmd == NULL)
 		return -1;
+
+	memset(npi_cmd_buf, 0, npi_buf_len);
 
 	switch (eut->eut_cmd_id) {
 	case WIFI_EUT_CMD_SET_EUT_MODE:
@@ -517,7 +519,7 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 			return -1;
 
 		eut->ext_data = val;
-		sprintf(npi_cmd_buf, eut->npi_cmd, val ? "start" : "stop");
+		snprintf(npi_cmd_buf, npi_buf_len, eut->npi_cmd, val ? "start" : "stop");
 		break;
 
 	case WIFI_EUT_CMD_SET_RX:
@@ -536,18 +538,21 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 			return -1;
 
 		eut->ext_data = val;
-		sprintf(npi_cmd_buf, eut->npi_cmd, val ? "rx_start" : "rx_stop");
+		snprintf(npi_cmd_buf, npi_buf_len, eut->npi_cmd, val ? "rx_start" : "rx_stop");
 		break;
 
 	case WIFI_EUT_CMD_SET_CHANNEL:
 		ret = sscanf(at_cmd, "CH,%d,%d\r\n", &ch1, &ch2);
 		if (ret == 2) {
-			sprintf(npi_cmd_buf, "iwnpi wlan0 set_channel %d %d", ch1, ch2);
+			snprintf(npi_cmd_buf, npi_buf_len, "iwnpi wlan0 set_channel %d %d",
+				 ch1, ch2);
 		} else if (ret == 1) {
 			if (eut->wcn_product_type == WCN_PRODUCT_MARLIN3)
-				sprintf(npi_cmd_buf, "iwnpi wlan0 set_channel %d %d", ch1, ch1);
+				snprintf(npi_cmd_buf, npi_buf_len, "iwnpi wlan0 set_channel %d %d",
+					 ch1, ch1);
 			else
-				sprintf(npi_cmd_buf, "iwnpi wlan0 set_channel %d", ch1);
+				snprintf(npi_cmd_buf, npi_buf_len, "iwnpi wlan0 set_channel %d",
+					 ch1);
 		} else
 			return -1;
 
@@ -562,7 +567,7 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 			return -1;
 
 		eut->ext_data = val;
-		sprintf(npi_cmd_buf, eut->npi_cmd, val ? "lna_on" : "lna_off");
+		snprintf(npi_cmd_buf, npi_buf_len, eut->npi_cmd, val ? "lna_on" : "lna_off");
 		break;
 
 	case WIFI_EUT_CMD_SET_RATE:
@@ -579,7 +584,7 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 			return -1;
 		}
 
-		sprintf(npi_cmd_buf, eut->npi_cmd, rate_index);
+		snprintf(npi_cmd_buf, npi_buf_len, eut->npi_cmd, rate_index);
 		break;
 
 		/* Only one paramter with int type */
@@ -598,7 +603,7 @@ static int at2npi(struct wifi_eut_t *eut, char *at_cmd, char *npi_cmd_buf)
 		if (ret != 1)
 			return -1;
 
-		sprintf(npi_cmd_buf, eut->npi_cmd, val);
+		snprintf(npi_cmd_buf, npi_buf_len, eut->npi_cmd, val);
 		break;
 
 	case WIFI_EUT_CMD_GET_PAYLOAD:
@@ -676,14 +681,14 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 		switch (eut->eut_cmd_id) {
 		case WIFI_EUT_CMD_GET_CHANNEL:
 			if (rsp != NULL)
-				sprintf(rsp, "+SPWIFITEST:CH=%d", result);
+				snprintf(rsp, AT_RSP_LEN, "+SPWIFITEST:CH=%d", result);
 			break;
 
 		case WIFI_EUT_CMD_GET_RATE:
 			if (rsp != NULL) {
 				rate = get_modulation_name(eut->wcn_product_type, result);
 				ENG_LOG("wifi_eut: rate = %s, index = %d\n", rate, result);
-				sprintf(rsp, "+SPWIFITEST:RATE=%s", rate);
+				snprintf(rsp, AT_RSP_LEN, "+SPWIFITEST:RATE=%s", rate);
 			}
 
 			break;
@@ -705,7 +710,7 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 				return -1;
 			}
 
-			sprintf(rsp, eut->at_rsp_fmt, result);
+			snprintf(rsp, AT_RSP_LEN, eut->at_rsp_fmt, result);
 
 			break;
 
@@ -730,7 +735,7 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 				return -1;
 			}
 
-			sprintf(rsp, "+SPWIFITEST:CH=%d,%d", ch1, ch2);
+			snprintf(rsp, AT_RSP_LEN, "+SPWIFITEST:CH=%d,%d", ch1, ch2);
 
 			break;
 
@@ -744,7 +749,8 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 				return -1;
 			}
 
-			sprintf(rsp, "+SPWIFITEST:RXPACKCOUNT=%d,%d,%d", rx_count, rx_err, rx_fail);
+			snprintf(rsp, AT_RSP_LEN, "+SPWIFITEST:RXPACKCOUNT=%d,%d,%d",
+				 rx_count, rx_err, rx_fail);
 			break;
 
 		case WIFI_EUT_CMD_GET_ANTINFO:
@@ -754,7 +760,7 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 				return -1;
 			}
 
-			sprintf(rsp, "+SPWIFITEST:ANTINFO=%d,%d", rf_2g, rf_5g);
+			snprintf(rsp, AT_RSP_LEN, "+SPWIFITEST:ANTINFO=%d,%d", rf_2g, rf_5g);
 			break;
 
 		case WIFI_EUT_CMD_GET_CHIPID:
@@ -764,7 +770,7 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 				return -1;
 			}
 
-			sprintf(rsp, "+SPWIFITEST:CHIP=%s", res_chip);
+			snprintf(rsp, AT_RSP_LEN, "+SPWIFITEST:CHIP=%s", res_chip);
 			break;
 
 		case WIFI_EUT_CMD_GET_EFUSE:
@@ -774,7 +780,7 @@ static int npi_result_to_at_resp(struct wifi_eut_t *eut, char *npi_output, char 
 				return -1;
 			}
 
-			sprintf(rsp, "+SPWIFITEST:EFUSE=%s", efuse);
+			snprintf(rsp, AT_RSP_LEN, "+SPWIFITEST:EFUSE=%s", efuse);
 			break;
 
 		default:
@@ -927,8 +933,8 @@ int set_mac_addr(char *mac)
 	if (fd < 0)
 		return -1;
 
-	sprintf(mac_addr, "%02x:%02x:%02x:%02x:%02x:%02x",
-		mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+	snprintf(mac_addr, sizeof(mac_addr), "%02x:%02x:%02x:%02x:%02x:%02x",
+		 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
 	ENG_LOG("wifi_eut: %s MAC=%s", __func__, mac_addr);
 	if (fd >= 0) {
@@ -955,9 +961,9 @@ int set_mac_addr_new(char *mac)
 	if (fd < 0)
 		return -1;
 
-	sprintf(mac_addr, "%c%c:%c%c:%c%c:%c%c:%c%c:%c%c",
-		mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
-		mac[6], mac[7], mac[8], mac[9], mac[10], mac[11]);
+	snprintf(mac_addr, sizeof(mac_addr), "%c%c:%c%c:%c%c:%c%c:%c%c:%c%c",
+		 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
+		 mac[6], mac[7], mac[8], mac[9], mac[10], mac[11]);
 	ENG_LOG("wifi_eut: %s MAC=%s", __func__, mac_addr);
 
 	if (fd >= 0) {
@@ -1033,10 +1039,14 @@ int get_cp2_info(char *buf, int buf_len)
 		return ret;
 	}
 
-	buf_len = read(fd, buf, buf_len);
-	if (buf_len <= 0) {
-		ENG_LOG("wifi_eut: read %s faild, ret = %d", AT_CMD_INTF, buf_len);
+	ret = read(fd, buf, buf_len);
+	if (ret <= 0) {
+		ENG_LOG("wifi_eut: read %s faild, ret = %d", AT_CMD_INTF, ret);
+		ret = -1;
 	} else {
+		if (ret >= buf_len)
+			ret = buf_len -1;
+		buf[ret] = '\0';
 		ret = 0;
 	}
 
@@ -1056,7 +1066,6 @@ int get_cp2_info(char *buf, int buf_len)
 static int permission_check(struct wifi_eut_t *eut)
 {
 	int ret = -1;
-	char *drv_path;
 
 	if (GET_EXT_DATA(WIFI_EUT_MODE) == WIFI_EUT_ENTER)
 		return 0;
@@ -1144,7 +1153,7 @@ static int set_tx_mode(struct wifi_eut_t *eut, char *at_cmd)
 		if (check_npi_status(line) < 0)
 			return -1;
 	} else {
-		sprintf(npi_cmd, "iwnpi wlan0 set_tx_mode %d", mode);
+		snprintf(npi_cmd, sizeof(npi_cmd), "iwnpi wlan0 set_tx_mode %d", mode);
 		ret = run_npi_command(npi_cmd, npi_output, sizeof(npi_output));
 		if (ret < 0)
 			return -1;
@@ -1208,7 +1217,8 @@ int set_tx(struct wifi_eut_t *eut, char *at_cmd)
 					return -1;
 			}
 
-			sprintf(npi_cmd, "iwnpi wlan0 set_tx_count %d", pkt_count);
+			snprintf(npi_cmd, sizeof(npi_cmd), "iwnpi wlan0 set_tx_count %d",
+				 pkt_count);
 			ret = run_npi_command(npi_cmd, npi_output, sizeof(npi_output));
 			if (ret < 0) {
 				ENG_LOG("wifi_eut: %s %d", __func__, __LINE__);
@@ -1258,13 +1268,11 @@ int set_tx(struct wifi_eut_t *eut, char *at_cmd)
 static int set_eut_mode(struct wifi_eut_t *eut, char *at_cmd)
 {
 	int ret;
-	char *out;
-	char *drv_path;
 	char buf[64];
 	char npi_cmd[64];
 	char npi_output[128] = { 0 };
 
-	ret = at2npi(eut, at_cmd, npi_cmd);
+	ret = at2npi(eut, at_cmd, npi_cmd, sizeof(npi_cmd));
 	if (ret < 0)
 		return -1;
 
@@ -1372,13 +1380,15 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 		goto err;
 	}
 
+	memset(at_rsp, 0, AT_RSP_LEN);
+
 	switch (eut->eut_cmd_id) {
 	case WIFI_EUT_CMD_SET_NETMODE:
 		strcpy(at_rsp, AT_CMD_RESP_OK);
 		break;
 
 	case WIFI_EUT_CMD_GET_EUT_MODE:
-		sprintf(at_rsp, "+SPWIFITEST:EUT=%d", eut->ext_data);
+		snprintf(at_rsp, AT_RSP_LEN, "+SPWIFITEST:EUT=%d", eut->ext_data);
 		break;
 
 	case WIFI_EUT_CMD_SET_TX_MODE:
@@ -1404,8 +1414,8 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 		if (get_mac_addr(mac) < 0)
 			goto err;
 
-		sprintf(at_rsp, "+SPWIFITEST:MAC=%02x%02x%02x%02x%02x%02x",
-			mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		snprintf(at_rsp, AT_RSP_LEN, "+SPWIFITEST:MAC=%02x%02x%02x%02x%02x%02x",
+			 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
 		break;
 
@@ -1413,7 +1423,7 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 		if (get_cp2_info(buff, sizeof(buff)) < 0)
 			goto err;
 
-		sprintf(at_rsp, "+SPWIFITEST:CP2INFO,%s", buff);
+		snprintf(at_rsp, AT_RSP_LEN, "+SPWIFITEST:CP2INFO,%s", buff);
 		break;
 
 	case WIFI_EUT_CMD_SET_TX:
@@ -1431,15 +1441,15 @@ int wifi_eut_hdlr(char *diag_cmd, char *at_rsp)
 		break;
 
 	case WIFI_EUT_CMD_GET_TX:
-		sprintf(at_rsp, "+SPWIFITEST:TX=%d", eut->ext_data);
+		snprintf(at_rsp, AT_RSP_LEN, "+SPWIFITEST:TX=%d", eut->ext_data);
 		break;
 
 	case WIFI_EUT_CMD_GET_RX:
-		sprintf(at_rsp, "+SPWIFITEST:RX=%d", eut->ext_data);
+		snprintf(at_rsp, AT_RSP_LEN, "+SPWIFITEST:RX=%d", eut->ext_data);
 		break;
 
 	default:
-		if (at2npi(eut, at_cmd, npi_cmd) < 0)
+		if (at2npi(eut, at_cmd, npi_cmd, sizeof(npi_cmd)) < 0)
 			goto err;
 
 		if (run_npi_command(npi_cmd, npi_output, sizeof(npi_output)) < 0)
@@ -1502,7 +1512,6 @@ int wifi_mac_get_addr(char *diag_cmd, char *at_rsp)
 	char *at_cmd;
 	int len;
 	struct wifi_eut_t *eut;
-	char mac[6];
 
 	if (strncmp(WIFI_EUT_GET_ADDR, diag_cmd, WIFI_EUT_ADDR_LEN) != 0)
 		at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
@@ -1558,7 +1567,6 @@ int wifi_mac_set_addr(char *diag_cmd, char *at_rsp)
 	char *at_cmd;
 	int len;
 	struct wifi_eut_t *eut;
-	char mac[6];
 
 	if (strncmp(WIFI_EUT_SET_ADDR, diag_cmd, WIFI_EUT_ADDR_LEN) != 0)
 		at_cmd = diag_cmd + sizeof(MSG_HEAD_T) + 1;
@@ -1648,17 +1656,20 @@ void register_this_module_ext(struct eng_callback *reg, int *num)
 	ALOGD("file:%s, func:%s\n", __FILE__, __func__);
 
 	wifi_eut_init();
-	sprintf((reg + modules_num)->at_cmd, "%s", "AT+SPWIFITEST");
+	memset((reg + modules_num)->at_cmd, 0, AT_CMD_LEN);
+	snprintf((reg + modules_num)->at_cmd, AT_CMD_LEN, "%s", "AT+SPWIFITEST");
 	(reg + modules_num)->eng_linuxcmd_func = wifi_eut_hdlr;
 	ALOGD("module cmd:%s\n", (reg + modules_num)->at_cmd);
 	modules_num++;
 
-	sprintf((reg + modules_num)->at_cmd, "%s", "AT+GETWIFIADDR");
+	memset((reg + modules_num)->at_cmd, 0, AT_CMD_LEN);
+	snprintf((reg + modules_num)->at_cmd, AT_CMD_LEN, "%s", "AT+GETWIFIADDR");
 	(reg + modules_num)->eng_linuxcmd_func = wifi_mac_get_addr;
 	ALOGD("module cmd:%s\n", (reg + modules_num)->at_cmd);
 	modules_num++;
 
-	sprintf((reg + modules_num)->at_cmd, "%s", "AT+SETWIFIADDR");
+	memset((reg + modules_num)->at_cmd, 0, AT_CMD_LEN);
+	snprintf((reg + modules_num)->at_cmd, AT_CMD_LEN, "%s", "AT+SETWIFIADDR");
 	(reg + modules_num)->eng_linuxcmd_func = wifi_mac_set_addr;
 	ALOGD("module cmd:%s\n", (reg + modules_num)->at_cmd);
 	modules_num++;

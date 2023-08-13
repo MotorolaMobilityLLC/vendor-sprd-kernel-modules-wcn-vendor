@@ -1,6 +1,9 @@
 #ifndef __WIFI_EUT_HDLR_H__
 #define __WIFI_EUT_HDLR_H__
 
+#define AT_CMD_LEN	(32)
+#define AT_RSP_LEN	(8*1024)
+
 struct wifi_eut_t {
 	int eut_cmd_id;
 

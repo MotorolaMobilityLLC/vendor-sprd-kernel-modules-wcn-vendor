@@ -34,9 +34,12 @@ int chr_skt_fd = -1;
 char **read_msg = NULL;
 
 int main() {
-  ::android::hardware::configureRpcThreadpool(1 /*threads*/, true /*willJoin*/);
-
   sp bluetoothHci = new BluetoothHci();
+
+  ::android::hardware::configureRpcThreadpool(1 /*threads*/, true /*willJoin*/);
+  //increase binder priority
+  ::android::hardware::setMinSchedulerPolicy(bluetoothHci, SCHED_FIFO, 69);
+
   const status_t status = bluetoothHci->registerAsService();
   if (status != ::android::OK) {
     ALOGE("Cannot register Bluetooth HAL service");

@@ -40,6 +40,7 @@
 #define HCI_EVT_CMD_CMPL_VSC    3
 #define HCI_CMD_PREAMBLE_SIZE   3
 #define HCI_CMD_MAX_LEN         258
+#define BT_VND_N79_FLAG_NOTIFY TRUE
 
 typedef void (*hci_cback)(void *);
 
@@ -48,12 +49,15 @@ uint8_t sprd_vnd_send_hci_vsc(uint16_t cmd, uint8_t *payload, uint8_t len, hci_c
 #define HCITOOLS_SOCKET 4550
 
 int sprd_vendor_hci_init(void);
+void sprd_vse_n79_flag_notify(void);
+void sprd_n79_flag_node_check(void);
 void sprd_vendor_hci_cleanup(void);
 
 #define HCI_WRITE_LOCAL_HW_REGISTER 0xFC2D
 #define HCI_READ_LOCAL_HW_REGISTER 0xFC2F
 #define HCI_WRITE_LOCAL_RF_REGISTER 0xFC30
 #define HCI_READ_LOCAL_RF_REGISTER 0xFC31
+#define HCI_N79_FLAG_NOTIFY 0xFCEC
 
 
 #endif /*BT_VENDOR_SPRD_HCI_H*/

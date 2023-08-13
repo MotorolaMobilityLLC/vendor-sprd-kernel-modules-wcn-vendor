@@ -170,6 +170,7 @@ static const char* dump_opcode(int opcode)
 #if (defined(SPRD_FEATURE_VND_OP_EVENT) && SPRD_FEATURE_VND_OP_EVENT == TRUE)
         CASE_RETURN_STR(BT_VND_OP_EVENT_CALLBACK)
 #endif
+        CASE_RETURN_STR(BT_VND_OP_N79_FLAG_STATE)
         CASE_RETURN_STR(BT_VND_OP_SET_POWER)
     default:
         return "unknown status code";
@@ -406,6 +407,11 @@ static int op(bt_vendor_opcode_t opcode, void* param)
     }
     break;
 #endif
+
+    case BT_VND_OP_N79_FLAG_STATE: {
+        sprd_vse_n79_flag_notify();
+    }
+    break;
 
     }
     return retval;
