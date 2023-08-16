@@ -50,6 +50,10 @@ int userial_set_port(char *p_conf_name, char *p_conf_value, int param);
 #define MAC_ADDR_LEN 6
 #define MAC_ADDR_BUF_LEN (strlen("FF:FF:FF:FF:FF:FF"))
 
+#ifndef MNTVND_BT_MAC_ADDR_PATH
+#define MNTVND_BT_MAC_ADDR_PATH "/mnt/vendor/btmac.txt"
+#endif
+
 /******************************************************************************
 **  Static variables
 ******************************************************************************/
@@ -149,6 +153,25 @@ void set_mac_address(uint8_t *addr)
     uint8_t addr_t[6] = {0};
 
     ALOGI("%s", __func__);
+
+    /* First try /mnt/vendor/btmac.txt, if fail, then try /data/vendor/bluetooth/btmac.txt */
+    /* check mnt mac file exist */
+    ret = access(MNTVND_BT_MAC_ADDR_PATH, F_OK);
+    if (ret != 0) {
+        ALOGI("%s %s miss", __func__, MNTVND_BT_MAC_ADDR_PATH);
+    } else {
+      /* read mac file */
+      ret = read_mac_address(MNTVND_BT_MAC_ADDR_PATH, addr_t);
+      if (ret != 0) {
+          ALOGI("%s %s error", __func__, MNTVND_BT_MAC_ADDR_PATH);
+      } else {
+          ALOGI("%s goto next_step", __func__);
+          goto next_step;
+      }
+    }
+
+    /* Due to /mnt/vendor/btmac.txt failed, now try /data/vendor/bluetooth/btmac.txt */
+    ALOGI("%s Now try %s", __func__, DATMISC_MAC_ADDR_PATH);
     /* check misc mac file exist */
     ret = access(DATMISC_MAC_ADDR_PATH, F_OK);
     if (ret != 0) {
@@ -163,6 +186,8 @@ void set_mac_address(uint8_t *addr)
         return;
     }
 
+next_step:
+    //ALOGI("%s: now next step", __func__);
     /* compose mac stream */
     mac_address_stream_compose(addr_t);
 

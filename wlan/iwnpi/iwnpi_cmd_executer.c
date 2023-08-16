@@ -35,6 +35,7 @@ extern struct cmd __stop___cmd;
 #undef LOG_TAG
 #endif
 
+
 #define LOG_TAG  ("IWNPI_ENG")
 
 #define OK_STR      ("OK")
@@ -66,10 +67,69 @@ extern struct cmd __stop___cmd;
 #define TMP_BUF_SIZE              (128)
 #define CMD_RESULT_BUFFER_LEN     (128)
 #define WIFI_EUT_COMMAND_MAX_LEN  (128)
+=======
+#define LOG_TAG "IWNPI_ENG"
+
+#define CMD_LNA_STATUS "lna_status"
+#define CMD_SET_ENG_MODE "set_eng_mode"
+#define CMD_RX_GET_OK "get_rx_ok"
+#define CMD_GET_REG "get_reg"
+#define CMD_GET_EFUSE	"get_efuse"
+#define CMD_GET_RECONNECT "get_reconnect"
+#define CMD_GET_RSSI	"get_rssi"
+#define INSMOD_SPRWL_KO     "insmod"
+#define RMMOD_SPRWL_KO     "rmmod"
+#define IFCONFIG_WLAN0_UP    "ifconfig wlan0 up"
+#define IFCONFIG_WLAN0_DOWN  "ifconfig wlan0 down"
+#define CMD_GET_BEAMF_STATUS "get_beamf_status"
+#define CMD_GET_RXSTBC_STATUS "get_rxstbc_status"
+
+#define CMD_RESULT_BUFFER_LEN (128)
 
 #define for_each_cmd(_cmd)                          \
   for (_cmd = &__start___cmd; _cmd < &__stop___cmd; \
        _cmd = (const struct cmd *)((char *)_cmd + cmd_size))
+
+
+#define WIFI_EUT_COMMAND_MAX_LEN (128)
+#define TMP_BUF_SIZE (128)
+
+#define IWNPI_EXEC_TMP_FILE           ("/mnt/vendor/iwnpi_exec_data.log")
+#define IWNPI_EXEC_BEAMF_STATUS_FILE  ("/mnt/vendor/iwnpi_exec_beamf_status_data.log")
+#define IWNPI_EXEC_RXSTBC_STATUS_FILE ("/mnt/vendor/iwnpi_exec_rxstbc_status_data.log")
+#define STR_RET_REG_VALUE ("ret: reg value:")
+#define STR_RET_STATUS_VALUE ("ret: status:")
+#define STR_RET_END (":end")
+#define STR_RET_RET ("ret: ")
+
+/********************************************************************
+*   name   strcat_safe
+*   ---------------------------
+*   descrition: wrap strcat func to solve hacker attacks (bug2153526)
+*   ----------------------------
+*   para        IN/OUT      type                note
+*   dest        IN          char *              dest string
+*   src         IN          const char *src     src string
+*   dest_size   IN          int                 dest space size
+*   ----------------------------------------------------
+*   return
+*   none
+*   ------------------
+*   other:
+*
+********************************************************************/
+void strcat_safe(char *dest, const char *src, int dest_size)
+{
+	int dest_len = strlen(dest);
+	int src_len = strlen(src);
+
+	if (dest_len + src_len + 1 > dest_size) {
+		ALOGD("ADL %s(), strcat err: src len is too long!\n", __func__);
+		return;
+	}
+
+	strcat(dest, src);
+}
 
 static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 {
@@ -452,10 +512,8 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 
 		while (NULL != argv[i]) {
 			strcat_safe(cmd_str, argv[i], WIFI_EUT_COMMAND_MAX_LEN);
-			if (argv[++i]) {
-				/* add a space */
-				strcat_safe(cmd_str, " ", WIFI_EUT_COMMAND_MAX_LEN);
-			}
+			if(argv[++i])
+				strcat_safe(cmd_str, " ", WIFI_EUT_COMMAND_MAX_LEN); /* add a space */
 		}
 
 		if (NULL != strstr(cmd_str, INSMOD_SPRWL_KO)) {
@@ -507,10 +565,14 @@ static int __handle_cmd(struct nlnpi_state *state, int argc, char **argv,
 			ALOGD("ADL %s(), call handle_reply_rx_ok_data()", __func__);
 			handle_reply_rx_ok_data(result_buf);
 		}
-	} else if ((NULL != strstr(command, CMD_GET_REG))
-		   || (NULL != strstr(command, CMD_GET_EFUSE))
-		   || (NULL != strstr(command, CMD_GET_RECONNECT))
-		   || (NULL != strstr(command, CMD_GET_RSSI))) {
+	} else if ((strstr(command, CMD_GET_REG) > 0)
+		   || (strstr(command, CMD_GET_EFUSE) > 0)) {
+		if (result_buf) {
+			ALOGD("ADL %s(), call handle_reply_get_wifi_data()", __func__);
+			handle_reply_get_wifi_data(result_buf);
+		}
+	} else if ((strstr(command, CMD_GET_RECONNECT) > 0)
+		   || (strstr(command, CMD_GET_RSSI) > 0)) {
 		if (result_buf) {
 			ALOGD("ADL %s(), call handle_reply_get_wifi_data()", __func__);
 			handle_reply_get_wifi_data(result_buf);

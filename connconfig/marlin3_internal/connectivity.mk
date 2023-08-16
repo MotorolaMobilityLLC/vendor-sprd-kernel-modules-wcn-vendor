@@ -65,6 +65,7 @@ ifeq ($(SPRD_WCN_HW_CONFIG), $(filter ums9620_2h10 ums9230_1h10 ums9230_4h10,$(S
     PRODUCT_ODM_PROPERTIES += \
         ro.vendor.enable.chr="true"
 endif
+    persist.bluetooth.a2dp_offload.disabled = "true"
 
 PRODUCT_PACKAGES += \
     sprdbt_tty.ko \

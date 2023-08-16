@@ -730,7 +730,7 @@ Return<void> TunerSession::getParameters(const hidl_vec<hidl_string>&  keys,
                                          getParameters_cb _hidl_cb) {
     ALOGD("%s keys length = %d", __func__,keys.size());
     char * reg = "getregparm";
-    char mark[1] = {'.'};
+    char mark[2] = {'.'};
     for(size_t i = 0; i < keys.size(); ++i) {
         int length = strlen(keys[i].c_str());
         if(keys[i] == "rssi") {

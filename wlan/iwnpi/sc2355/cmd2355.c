@@ -4676,6 +4676,7 @@ int wlnpi_cmd_set_5gpw_backoff(int argc, char **argv, unsigned char *s_buf, int 
 	ENG_LOG("ADL leaving %s()", __func__);
         return 0;
 }
+
 struct wlnpi_cmd_t g_cmd_table[] = {
 	{
 	/*-----CMD ID:0-----------*/
@@ -4685,6 +4686,14 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .parse = wlnpi_cmd_start,
 	 .show = wlnpi_show_only_status,
 	 },
+	{
+	/*----CMD ID:201------------*/
+	 .id = WLNPI_CMD_SET_5GPW_BACKOFF_FLAG,
+	 .name = "set_5gpw_backoff",
+	 .help = "set_5gpw_backoff[band1 band2 band3 band4]",
+	 .parse = wlnpi_cmd_set_5gpw_backoff,
+	 .show = wlnpi_show_only_status,
+	},
 	{
 	/*-----CMD ID:1-----------*/
 	 .id = WLNPI_CMD_STOP,

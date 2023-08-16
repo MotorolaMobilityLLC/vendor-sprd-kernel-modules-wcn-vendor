@@ -25,6 +25,8 @@ on property:sys.boot_completed=1
     chown system system /sys/class/misc/wcn/devices/armlog_status
     chown system system /sys/class/misc/wcn/devices/reset_dump
     chown system system /sys/class/misc/wcn/devices/atcmd
+    
+on property:sys.boot_completed=1 
     chmod 660 /sys/class/rfkill/rfkill0/state
     chown bluetooth net_bt_admin /sys/class/rfkill/rfkill0/state
     chmod 660 /sys/class/rfkill/rfkill0/type
