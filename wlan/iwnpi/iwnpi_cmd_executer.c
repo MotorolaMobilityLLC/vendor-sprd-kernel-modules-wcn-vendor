@@ -67,7 +67,6 @@ extern struct cmd __stop___cmd;
 #define TMP_BUF_SIZE              (128)
 #define CMD_RESULT_BUFFER_LEN     (128)
 #define WIFI_EUT_COMMAND_MAX_LEN  (128)
-=======
 #define LOG_TAG "IWNPI_ENG"
 
 #define CMD_LNA_STATUS "lna_status"
@@ -101,35 +100,6 @@ extern struct cmd __stop___cmd;
 #define STR_RET_STATUS_VALUE ("ret: status:")
 #define STR_RET_END (":end")
 #define STR_RET_RET ("ret: ")
-
-/********************************************************************
-*   name   strcat_safe
-*   ---------------------------
-*   descrition: wrap strcat func to solve hacker attacks (bug2153526)
-*   ----------------------------
-*   para        IN/OUT      type                note
-*   dest        IN          char *              dest string
-*   src         IN          const char *src     src string
-*   dest_size   IN          int                 dest space size
-*   ----------------------------------------------------
-*   return
-*   none
-*   ------------------
-*   other:
-*
-********************************************************************/
-void strcat_safe(char *dest, const char *src, int dest_size)
-{
-	int dest_len = strlen(dest);
-	int src_len = strlen(src);
-
-	if (dest_len + src_len + 1 > dest_size) {
-		ALOGD("ADL %s(), strcat err: src len is too long!\n", __func__);
-		return;
-	}
-
-	strcat(dest, src);
-}
 
 static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 {
