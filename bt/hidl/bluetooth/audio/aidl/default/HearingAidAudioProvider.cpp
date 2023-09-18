@@ -1,4 +1,6 @@
 /*
+ This file has been modified by Unisoc (Shanghai) Technologies Co., Ltd in 2023.
+
  * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +33,7 @@ namespace audio {
 static constexpr uint32_t kPcmFrameSize = 4;  // 16 bits per sample / stereo
 static constexpr uint32_t kPcmFrameCount = 128;
 static constexpr uint32_t kRtpFrameSize = kPcmFrameSize * kPcmFrameCount;
-static constexpr uint32_t kRtpFrameCount = 7;  // max counts by 1 tick (20ms)
+static constexpr uint32_t kRtpFrameCount = 10;  // max counts by 1 tick (20ms)
 static constexpr uint32_t kBufferSize = kRtpFrameSize * kRtpFrameCount;
 static constexpr uint32_t kBufferCount = 1;  // single buffer
 static constexpr uint32_t kDataMqSize = kBufferSize * kBufferCount;

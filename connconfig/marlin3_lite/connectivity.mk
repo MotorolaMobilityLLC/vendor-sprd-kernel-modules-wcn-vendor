@@ -1,3 +1,5 @@
+# This file has been modified by Unisoc(Shanghai)Technologies Co.,Ltd in 2023.
+
 CONNECTIVITY_OWN_FILES := \
     bt_configure_rf.ini \
     bt_configure_pskey.ini \
@@ -92,7 +94,7 @@ PRODUCT_ODM_PROPERTIES += \
     persist.bluetooth.a2dp_offload.disabled = "true" \
     ro.bluetooth.a2dp_offload.supported="false"
 
-ifeq ($(SPRD_WCN_HW_CONFIG), $(filter ums9620_2h10 ums9230_1h10 ums9230_4h10,$(SPRD_WCN_HW_CONFIG)))
+ifeq ($(SPRD_WCN_HW_CONFIG), $(filter ums9620_2h10 ums9230_1h10 ums9230_4h10 ums9621_1h10,$(SPRD_WCN_HW_CONFIG)))
     PRODUCT_ODM_PROPERTIES += \
         ro.vendor.enable.chr="true"
 endif

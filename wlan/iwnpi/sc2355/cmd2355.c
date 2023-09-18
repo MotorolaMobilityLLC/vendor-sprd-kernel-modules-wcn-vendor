@@ -2508,6 +2508,35 @@ int wlnpi_cmd_set_eng_mode(int argc, char **argv, unsigned char *s_buf, int *s_l
 	return 0;
 }
 
+/*-----CMD ID:52-----------*/
+int wlnpi_show_eng_mode_status(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
+{
+	FILE *fp = NULL;
+	char ret_buf[WLNPI_RESULT_BUF_LEN + 1] = { 0x00 };
+	unsigned char status = 0;
+
+	ENG_LOG("ADL entry %s(), r_eln = %d", __func__, r_len);
+	status = r_buf[0];
+
+	snprintf(ret_buf, WLNPI_RESULT_BUF_LEN, "ret: %d :end\n", status);
+	printf("%s", ret_buf);
+
+	if (NULL != (fp = fopen(IWNPI_EXEC_TMP_FILE, "w+"))) {
+		int write_cnt = 0;
+
+		write_cnt = fputs(ret_buf, fp);
+		ENG_LOG("ADL %s(), write_cnt = %d ret_buf %s", __func__, write_cnt, ret_buf);
+
+		fclose(fp);
+	} else {
+		ENG_LOG("ADL %s(), open %s error\n", __func__, IWNPI_EXEC_TMP_FILE);
+		return -1;
+	}
+
+	ENG_LOG("ADL leaving %s(), status = %d", __func__, status);
+	return 0;
+}
+
 /*-----CMD ID:55-----------*/
 /******************************************************************
 *   name   wlnpi_cmd_start_pkt_log
@@ -2552,6 +2581,34 @@ int wlnpi_cmd_start_pkt_log(int argc, char **argv, unsigned char *s_buf, int *s_
 	*s_len = 4;
 
 	ENG_LOG("ADL leaving %s()", __func__);
+	return 0;
+}
+
+int wlnpi_show_get_sup_ch(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
+{
+        unsigned char country_code[2];
+        unsigned char length = 0;
+	unsigned int  *chn_info;
+	unsigned char index = 0;
+
+        ENG_LOG("ADL entry %s(), r_len = %d", __func__, r_len);
+	if (r_len < 2) {
+		ENG_LOG("ADL leaving %s(), r_len = %d ERR\n", __func__, r_len);
+		return  -1;
+	}
+
+	country_code[0] = *r_buf;
+	country_code[1] = *(r_buf + 1);
+	printf("wlan country_code: %c%c\n", country_code[0], country_code[1]);
+
+	length = (r_len -2)/8;
+	chn_info = (unsigned int *)(r_buf + 2);
+	for(; index < length; index++) {
+		printf("support chn freq: %dKHz, bandwith: %dM\n", *chn_info, *(chn_info + 1));
+		chn_info = chn_info + 2;
+	}
+
+
 	return 0;
 }
 
@@ -5103,9 +5160,9 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	/*-----CMD ID:52-----------*/
 	 .id = WLNPI_CMD_ENG_MODE,
 	 .name = "set_eng_mode",
-	 .help = "set_eng_mode [1:set_cca|3:set_scan][0:off|1:on]",
+	 .help = "set_eng_mode [1:set_cca|2:get_cca|3:set_scan|4:get_scan] [0:off|1:on]",
 	 .parse = wlnpi_cmd_set_eng_mode,
-	 .show = wlnpi_show_only_status,
+	 .show = wlnpi_show_eng_mode_status,
 	 },
 	{
 	/*-----CMD ID:65-----------*/
@@ -5113,7 +5170,7 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .name = "get_sup_ch",
 	 .help = "get_sup_ch",
 	 .parse = wlnpi_cmd_no_argv,
-	 .show = wlnpi_show_only_status,
+	 .show = wlnpi_show_get_sup_ch,
 	 },
 	{
 	/*-----CMD ID:66-----------*/
