@@ -15,6 +15,7 @@ SPRD_WCN_FIRMWARE_FILES := \
     gnssmodem.bin
 
 SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/wcn_trunk_22a/umw2631_qogirL6_builddir/PM_umw2631_qogirL6.bin
+SPRD_WCN_MODEM_FIRMWARE_58 := vendor/sprd/release/unisoc_bin/wcn_trunk_22a/umw2631_qogirL6_builddir/PM_umw2631_qogirL6_58.bin
 SPRD_GNSS_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20b_new/qogirl6/QogirL6_gnss_cm4_builddir/PM_QogirL6_gnss_cm4.bin
 
 VER_BTWF=vendor/sprd/release/unisoc_bin/wcn_trunk_22a/version.txt
@@ -41,6 +42,11 @@ else
         $(if $(wildcard $(LOCAL_PATH)/$(own)), \
             $(LOCAL_PATH)/$(own):$(SPRD_WIFI_FIRMWARE_PATH)/$(own), \
             $(error wcn firmware bin $(own) miss. please fix it, and don't take a random one)))
+endif
+
+ifneq ($(wildcard $(SPRD_WCN_MODEM_FIRMWARE_58)), )
+GENERATE_WCN_PRODUCT_COPY_FILES += \
+        $(SPRD_WCN_MODEM_FIRMWARE_58):$(SPRD_WIFI_FIRMWARE_PATH)/wcnmodem_58.bin
 endif
 
 PRODUCT_COPY_FILES += \
