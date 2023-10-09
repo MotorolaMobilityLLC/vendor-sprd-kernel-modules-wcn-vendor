@@ -23,7 +23,7 @@
           <PROPERTY NAME="MlcNum Enable" VALUE="FALSE"/>
           <PROPERTY NAME="MLC-NUMBER" VALUE="123456"/>
           <PROPERTY NAME="CP-AUTORESET" VALUE="TRUE"/>
-          <PROPERTY NAME="CER-VERIFY" VALUE="FALSE"/>
+          <PROPERTY NAME="CER-VERIFY" VALUE="TRUE"/>
           <PROPERTY NAME="SUPL-CER" VALUE="/data/vendor/gnss/supl/spirentroot.cer"/>
           <PROPERTY NAME="CELL-ID-GSM-MCC" VALUE="460"/>
           <PROPERTY NAME="CELL-ID-GSM-MNC" VALUE="1"/>
