@@ -25,18 +25,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
-//...#include "libbase.h"
-//...#include "libcutils.h"
-//...#include "libfmq.h"
-//...#include "libhidlbase.h"
-//...#include "liblog.h"
-//...#include "libutils.h"
-//...#include "android.hardware.bluetooth.audio@2.0.h"
-//...#include "libc++.h"
-//...#include "libc.h"
-//...#include "libm.h"
-//...#include "libdl.h"
 #include "BluetoothAudioSession.h"
 #include "BluetoothAudioSessionControl.h"
 #include "btaudio_offload_if.h"
@@ -94,6 +82,7 @@ extern "C"
   int Suspend(void);
   int audio_stream_suspend(void);
   void TearDown(void);
+  int Stop(void);
   int audio_stream_stop(void);
   int audio_stream_close(void);
   bool audio_check_a2dp_ready(void);
@@ -118,10 +107,6 @@ extern "C"
 *
 ******************************************************************************/
 void ControlResultHandler(const BluetoothAudioStatus& status) {
-  //if (!in_use()) {
-    //LOG(ERROR) << __func__ << ": BluetoothAudioPortAidlis not in use";
-    //return;
-  //}
   std::unique_lock<std::mutex> port_lock(cv_mutex_);
   BluetoothStreamState previous_state = state_;
   LOG(INFO) << "control_result_cb: session_type=" << toString(session_type)
@@ -175,10 +160,6 @@ void ControlResultHandler(const BluetoothAudioStatus& status) {
 }
 
 void SessionChangedHandler(void) {
-  //if (!in_use()) {
-    //LOG(ERROR) << __func__ << ": BluetoothAudioPortAidl is not in use";
-    //return;
-  //}
   std::unique_lock<std::mutex> port_lock(cv_mutex_);
   BluetoothStreamState previous_state = state_;
   LOG(INFO) << "session_changed_cb: session_type=" << toString(session_type)
@@ -208,8 +189,8 @@ bool CondwaitState(BluetoothStreamState state) {
           port_lock, std::chrono::milliseconds(kMaxWaitingTimeMs),
           //[this] { return this->state_ != BluetoothStreamState::STARTING; });
           [] { return state_ != BluetoothStreamState::STARTING; });
-      LOG(INFO) << __func__ << ": retval=" << retval << " waiting for STARTED";
       retval = retval && state_ == BluetoothStreamState::STARTED;
+      LOG(INFO) << __func__ << ": retval=" << retval <<" status=" << state_;
       break;
     case BluetoothStreamState::SUSPENDING:
       LOG(INFO) << __func__ << ": session_type=" << toString(session_type)
@@ -219,6 +200,7 @@ bool CondwaitState(BluetoothStreamState state) {
           //[this] { return this->state_ != BluetoothStreamState::SUSPENDING; });
           [] { return state_ != BluetoothStreamState::SUSPENDING; });
       retval = retval && state_ == BluetoothStreamState::STANDBY;
+      LOG(INFO) << __func__ << ": retval=" << retval <<" status=" << state_;
       break;
     default:
       LOG(WARNING) << __func__ << ": session_type=" << toString(session_type)
@@ -227,6 +209,7 @@ bool CondwaitState(BluetoothStreamState state) {
   }
   return retval;  // false if any failure like timeout
 }
+
 
 /*******************************************************************************
 *
@@ -367,19 +350,7 @@ char* audio_get_codec_config(uint8_t *multicast_status, uint8_t *num_dev, enc_co
   return func_status;
 }
 
-/*******************************************************************************
-*
-* Function         clear_a2dp_suspend_flag
-*
-* Description
-*
-*
-* Returns          int64
-*
-******************************************************************************/
-//clear_a2dp_suspend_flag
-//{
-//}
+
 /*******************************************************************************
 *
 * Function         audio_check_a2dp_ready
@@ -460,30 +431,49 @@ int audio_stream_open(void)
 *
 ******************************************************************************/
 int audio_stream_start(void) {
-  //if (!in_use()) {
-    //LOG(ERROR) << __func__ << ": BluetoothAudioPortAidl is not in use";
-    //return false;
-  //}
   LOG(INFO) << __func__ << ": session_type=" << toString(session_type)
-            << ", state=" << state_
-            //<< ", mono=" << (is_stereo_to_mono_ ? "true" : "false")
-            << " request";
+            << ", state=" << state_ << " request";
   bool retval = false;
+  //HBS930 reply max 700ms
+  int retry = 300;
+  int i = 0;
+
+  //if start when suspend not finish
+  if (state_ == BluetoothStreamState::SUSPENDING) {
+      retval = CondwaitState(BluetoothStreamState::SUSPENDING);
+      if (!retval) {
+        LOG(INFO) << __func__ << ": something error in Headset or air, suspend not finished in 4.5s, cannot start";
+        return retval;
+      }
+  }
+
   if (state_ == BluetoothStreamState::STANDBY) {
-    state_ = BluetoothStreamState::STARTING;
-    if (Start()) {
-      retval = CondwaitState(BluetoothStreamState::STARTING);
-    } else {
-      LOG(ERROR) << __func__ << ": session_type=" << toString(session_type)
+    for(i=1; i<=retry; i++) {
+      state_ = BluetoothStreamState::STARTING;
+      //we accept remote start cmd when we are source, then suspend
+      //if we start this time but "btif_av_stream_started_ready state==3(started), flag==LOCAL_SUSPEND_PENDING"
+      //when encountering the above situations during software coding, audio will send out_write until successful
+      if (Start()) {
+        retval = CondwaitState(BluetoothStreamState::STARTING);
+        if (retval) {
+          break;
+        }
+      } else {
+        LOG(ERROR) << __func__ << ": session_type=" << toString(session_type)
                  << ", state=" << state_ << " Hal fails";
+      }
+      //sleep can reduce audio start between accept remote start and send suspend
+      usleep(5*1000);
+      //LOG(INFO) << __func__ << ": sleep 5ms";
     }
   }
 
+  LOG(INFO) << __func__ << ": session_type=" << toString(session_type)
+              << ", retval=" << retval << " retry " << i << " times ";
+
   if (retval) {
     LOG(INFO) << __func__ << ": session_type=" << toString(session_type)
-              << ", state=" << state_
-              //<< ", mono=" << (is_stereo_to_mono_ ? "true" : "false")
-              << " done";
+              << ", state=" << state_ << " done";
   } else {
     LOG(ERROR) << __func__ << ": session_type=" << toString(session_type)
                << ", state=" << state_ << " failure";
@@ -497,7 +487,6 @@ int Start(void) {
     if ( session_ptr != nullptr )
     {
       bool low_latency = false;
-      LOG(INFO) << __func__ << "entered StartStream in BluetoothAudioSession";
       return session_ptr->StartStream(low_latency);
     }
     return false;
@@ -514,13 +503,25 @@ int Start(void) {
 *
 ******************************************************************************/
 int audio_stream_stop(void) {
-  //if (!in_use()) {
-    //LOG(ERROR) << __func__ << ": BluetoothAudioPortAidl is not in use";
-    //return false;
-  //}
   LOG(INFO) << __func__ << ": will enter SuspendStream session_type=" << toString(session_type)
             << ", state=" << state_ << " request";
+
+  //change device or disconnect device, audio will set parameters to close and out_standby
+  //when excute close state change to DISABLE, do not need execute stop，so return(false is not fail)
+  if (state_ == BluetoothStreamState::DISABLED) {
+    return false;
+  }
+
   bool retval = false;
+  //if pause or disturb by another app, when start not finish
+  if (state_ == BluetoothStreamState::STARTING) {
+      retval = CondwaitState(BluetoothStreamState::STARTING);
+      if (!retval) {
+        LOG(INFO) << __func__ << ": something error in Headset or air, start not finished in 4.5s, cannot susupend";
+        return retval;
+      }
+  }
+
   if (state_ == BluetoothStreamState::STARTED) {
     state_ = BluetoothStreamState::SUSPENDING;
     if (Suspend()) {
@@ -548,15 +549,14 @@ int Suspend(void) {
   if ( session_ptr != nullptr )
   {
     session_ptr->SuspendStream();
-    LOG(INFO) << __func__ << "entered SuspendStream in BluetoothAudioSession";
-	return true;
+    return true;
   }
   return false;
  }
 
 /*******************************************************************************
 *
-* Function         audio_stream_suspend
+* Function         clear_a2dp_suspend_flag
 *
 * Description
 *
@@ -586,14 +586,56 @@ int audio_stream_suspend(void) {
   LOG(INFO) << __func__ << ": will enter StopStream session_type=" << toString(session_type)
             << ", state=" << state_ << " request";
 
+  bool retval = false;
+  if (state_ == BluetoothStreamState::STARTED) {
+    state_ = BluetoothStreamState::SUSPENDING;
+    if (Stop()) {
+      retval = CondwaitState(BluetoothStreamState::SUSPENDING);
+    } else {
+      LOG(ERROR) << __func__ << ": session_type=" << toString(session_type)
+                 << ", state=" << state_ << " Hal fails";
+    }
+  }
+
+  if (retval) {
+    LOG(INFO) << __func__ << ": session_type=" << toString(session_type)
+              << ", state=" << state_ << " done";
+  } else {
+    LOG(ERROR) << __func__ << ": session_type=" << toString(session_type)
+               << ", state=" << state_ << " failure";
+  }
+
   state_ = BluetoothStreamState::DISABLED;
+  return retval;  // false if any failure like timeout
+}
+
+int Stop(void) {
   std::shared_ptr<BluetoothAudioSession> session_ptr = BluetoothAudioSessionInstance::GetSessionInstance(session_type);
 
   if ( session_ptr != nullptr )
   {
     session_ptr->StopStream();
-    LOG(INFO) << __func__ << "entered StopStream in BluetoothAudioSession";
   }
+  return true;
+ }
+
+/*******************************************************************************
+*
+* Function         audio_stream_close
+*
+* Description
+*
+*
+* Returns          int64
+*
+******************************************************************************/
+int audio_stream_close(void) {
+  if (state_ != BluetoothStreamState::DISABLED) {
+    audio_stream_suspend();
+  }
+  TearDown();
+  LOG(INFO) << __func__ << ": state=" << state_
+               << ", closed";
   return true;
 }
 
@@ -606,26 +648,6 @@ void TearDown(void) {
     LOG(INFO) << __func__ << "entered UnregisterStatusCback in BluetoothAudioSession";
   }
   cookie_ = ::aidl::android::hardware::bluetooth::audio::kObserversCookieUndefined;
-}
-/*******************************************************************************
-*
-* Function         audio_stream_close
-*
-* Description
-*
-*
-* Returns          int64
-*
-******************************************************************************/
-//equal to adev_close_output_stream in stream_apis.cc
-int audio_stream_close(void) {
-  if (state_ != BluetoothStreamState::DISABLED) {
-    audio_stream_suspend();
-  }
-  TearDown();
-  LOG(INFO) << __func__ << ": state=" << state_
-               << ", closed";
-  return true;
 }
 
 }  // namespace audio
