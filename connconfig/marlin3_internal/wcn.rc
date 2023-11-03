@@ -111,5 +111,8 @@ on property:persist.sys.longcheer.wifisar=2
 on property:persist.sys.longcheer.wifisar=3
     start wifisar3
 
+on property:persist.sys.longcheer.wifisar=7
+    start wifisar7
+
 on property:persist.sys.longcheer.wifisar=6
     start wifisar6
