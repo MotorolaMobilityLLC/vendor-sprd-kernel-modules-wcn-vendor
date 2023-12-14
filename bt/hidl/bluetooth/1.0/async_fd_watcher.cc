@@ -1,4 +1,6 @@
 //
+// This file has been modified by Unisoc (Shanghai) Technologies Co., Ltd in 2023.
+//
 // Copyright 2016 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +34,7 @@
 
 static const int INVALID_FD = -1;
 
-static const int BT_RT_PRIORITY = 69;
+static const int BT_RT_PRIORITY = 2;
 
 namespace android {
 namespace hardware {

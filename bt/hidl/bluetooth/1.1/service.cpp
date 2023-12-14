@@ -1,4 +1,6 @@
 //
+// This file has been modified by Unisoc (Shanghai) Technologies Co., Ltd in 2023.
+//
 // Copyright 2019 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,8 +39,6 @@ int main() {
   sp bluetoothHci = new BluetoothHci();
 
   ::android::hardware::configureRpcThreadpool(1 /*threads*/, true /*willJoin*/);
-  //increase binder priority
-  ::android::hardware::setMinSchedulerPolicy(bluetoothHci, SCHED_FIFO, 69);
 
   const status_t status = bluetoothHci->registerAsService();
   if (status != ::android::OK) {
