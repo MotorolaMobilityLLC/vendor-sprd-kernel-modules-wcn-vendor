@@ -140,24 +140,6 @@ service wifisar6anz /vendor/bin/wifisar6anz.sh
     oneshot
     disabled
 
-on property:persist.sys.longcheer.wifisar=0
-    start wifisar0
-
-on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=2
-    start wifisar1
-
-on property:persist.sys.longcheer.wifisar=2
-    start wifisar2
-
-on property:persist.sys.longcheer.wifisar=3
-    start wifisar3
-
-on property:persist.sys.longcheer.wifisar=7
-    start wifisar7
-
-on property:persist.sys.longcheer.wifisar=6
-    start wifisar6
-
 on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=3
     start wifisar1eu
 
@@ -166,6 +148,10 @@ on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=3
 
 on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=3
     start wifisar6eu
+
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=3
+    start wifisar0.sh
+
 
 
 on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=1
@@ -176,6 +162,11 @@ on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=1
 
 on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=1
     start wifisar6eu
+    
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=1
+    start wifisar0.sh
+
+
 
 on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=2
     start wifisar1eu
@@ -185,6 +176,11 @@ on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=2
 
 on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=2
     start wifisar6eu
+    
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=2
+    start wifisar0.sh
+
+
 
 on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=4
     start wifisar1eu
@@ -194,15 +190,98 @@ on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=4
 
 on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=4
     start wifisar6eu
+    
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=4
+    start wifisar0.sh
 
-on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=6
+
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=6
     start wifisar2anz
 
-on property:persist.sys.longcheer.wifisar=3 && property:ro.boot.sku=6
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=6
     start wifisar3anz
 
-on property:persist.sys.longcheer.wifisar=4 && property:ro.boot.sku=6
+on property:persist.sys.longcheer.wifisar=3 && property:ro.boot.sku=6
     start wifisar4anz
 
 on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=6
     start wifisar6anz
+    
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=6
+    start wifisar0.sh
+
+
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=9
+    start wifisar1eu
+
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=9
+    start wifisar2eu
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=9
+    start wifisar6eu
+
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=9
+    start wifisar0.sh
+
+
+
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=7
+    start wifisar1eu
+
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=7
+    start wifisar2eu
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=7
+    start wifisar6eu
+    
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=7
+    start wifisar0.sh
+
+
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=8
+    start wifisar1eu
+
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=8
+    start wifisar2eu
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=8
+    start wifisar6eu
+    
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=8
+    start wifisar0.sh
+
+
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=10
+    start wifisar1eu
+
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=10
+    start wifisar2eu
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=10
+    start wifisar6eu
+    
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=10
+    start wifisar0.sh
+
+
+
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=11
+    start wifisar2anz
+
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=11
+    start wifisar3anz
+
+on property:persist.sys.longcheer.wifisar=3 && property:ro.boot.sku=11
+    start wifisar4anz
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=11
+    start wifisar6anz
+    
+on property:persist.sys.longcheer.wifisar=0 && property:ro.boot.sku=11
+    start wifisar0.sh
