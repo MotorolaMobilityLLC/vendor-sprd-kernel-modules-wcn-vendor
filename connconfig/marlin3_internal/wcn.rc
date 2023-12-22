@@ -167,6 +167,34 @@ on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=3
 on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=3
     start wifisar6eu
 
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=1
+    start wifisar1eu
+
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=1
+    start wifisar2eu
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=1
+    start wifisar6eu
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=2
+    start wifisar1eu
+
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=2
+    start wifisar2eu
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=2
+    start wifisar6eu
+
+on property:persist.sys.longcheer.wifisar=1 && property:ro.boot.sku=4
+    start wifisar1eu
+
+on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=4
+    start wifisar2eu
+
+on property:persist.sys.longcheer.wifisar=6 && property:ro.boot.sku=4
+    start wifisar6eu
+
 on property:persist.sys.longcheer.wifisar=2 && property:ro.boot.sku=6
     start wifisar2anz
 
