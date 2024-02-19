@@ -28,6 +28,7 @@
 #include "BluetoothAudioSession.h"
 #include "BluetoothAudioSessionControl.h"
 #include "btaudio_offload_if.h"
+#include "DolbyAc4BindingBlob_impl.h"
 #include <sys/types.h>
 #include <android-base/logging.h>
 #include <android-base/stringprintf.h>
