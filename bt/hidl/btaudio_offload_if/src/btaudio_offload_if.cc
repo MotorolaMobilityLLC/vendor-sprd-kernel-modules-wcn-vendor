@@ -587,27 +587,8 @@ int audio_stream_suspend(void) {
   LOG(INFO) << __func__ << ": will enter StopStream session_type=" << toString(session_type)
             << ", state=" << state_ << " request";
 
-  bool retval = false;
-  if (state_ == BluetoothStreamState::STARTED) {
-    state_ = BluetoothStreamState::SUSPENDING;
-    if (Stop()) {
-      retval = CondwaitState(BluetoothStreamState::SUSPENDING);
-    } else {
-      LOG(ERROR) << __func__ << ": session_type=" << toString(session_type)
-                 << ", state=" << state_ << " Hal fails";
-    }
-  }
-
-  if (retval) {
-    LOG(INFO) << __func__ << ": session_type=" << toString(session_type)
-              << ", state=" << state_ << " done";
-  } else {
-    LOG(ERROR) << __func__ << ": session_type=" << toString(session_type)
-               << ", state=" << state_ << " failure";
-  }
-
   state_ = BluetoothStreamState::DISABLED;
-  return retval;  // false if any failure like timeout
+  return Stop();
 }
 
 int Stop(void) {
@@ -616,10 +597,11 @@ int Stop(void) {
   if ( session_ptr != nullptr )
   {
     session_ptr->StopStream();
+    return true;
   }
-  return true;
- }
-
+  return false;
+}
+ 
 /*******************************************************************************
 *
 * Function         audio_stream_close
