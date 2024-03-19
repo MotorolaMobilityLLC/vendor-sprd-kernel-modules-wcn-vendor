@@ -5,10 +5,17 @@ CONNECTIVITY_OWN_FILES := \
     bt_configure_pskey.ini \
     bt_configure_rf_aa.ini \
     bt_configure_pskey_aa.ini \
+    bt_configure_rf.xpe.ini \
+    bt_configure_pskey.xpe.ini \
+    bt_configure_rf_aa.xpe.ini \
+    bt_configure_pskey_aa.xpe.ini \
+    fm_board_config.xpe.ini \
     fm_board_config.ini
 
 WIFI_INI_FILES := \
     wifi_board_config.ini\
+    wifi_board_config.xpe.ini\
+    wifi_board_config_aa.xpe.ini\
     wifi_board_config_aa.ini\
 
 BOARD_HAVE_SPRD_WCN_BRANCH ?= marlin3_20a
@@ -26,7 +33,7 @@ SPRD_WCN_FIRMWARE_FILES := \
     wcnmodem.bin\
     gnssmodem.bin
 
-SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/$(BOARD_HAVE_SPRD_WCN_BRANCH)/sc2355_marlin3_lite_ab_builddir/EXEC_KERNEL_IMAGE.bin
+SPRD_WCN_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/$(BOARD_HAVE_SPRD_WCN_BRANCH)/sc2355_marlin3_lite_integration_builddir/EXEC_KERNEL_IMAGE.bin
 SPRD_GNSS_MODEM_FIRMWARE := vendor/sprd/release/unisoc_bin/gnss_20b_new/marlin3lite/marlin3lite_gnss_cm4_builddir/gnssmodem.bin
 
 GENERATE_WCN_PRODUCT_COPY_FILES += $(foreach own, $(CONNECTIVITY_OWN_FILES), \

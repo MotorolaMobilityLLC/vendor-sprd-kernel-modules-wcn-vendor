@@ -428,8 +428,8 @@ static void marlin3_lite_epilog_process() {
 static int get_file_name(char *name_rf_t, char *name_pskey_t) {
     int fd, ret;
     char filename_rf[128] = {0}, filename_pskey[128] = {0}, id_str[30] = {0};
-    char *id_str_pt[2];
-    unsigned int id = 0;
+    char *id_str_pt[3];
+    unsigned int id = 0, XPE_EFUSE_DATA = 0;
     /* property check */
     ret = property_get(VENDOR_LIB_CONF_PROPERTY_PATH, filename_rf, VENDOR_LIB_CONF_PATH);
     if (ret <0) {
@@ -460,14 +460,26 @@ static int get_file_name(char *name_rf_t, char *name_pskey_t) {
     if (id_str_pt[0] != NULL) {
         id_str_pt[1] = strtok(NULL, "/");
         ALOGD("%s id_str_pt[1]: %s", __func__, id_str_pt[1]);
+		if (id_str_pt[1] != NULL) {
+            id_str_pt[2] = strtok(NULL, "/");
+            ALOGD("%s id_str_pt[2]: %s", __func__, id_str_pt[2]);
+        }
     }
+
     id = strtoul(id_str_pt[0], 0, 0) & 0xFFFFFFFF;
+	XPE_EFUSE_DATA = strtoul(id_str_pt[2], 0, 0) & 0xFFFFFFFF;
     if (id == WCN_CHIP_ID_AA) {
         strcat(filename_rf, "bt_configure_rf_aa.ini");
         strcat(filename_pskey, "bt_configure_pskey_aa.ini");
     } else if (id == WCN_CHIP_ID_AB) {
-        strcat(filename_rf, "bt_configure_rf.ini");
-        strcat(filename_pskey, "bt_configure_pskey.ini");
+        /*marlin3_lite two bin*/
+        if (XPE_EFUSE_DATA == 1) {
+            strcat(filename_rf, "bt_configure_rf.xpe.ini");
+            strcat(filename_pskey, "bt_configure_pskey.xpe.ini");
+        }else{
+            strcat(filename_rf, "bt_configure_rf.ini");
+            strcat(filename_pskey, "bt_configure_pskey.ini");
+        }
     } else {
         strcat(filename_rf, "bt_configure_rf_aa.ini");
         strcat(filename_pskey, "bt_configure_pskey_aa.ini");
