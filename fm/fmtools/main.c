@@ -1,3 +1,22 @@
+/******************************************************************************
+ *
+ * This file has been modified by Unisoc (Shanghai) Technologies Co., Ltd in 2023.
+ *
+ *  Copyright 1999-2012 Broadcom Corporation
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at:
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ ******************************************************************************/
 #include <stdio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +35,10 @@
 #include <getopt.h>
 #include <stdint.h>
 #include <ctype.h>
+#include <string.h>
+#include <cutils/properties.h>
+#define BUILD_TYPE_PROP_KEY "ro.build.type"
+#define USER_DEBUG_VERSION_STR "userdebug"
 
 
 
@@ -150,10 +173,12 @@ int main(int argc, char* argv[])
     struct fm_reg_ctl_parm  parm;
 	struct fm_seek_parm rx_parm;
 	rx_parm.freq = 9140;
+    char value[92] = {'\0'};
+    property_get(BUILD_TYPE_PROP_KEY, value, "");
 
 	if (argc == 1)
 		usage();
-	while ((opt=getopt_long(argc, argv, "r:w:ocpdst::mugn", main_options, NULL)) != -1) {//nargc, nargv, options, long_options, index
+	while (((opt=getopt_long(argc, argv, "r:w:ocpdstmug", main_options, NULL)) != -1) && strstr(value,USER_DEBUG_VERSION_STR)) {//nargc, nargv, options, long_options, index
 		switch(opt) {
 			case 'r':
 				fm_action = ACTION_READ;

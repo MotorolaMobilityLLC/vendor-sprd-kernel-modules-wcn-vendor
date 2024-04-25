@@ -1,18 +1,22 @@
-/*
- * Copyright (C) 2017 The Android Open Source Project
+/******************************************************************************
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This file has been modified by Unisoc (Shanghai) Technologies Co., Ltd in 2023.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *  Copyright 1999-2012 Broadcom Corporation
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at:
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ ******************************************************************************/
 
 #define LOG_TAG "BcRadioDef.tuner"
 #define LOG_NDEBUG 0
@@ -418,14 +422,13 @@ Return<Result> TunerSession::startProgramListUpdates(const ProgramFilter& filter
             return utils::satisfies(filter, program.selector);
         };
         std::copy_if(mScanedPrograms.begin(), mScanedPrograms.end(), std::back_inserter(filteredList), filterCb);
-
-        auto task = [this, mScanedPrograms]() {
+        auto task = [this, filteredList]() {
             lock_guard<mutex> lk(mMut);
 
             ProgramListChunk chunk = {};
             chunk.purge = true;
             chunk.complete = true;
-            chunk.modified = hidl_vec<ProgramInfo>(mScanedPrograms.begin(), mScanedPrograms.end());
+            chunk.modified = hidl_vec<ProgramInfo>(filteredList.begin(), filteredList.end());
 
             mCallback->onProgramListUpdated(chunk);
         };
