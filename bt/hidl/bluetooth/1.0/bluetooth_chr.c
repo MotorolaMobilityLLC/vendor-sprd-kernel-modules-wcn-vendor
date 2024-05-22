@@ -18,7 +18,6 @@
 
 #define LOG_TAG "bt_chr"
 
-//#include <utils/Log.h>
 #include <log/log.h>
 #include <arpa/inet.h>
 #include <assert.h>
@@ -36,7 +35,6 @@
 #include <signal.h>
 #include <inttypes.h>
 #include "bt_vendor_lib.h"
-//#include "btsnoop_sprd_for_raw.h"
 #include <unistd.h>
 #include <pthread.h>
 #include <sys/inotify.h>
@@ -114,10 +112,11 @@
 /**********************************************/
 
 /******************param*********************/
-extern uint8_t bt_chr_event_bitmap_30001;
+extern uint8_t bt_chr_event_bitmap_30002;
 extern int chr_skt_fd;
 extern char **read_msg;
-char chr_ind_30001[512] = {0};
+char chr_ind_30002[512] = {0};
+
 #ifdef FUNCTION_NEED_RELEASE
 static uint8_t bt_chr_event_bitmap_2 = 0;
 static uint8_t bt_chr_event_bitmap_3 = 0;
@@ -126,6 +125,9 @@ static uint8_t bt_chr_event_bitmap_4 = 0;
 
 #define TRUE 1
 #define FALSE 0
+#define WCN_CHR_SOCKET_CMD_ENABLE       "wcn_chr_enable"
+#define WCN_CHR_SOCKET_CMD_DISABLE      "wcn_chr_disable"
+
 uint8_t thread_isrunning;
 pthread_t thread_id;
 
@@ -147,8 +149,8 @@ int select_num_from_string(char *num_in_str) {
     int number = 0;
 
     for(int i=0;num_in_str[i]!='\0';i++)
-        if((num_in_str[i]<='9') && (num_in_str[i]>='0'))/*is numeric character or not*/
-            number=number*10+(num_in_str[i])-'0';/*numeric character set to number*/
+        if((num_in_str[i]<='9') && (num_in_str[i]>='0'))/*determine if it is num character*/
+            number=number*10+(num_in_str[i])-'0';/*num character change to num*/
     return number;
 }
 
@@ -206,21 +208,17 @@ void recv_btchrmsg(uint8_t *data) {
 
     //event_id:abnormal event + its first event
     if (recv_chr_data[3] == 0x0 && recv_chr_data[4] == 0x0) {
-        bt_chr_event_bitmap_30001++;
-        SNOOPD("bt_chr_event_bitmap_30001:%d",bt_chr_event_bitmap_30001);
-        sprintf(chr_ind_30001,"0x%x,0x%x", recv_chr_data[5], recv_chr_data[6]);
-        SNOOPD("bt_chr_event_bitmap_30001: %d, sprint chr_ind_30001:%s",
-                bt_chr_event_bitmap_30001, chr_ind_30001);
+        bt_chr_event_bitmap_30002++;
+        SNOOPD("bt_chr_event_bitmap_30002:%d",bt_chr_event_bitmap_30002);
+        sprintf(chr_ind_30002,"0x%x,0x%x", recv_chr_data[5], recv_chr_data[6]);
+        SNOOPD("bt_chr_event_bitmap_30002: %d, sprint chr_ind_30002:%s",
+                bt_chr_event_bitmap_30002, chr_ind_30002);
     }
 }
 
-static void bluetooth_chr_thread_exit() {
-    SNOOPD("%s exit", __func__);
+void bluetooth_chr_clear_chr_ind() {
     int i;
-    if (chr_skt_fd) {
-        close(chr_skt_fd);
-        chr_skt_fd = -1;
-    }
+
     if (read_msg) {
         if (select_num_from_string(read_msg[3]) == 0) {
             for (i = 0; i <= 3; i++) {
@@ -246,18 +244,60 @@ static void bluetooth_chr_thread_exit() {
             read_msg = NULL;
         }
     }
+}
+
+int bluetooth_connect_chr() {
+    struct sockaddr_in bt_addr = {0};
+
+    //create socket
+    chr_skt_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (chr_skt_fd < 0) {
+        SNOOPE("chr_skt_fd create fail errno = %d, err str:%s:",
+                errno, strerror(errno));
+        return FALSE;
+    } else {
+        SNOOPD("chr_skt_fd = %d", chr_skt_fd);
+    }
+
+    //use AD_INET to connect BSP
+    bt_addr.sin_family = AF_INET;
+    bt_addr.sin_port = htons(4757);
+    inet_pton(AF_INET, "127.0.0.1", &bt_addr.sin_addr);
+    if(!connect(chr_skt_fd, (struct sockaddr *)&bt_addr, sizeof(bt_addr))) {
+        SNOOPD("bt connect wcn_chr server succeed");
+        return TRUE;
+    } else {
+        SNOOPE("bt connect wcn_chr server fail errno=%d, err str:%s",
+                errno, strerror(errno));
+        return FALSE;
+    }
+}
+
+void bluetooth_release_skt(int chr_skt_fd) {
+    if (chr_skt_fd > 0) {
+        close(chr_skt_fd);
+        chr_skt_fd = -1;
+    }
+}
+
+static void bluetooth_chr_thread_exit() {
+    SNOOPD("exit");
+    bluetooth_release_skt(chr_skt_fd);
+    bluetooth_chr_clear_chr_ind();
     pthread_exit(0);
 }
 
 static void bluetooth_chr_thread(void* param) {
-    //int chr_skt_fd;
     int bytes = 0;
     char buffer[1024] = {0};
     uint32_t skt_read_value = 0;
     uint32_t skt_write_value = 0;
-    struct sockaddr_in bt_addr = {0};
     bt_chr_ind_msg_struct msg = {0};
     char temp_ind_event[1024] = {0};
+    fd_set fds;
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
 
     //Signal action
     struct sigaction actions;
@@ -272,38 +312,26 @@ static void bluetooth_chr_thread(void* param) {
 
     UNUSED(param);
 
+connect_p:
+    //SNOOPD("connect");
+
     //create socket
-    chr_skt_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (chr_skt_fd < 0) {
-        SNOOPE("chr_skt_fd create fail errno = %d, err str:%s:",
-                errno, strerror(errno));
-        goto exit_p;
-    } else {
-        SNOOPD("chr_skt_fd = %d", chr_skt_fd);
-    }
-
-    //use AD_INET to connect BSP
-    bt_addr.sin_family = AF_INET;
-    bt_addr.sin_port = htons(4757);
-    inet_pton(AF_INET, "127.0.0.1", &bt_addr.sin_addr);
-    if(!connect(chr_skt_fd, (struct sockaddr *)&bt_addr, sizeof(bt_addr))) {
-        SNOOPD("bt connect wcn_chr server succeed");
-    } else {
-        SNOOPE("bt connect wcn_chr server fail errno=%d, err str:%s",
-                errno, strerror(errno));
+    if (!bluetooth_connect_chr()) {
         goto exit_p;
     }
 
-    //connect success wait BSP indicate wcn_chr_set_event
     SNOOPD("usleep 30ms");
     usleep(30*1000);
 
-    //BSP set chr enable or disable
-    //wcn_chr_set_event,module=GNSS,event_id=0x30001,set=1,maxcount=0x100,tlimit=0x1
     memset(buffer, 0 ,sizeof(buffer));
     //chr will jam because function read will keep waiting
     SNOOPD("start read");
     skt_read_value = skt_read(chr_skt_fd, buffer, sizeof(buffer));
+    /*chr ind*/
+    //wcn_chr_enable
+    //wcn_chr_disable
+    //wcn_chr_set_event,module=BT,event_id=0x30002,set=1,maxcount=0x100,tlimit=0x1
+    //wcn_chr_set_event,module=BT,event_id=xx,set=0
 
     if(skt_read_value <= 0) {
         SNOOPE("bt read from wcn_chr server failed");
@@ -316,58 +344,54 @@ static void bluetooth_chr_thread(void* param) {
     //if skt_read_value >= 0  :read something from socket   ----enable or disable chr
     bytes = sizeof(buffer);
     read_msg = explode(',', buffer, &bytes);
-    //wcn_chr_set_event,module=BT,event_id=0x30001,set=1,maxcount=0x100,tlimit=0x1
-    //wcn_chr_set_event,module=BT,event_id=xx,set=0
 
-    //BSP send cmd to disable bt chr
     if (select_num_from_string(read_msg[3]) == 0) {
-        SNOOPD("bt chr disabled");
-        int i;
-        for (i = 0; i <= 3; i++) {
-            if (read_msg[i]) {
-                free(read_msg[i]);
-            }
-            read_msg[i] = NULL;
-        }
-        if (read_msg) {
-            free(read_msg);
-        }
-        read_msg = NULL;
+        SNOOPD("bt chr stop count");
+        bluetooth_chr_clear_chr_ind();
         goto exit_p;
     }
 
-    //BSP send cmd to enable bt chr
     if (select_num_from_string(read_msg[3]) == 1) {
-        SNOOPD("bt chr enabled");
+        //in case buffer change to:
+        //wcn_chr_disablent,module=BT,event_id=0x30002,set=1,maxcount=0x100,tlimit=0x1
+        bluetooth_chr_clear_chr_ind();
+        memset(buffer, 0 ,sizeof(buffer));
+        SNOOPD("bt chr count");
         do {
-            //the reported error from whether will be indicated to BSP decided on its event_id
-            //wcn_chr_ind_event,modules=bt/gnss/wifi/bsp,ref_count=XX,event_id=XX,version=XX,event_content_len=XX,chr_info=XX;
-            if (msg.ref_count < bt_chr_event_bitmap_30001) {
-                SNOOPD("recv msg from firmware msg.ref_count: %d, bt_chr_event_bitmap_30001:%d, chr_ind_30001:%s",
-                        msg.ref_count, bt_chr_event_bitmap_30001,chr_ind_30001);
-                msg.ref_count = bt_chr_event_bitmap_30001;
-                msg.event_id = 0x23001;
-                msg.event_content = chr_ind_30001;
-                msg.event_content_len = strlen(chr_ind_30001);
+            FD_SET(chr_skt_fd, &fds);
+            int ret = select(chr_skt_fd + 1, &fds, NULL, NULL, &timeout);
+            if(ret <= 0) {
+                goto count_p;
+            }
+
+            skt_read_value = skt_read(chr_skt_fd, buffer, sizeof(buffer));
+            SNOOPD("chr_skt_fd = %d, skt_read_value = %d, buffer = %s",
+                chr_skt_fd,skt_read_value,buffer);
+            if (0 == strcmp(buffer, WCN_CHR_SOCKET_CMD_DISABLE)) {
+                bluetooth_release_skt(chr_skt_fd);
+                msg.ref_count = 0;
+                bt_chr_event_bitmap_30002 = 0;
+                goto connect_p;
+            }
+count_p:
+    //SNOOPD("still count");
+
+            if (msg.ref_count < bt_chr_event_bitmap_30002) {
+                SNOOPD("recv msg from firmware msg.ref_count: %d, bt_chr_event_bitmap_30002:%d, chr_ind_30002:%s",
+                        msg.ref_count, bt_chr_event_bitmap_30002,chr_ind_30002);
+                msg.ref_count = bt_chr_event_bitmap_30002;
+                msg.event_id = 0x23002;
+                msg.event_content = chr_ind_30002;
+                msg.event_content_len = strlen(chr_ind_30002);
 
                 sprintf(temp_ind_event,"wcn_chr_ind_event,module=BT,ref_count=%d,event_id=0x%x,version=%d,event_content_len=%d,char_info=%s",
                             msg.ref_count, msg.event_id, msg.version, msg.event_content_len, msg.event_content);
                 SNOOPD("temp_ind_event: %s",temp_ind_event);
                 skt_write_value = write(chr_skt_fd, temp_ind_event, strlen(temp_ind_event));
+
                 if (skt_write_value < 0) {
                     SNOOPE("bt write to wcn_chr server failed");
-                    int i;
-                    for (i = 0; i <= 5; i++) {
-                        if (read_msg[i]) {
-                            free(read_msg[i]);
-                        }
-                        read_msg[i] = NULL;
-                    }
-
-                    if (read_msg) {
-                        free(read_msg);
-                    }
-                    read_msg = NULL;
+                    bluetooth_chr_clear_chr_ind();
                     goto exit_p;
                 }
             }
@@ -376,40 +400,38 @@ static void bluetooth_chr_thread(void* param) {
         } while (thread_isrunning);
     }
     //release chr_skt_fd
-    if (chr_skt_fd) {
-        close(chr_skt_fd);
-        chr_skt_fd = -1;
-    }
+    bluetooth_release_skt(chr_skt_fd);
 
 exit_p:
-    SNOOPD("%s exit", __func__);
-    if (chr_skt_fd) {
-        close(chr_skt_fd);
-        chr_skt_fd = -1;
-    }
+    SNOOPD("exit");
+    bluetooth_release_skt(chr_skt_fd);
 }
-
 
 void bluetooth_chr_init(void)
 {
-    int ret = -1;
+    int ret;
     //pthread_t thread_id;
     thread_isrunning = TRUE;
 
     ret = pthread_create(&thread_id, NULL,(void*)bluetooth_chr_thread, NULL);
-    if (ret) {
+    if (ret != 0) {
         SNOOPE("bluetooth_chr_init pthread_create failed");
         thread_isrunning = FALSE;
     }
 }
 
-
-void bluetooth_chr_cleanup(void)
-{
+void bluetooth_chr_cleanup(void) {
     shutdown(chr_skt_fd, SHUT_RDWR);
     SNOOPD("wait bluetooth_chr_thread exit ");
     usleep(1*1000);
     thread_isrunning = FALSE;
-    pthread_kill(thread_id, SIGUSR2);
-    SNOOPE("bluetooth_chr_thread exit complete ");
+    //if chr not ind disable, will not clear bt_chr_event_bitmap_30002
+    //bt_chr_event_bitmap_30002 = 0;
+
+    int ret = pthread_kill(thread_id, SIGUSR2);
+    SNOOPD("pthread_kill %d", ret);
+
+    if ( 0 == ret ) {
+        SNOOPD("bluetooth_chr_thread exit complete ");
+    }
 }

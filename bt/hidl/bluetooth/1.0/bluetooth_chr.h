@@ -97,23 +97,13 @@ typedef enum{
 void bluetooth_chr_init(void);
 //static void bluetooth_chr_thread(void* param);
 void bluetooth_chr_cleanup(void);
-void send_btchrmsg_hardware_error_to_framework(uint8_t *data);
 int select_num_from_string(char *num_in_str);
 char **explode(char sep, const char *str, int *size);
-int set_cmd_format();
 void recv_btchrmsg(uint8_t *data);
-void wcn_chr_set_event(uint8_t mode_change, uint32_t set_event);
-void wcn_chr_request_event(uint32_t set_event);
-void wcn_chr_eventid_error_event();
-
 /**********************************************/
-
-
 //extern const btsnoop_sprd_t *btsnoop_sprd_for_raw_get_interface(void);
 extern void *btsnoop_raw_start_up(void);
 extern void *btsnoop_raw_shut_down(void);
-
-
 
 #ifdef __cplusplus
 }

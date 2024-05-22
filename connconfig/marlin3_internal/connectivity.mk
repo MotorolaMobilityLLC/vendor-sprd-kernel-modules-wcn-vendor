@@ -61,7 +61,7 @@ PRODUCT_ODM_PROPERTIES += \
     persist.bluetooth.a2dp_offload.disabled = "false" \
     ro.bluetooth.a2dp_offload.supported="true"
 
-ifeq ($(SPRD_WCN_HW_CONFIG), $(filter ums9620_2h10 ums9230_1h10 ums9230_4h10,$(SPRD_WCN_HW_CONFIG)))
+ifeq ($(SPRD_WCN_HW_CONFIG), $(filter ums9620_2h10 ums9230_1h10 ums9230_4h10 ums9230_6h10,$(SPRD_WCN_HW_CONFIG)))
     PRODUCT_ODM_PROPERTIES += \
         ro.vendor.enable.chr="true"
 endif

@@ -1,6 +1,4 @@
 //
-// This file has been modified by Unisoc (Shanghai) Technologies Co., Ltd in 2023.
-//
 // Copyright 2019 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,23 +27,23 @@ using android::hardware::bluetooth::V1_1::implementation::BluetoothHci;
 
 using android::sp;
 using android::status_t;
-
 //remark BT CHR event
-uint8_t bt_chr_event_bitmap_30001;
+uint8_t bt_chr_event_bitmap_30002;
 int chr_skt_fd = -1;
 char **read_msg = NULL;
 
 int main() {
-  sp bluetoothHci = new BluetoothHci();
-
   ::android::hardware::configureRpcThreadpool(1 /*threads*/, true /*willJoin*/);
 
+  sp bluetoothHci = new BluetoothHci();
   const status_t status = bluetoothHci->registerAsService();
   if (status != ::android::OK) {
     ALOGE("Cannot register Bluetooth HAL service");
     return 1;  // or handle error
   }
 
+  //increase binder priority
+  android::hardware::setMinSchedulerPolicy(bluetoothHci, SCHED_FIFO, 2);
   ::android::hardware::joinRpcThreadpool();
   return 1;  // joinRpcThreadpool should never return
 }
