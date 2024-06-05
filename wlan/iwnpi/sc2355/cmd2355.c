@@ -1,7 +1,19 @@
 /*
- * Authors:<jay.yang@spreadtrum.com>
- * Owner:
+ * SPDX-License-Identifier: LicenseRef-Unisoc-General-1.0
+ *
+ * Copyright 2023-2024 Unisoc(Shanghai) Technologies Co., Ltd
+ *
+ * Licensed under the Unisoc General Software License, version 1.0(the License);
+ * you may not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ *
+ * https://www.unisoc.com/en_us/license/UNISOC GENERAL LICENSE V1.0-EN_US
+ *
+ * Software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OF ANY KIND, either express or implied
+ * See the Unisoc General Software License, version 1.0 for more details.
  */
+
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -4599,6 +4611,56 @@ int wlnpi_cmd_get_sta_wfa_para(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, in
 	return 0;
 }
 
+/*-----CMD ID:172-----------*/
+int wlnpi_cmd_set_roam(int argc, char **argv, unsigned char *s_buf, int *s_len)
+{
+	char *err = NULL;
+
+	ENG_LOG("ADL entry %s(), argc = %d, argv[0] = %s", __func__, argc, argv[0]);
+	if (1 != argc) {
+		printf("need 1 paras, please check!\n");
+		return -1;
+	}
+
+	*s_buf = (unsigned char)strtol(argv[0], &err, 10);
+	if (err == argv[0]) {
+		ENG_LOG("ADL %s(), strtol is ERROR, return -1\n", __func__);
+		printf("invalid input argv\n");
+		return -1;
+	}
+
+	if (*s_buf > 1) {
+		ENG_LOG("ADL %s(), roam_flag value is ERROR, return -1\n", __func__);
+		printf("invalid input argv\n");
+		return -1;
+	}
+
+	*s_len = 1;
+
+	ENG_LOG("ADL leaving %s(), roam_flag = %d, s_len = %d", __func__, *s_buf, *s_len);
+
+	return 0;
+}
+
+/*-----CMD ID:173-----------*/
+int wlnpi_show_get_roam(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, int r_len)
+{
+	ENG_LOG("ADL entry %s(), r_len = %d", __func__, r_len);
+
+	if (1 != r_len) {
+		printf("r_len %d err\n", r_len);
+		ENG_LOG("ADL leaving %s(), r_len %d is ERROR, return -1", __func__, r_len);
+
+		return -1;
+	}
+
+	printf("ret: %d :end\n", r_buf[0]);
+
+	ENG_LOG("ADL leaving %s(), roam_flag = %d, return 0", __func__, r_buf[0]);
+
+	return 0;
+}
+
 int wlnpi_cmd_set_cca_param(int argc, char **argv, unsigned char *s_buf,
 			    int *s_len)
 {
@@ -5750,6 +5812,22 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .parse = wlnpi_cmd_no_argv,
 	 .show = wlnpi_cmd_get_sta_wfa_para,
 	 },
+	{
+		/*----CMD ID:172------------*/
+		.id = WLNPI_CMD_SET_ROAM,
+		.name = "set_roam",
+		.help = "set_roam [0:disable|1:enable]",
+		.parse = wlnpi_cmd_set_roam,
+		.show = wlnpi_show_only_status,
+	},
+	{
+		/*----CMD ID:173------------*/
+		.id = WLNPI_CMD_GET_ROAM,
+		.name = "get_roam",
+		.help = "get_roam",
+		.parse = wlnpi_cmd_no_argv,
+		.show = wlnpi_show_get_roam,
+	},
 	{
 	 /*----CMD ID:198------------*/
 	 .id   = WLNPI_CMD_SET_CCA_PARAM,
