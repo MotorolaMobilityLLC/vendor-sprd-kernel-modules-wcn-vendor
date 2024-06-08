@@ -1,3 +1,19 @@
+/*
+ * SPDX-License-Identifier: LicenseRef-Unisoc-General-1.0
+ *
+ * Copyright 2023-2024 Unisoc(Shanghai) Technologies Co., Ltd
+ *
+ * Licensed under the Unisoc General Software License, version 1.0(the License);
+ * you may not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ *
+ * https://www.unisoc.com/en_us/license/UNISOC GENERAL LICENSE V1.0-EN_US
+ *
+ * Software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OF ANY KIND, either express or implied
+ * See the Unisoc General Software License, version 1.0 for more details.
+ */
+
 #ifndef __WLNPI_H__
 #define __WLNPI_H__
 
@@ -203,6 +219,8 @@ enum WLNPI_CMD_LIST {
 	WLNPI_CMD_GET_SOFTAP_WFA_PARA = 155,
 	WLNPI_CMD_SET_STA_WFA_PARA = 156,
 	WLNPI_CMD_GET_STA_WFA_PARA = 157,
+	WLNPI_CMD_SET_ROAM = 172,
+	WLNPI_CMD_GET_ROAM = 173,
 	WLNPI_CMD_SET_CCA_PARAM = 198,
 	WLNPI_CMD_SET_RAND_MAC_FLAG = 199,
 	/* no need send command to firmware when set country */
