@@ -122,8 +122,6 @@ static int read_mac_address(char *file_name, uint8_t *addr)
     for (i = 0; i < MAC_ADDR_LEN; i++) {
         addr[i] = addr_t[i] & 0xFF;
     }
-    ALOGI("%s %s addr: [%02X:%02X:%02X:XX:XX:XX]", __func__, file_name,
-          addr[0], addr[1], addr[2]);
     close(fd);
     return 0;
 
