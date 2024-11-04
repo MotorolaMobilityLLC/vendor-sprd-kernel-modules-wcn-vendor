@@ -34,7 +34,7 @@
 
 static const int INVALID_FD = -1;
 
-static const int BT_RT_PRIORITY = 2;
+static const int BT_RT_PRIORITY = 1;
 
 namespace android {
 namespace hardware {

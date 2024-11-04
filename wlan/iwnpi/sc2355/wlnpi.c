@@ -87,8 +87,8 @@ static int nl_reply_handler(struct nl_msg *msg, void *arg)
 	return NL_SKIP;
 }
 
-static int nl_send_recv_msg(wlnpi_t *wlnpi, unsigned char *s_buf, int s_len, unsigned char *r_buf,
-			    unsigned int *r_len)
+int nl_send_recv_msg(wlnpi_t *wlnpi, unsigned char *s_buf, int s_len, unsigned char *r_buf,
+		     unsigned int *r_len)
 {
 	struct nl_cb *cb;
 	struct nl_cb *s_cb;

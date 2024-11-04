@@ -219,6 +219,7 @@ enum WLNPI_CMD_LIST {
 	WLNPI_CMD_GET_SOFTAP_WFA_PARA = 155,
 	WLNPI_CMD_SET_STA_WFA_PARA = 156,
 	WLNPI_CMD_GET_STA_WFA_PARA = 157,
+	WLNPI_CMD_DOWNLOAD_WAVE_DATA = 158,
 	WLNPI_CMD_SET_ROAM = 172,
 	WLNPI_CMD_GET_ROAM = 173,
 	WLNPI_CMD_SET_CCA_PARAM = 198,
@@ -257,7 +258,7 @@ struct wlnpi_cmd_t {
 	char *help;
 	P_FUNC_1 parse;
 	P_FUNC_2 show;
-	char id;
+	unsigned char id;
 };
 
 typedef struct {
@@ -447,7 +448,17 @@ struct wlnpi_sta_lut_t {
 	unsigned int rssi_smooth;
 };
 
+struct wlnpi_wave_hdr_t {
+	unsigned short sec_len; /* section len, unit:byte */
+	unsigned char sec_seq;  /* section sequence */
+	unsigned char last_sec; /* 0:not last section; 1:last section */
+	unsigned char type;     /* 0:11b 2M short; 1:11n 20M mcs0 short; 2:11n 40M */
+	unsigned char reserved;
+};
+
 extern wlnpi_t g_wlnpi;
 extern struct wlnpi_cmd_t *match_cmd_table(char *name);
+int nl_send_recv_msg(wlnpi_t *wlnpi, unsigned char *s_buf, int s_len, unsigned char *r_buf,
+		     unsigned int *r_len);
 
 #endif

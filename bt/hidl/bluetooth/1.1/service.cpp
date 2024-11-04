@@ -1,4 +1,6 @@
 //
+// This file has been modified by Unisoc (Shanghai) Technologies Co., Ltd in 2024.
+//
 // Copyright 2019 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +35,14 @@ int chr_skt_fd = -1;
 char **read_msg = NULL;
 
 int main() {
+  // Make watching thread RT.
+  struct sched_param rt_params;
+  rt_params.sched_priority = 1;
+  if (sched_setscheduler(gettid(), SCHED_FIFO, &rt_params)) {
+    ALOGE("%s unable to set SCHED_FIFO for pid %d, tid %d, error %s", __func__,
+          getpid(), gettid(), strerror(errno));
+  }
+
   ::android::hardware::configureRpcThreadpool(1 /*threads*/, true /*willJoin*/);
 
   sp bluetoothHci = new BluetoothHci();
@@ -42,8 +52,6 @@ int main() {
     return 1;  // or handle error
   }
 
-  //increase binder priority
-  android::hardware::setMinSchedulerPolicy(bluetoothHci, SCHED_FIFO, 2);
   ::android::hardware::joinRpcThreadpool();
   return 1;  // joinRpcThreadpool should never return
 }

@@ -26,6 +26,7 @@
 #include <ctype.h>
 
 #include "wlnpi.h"
+#include "wave.h"
 
 #include <netlink/genl/genl.h>
 #include <netlink/genl/family.h>
@@ -4611,6 +4612,104 @@ int wlnpi_cmd_get_sta_wfa_para(struct wlnpi_cmd_t *cmd, unsigned char *r_buf, in
 	return 0;
 }
 
+/*-----CMD ID:158-----------*/
+int wlnpi_cmd_download_wave_data(int argc, char **argv, unsigned char *s_buf, int *s_len)
+{
+	wlnpi_t *wlnpi = &g_wlnpi;
+	WLNPI_CMD_HDR_T *msg = NULL;
+	struct wlnpi_wave_hdr_t *wave = NULL;
+	unsigned char *data = NULL;
+	unsigned char *send_buf = s_buf - sizeof(WLNPI_CMD_HDR_T);
+	int send_len = 0;
+	unsigned char *recv_buf = NULL;
+	unsigned int recv_len = 1024;
+	int *status = NULL;
+	int i;
+	int ret = 0;
+	char *err;
+	unsigned char type = 0;
+	unsigned int (*wave_data)[WAVE_DATA_COL] = NULL;
+
+	if (argc != 1) {
+		printf("need 1 paras, please check!\n");
+		return -1;
+	}
+
+	type = (unsigned char)strtol(argv[0], &err, 10);
+	if (err == argv[0]) {
+		ENG_LOG("ADL %s(), strtol is ERROR, return -1\n", __func__);
+		printf("invalid input argv\n");
+		return -1;
+	}
+
+	if (type == 0) {
+		wave_data = g_wave_data_11b;
+	} else if (type == 1) {
+		wave_data = g_wave_data_11n;
+	} else if (type == 2) {
+		wave_data = g_wave_data_11n_40m;
+	} else {
+		ENG_LOG("ADL %s, type=%d is invalid!\n", __func__, type);
+		printf("type=%d is invalid!\n", type);
+		return -1;
+	}
+
+	ENG_LOG("ADL enter %s(), type=%d\n", __func__, type);
+	msg = (WLNPI_CMD_HDR_T *)send_buf;
+	msg->type = HOST_TO_MARLIN_CMD;
+	msg->subtype = WLNPI_CMD_DOWNLOAD_WAVE_DATA;
+
+	recv_buf = malloc(recv_len);
+	if (!recv_buf) {
+		ENG_LOG("ADL %s(), malloc error", __func__);
+		return -1;
+	}
+	memset(recv_buf, 0, recv_len);
+
+	/* 1.send section of wave(1000 Bytes at a time) */
+	for (i = 0; i < WAVE_DATA_ROW; ++i) {
+		wave = (struct wlnpi_wave_hdr_t *)s_buf;
+		wave->type = type;
+		wave->sec_seq = i;
+		if (i != WAVE_DATA_ROW - 1) {
+			wave->sec_len = WAVE_SEC_LEN;
+			wave->last_sec = 0;
+		} else {
+			wave->sec_len = WAVE_LAST_SEC_LEN;
+			wave->last_sec = 1;
+		}
+
+		msg->len = sizeof(struct wlnpi_wave_hdr_t) + wave->sec_len;
+		send_len = sizeof(WLNPI_CMD_HDR_T) + msg->len;
+		data  = s_buf + sizeof(struct wlnpi_wave_hdr_t);
+		memcpy(data, wave_data[i], wave->sec_len);
+
+		if (wave->last_sec)
+			break;
+
+		ret = nl_send_recv_msg(wlnpi, send_buf, send_len, recv_buf, &recv_len);
+		if (ret) {
+			ENG_LOG("ADL %s(), wave seq=%d send error\n", __func__, i);
+			break;
+		}
+		status = (int *)(recv_buf + sizeof(WLNPI_CMD_HDR_T));
+		if (*status)
+			printf("wave seq=%d send error! status:%d\n", i, *status);
+
+		ENG_LOG("ADL %s(), send seq=%d len=%d type=%d wave data. status=%d\n", __func__,
+			wave->sec_seq, wave->sec_len, wave->type, *status);
+	}
+
+	/* 2.send last section of wave(120 Bytes) */
+	*s_len = msg->len;
+	ENG_LOG("ADL %s(), send seq=%d len=%d type=%d wave data. s_len=%d\n", __func__,
+		wave->sec_seq, wave->sec_len, wave->type, *s_len);
+
+	free(recv_buf);
+	recv_buf = NULL;
+	return ret;
+}
+
 /*-----CMD ID:172-----------*/
 int wlnpi_cmd_set_roam(int argc, char **argv, unsigned char *s_buf, int *s_len)
 {
@@ -5802,6 +5901,14 @@ struct wlnpi_cmd_t g_cmd_table[] = {
 	 .help = "get_sta_wfa",
 	 .parse = wlnpi_cmd_no_argv,
 	 .show = wlnpi_cmd_get_sta_wfa_para,
+	 },
+	{
+	 /*----CMD ID:158------------*/
+	 .id = WLNPI_CMD_DOWNLOAD_WAVE_DATA,
+	 .name = "download_wave_data",
+	 .help = "download_wave_data [type 0:11b, 1:11n 20M, 2:11n 40M]",
+	 .parse = wlnpi_cmd_download_wave_data,
+	 .show = wlnpi_show_only_status,
 	 },
 	{
 		/*----CMD ID:172------------*/
