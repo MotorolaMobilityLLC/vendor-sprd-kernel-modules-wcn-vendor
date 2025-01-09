@@ -2,6 +2,7 @@
 <SPRDGNSS>
     <COMM>
       <PROTOCOL NAME="RX_SUPL_PROTOCOL" TYPE="SUPL" INTERFACE="DUMMY2">
+          <PROPERTY NAME="CONFIG-VERSION" VALUE="1.0"/>
           <PROPERTY NAME="ENABLE" VALUE="TRUE"/>
           <PROPERTY NAME="SERVER-ADDRESS" VALUE="unisoc.supl.qxwz.com"/>
           <PROPERTY NAME="SERVER-PORT" VALUE="7275"/>
@@ -87,6 +88,7 @@
           <PROPERTY NAME="RRLP-ENABLE" VALUE="TRUE"/>
           <PROPERTY NAME="RRC-ENABLE" VALUE="FALSE"/>
           <PROPERTY NAME="LPPE-ENABLE" VALUE="FALSE"/>
+          <PROPERTY NAME="SOS-PDN-FQDN" VALUE="*.sos.supl.rakuten.jp,e-slp.e911.kddi.ne.jp"/>
       </PROTOCOL>
     </COMM>
 </SPRDGNSS>
